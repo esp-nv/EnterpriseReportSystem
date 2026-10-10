@@ -1,4 +1,6 @@
 using EnterpriseReportSystem.Data;
+using EnterpriseReportSystem.Services.Implementations;
+using EnterpriseReportSystem.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Добавяме и конфигурираме Entity Framework Core с SQL Server
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+// Регистрираме бизнес услугата за количествени ведомости и анализи
+builder.Services.AddScoped<IReportService, ReportService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
