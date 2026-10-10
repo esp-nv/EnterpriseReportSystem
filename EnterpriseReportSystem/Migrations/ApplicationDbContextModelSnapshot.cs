@@ -138,6 +138,9 @@ namespace EnterpriseReportSystem.Migrations
                     b.Property<int>("Direction")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsFinancial")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

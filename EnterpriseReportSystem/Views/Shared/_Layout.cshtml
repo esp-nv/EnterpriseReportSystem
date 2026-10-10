@@ -25,6 +25,32 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        <ul class="navbar-nav flex-grow-1">
+                            <!-- 1. СЧЕТОВОДНИ СПРАВКИ -->
+                            <li class="nav-item">
+                                <a class="nav-link text-dark fw-bold" asp-controller="Report" asp-action="Index">📊 Оборотна Ведомост</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark fw-bold" asp-controller="Audit" asp-action="SmartImport">🧩 Excel Импорт & Одит</a>
+                            </li>
+
+                            <!-- 2. НОМЕНКЛАТУРИ И КОНФИГУРАЦИЯ -->
+                            <li class="nav-item">
+                                <a class="nav-link text-primary fw-bold" asp-controller="Setup" asp-action="Hierarchy">⚙️ Настройка Йерархия</a>
+                            </li>
+
+                            <!-- 3. ОПЕРАТИВНО ВЪВЕЖДАНЕ НА ДАННИ -->
+                            <li class="nav-item">
+                                <a class="nav-link text-success fw-bold" asp-controller="Setup" asp-action="CreateAsset">➕ Нов Актив</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-success fw-bold" asp-controller="Setup" asp-action="LogOperation">📝 Приход / Разход</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-warning fw-bold text-dark" asp-controller="Setup" asp-action="TransferAsset">🔄 Логистичен Трансфер</a>
+                            </li>
+                        </ul>
+
                         <li class="nav-item">
                             <a class="nav-link text-dark fw-bold" asp-area="" asp-controller="Report" asp-action="Index">
                                 📊 Оборотна Ведомост
