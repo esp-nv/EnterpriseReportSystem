@@ -14,6 +14,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<AssetGroup> AssetGroups { get; set; } = null!;
     public DbSet<OperationType> OperationTypes { get; set; } = null!;
     public DbSet<AssetTransaction> AssetTransactions { get; set; } = null!;
+    public object MainTypes { get; internal set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
