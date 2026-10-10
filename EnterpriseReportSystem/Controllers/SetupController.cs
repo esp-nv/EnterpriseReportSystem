@@ -176,4 +176,59 @@ public class SetupController : Controller
 
         return View(model);
     }
+
+    // ==========================================
+    // 3. РЕДАКЦИЯ И ИЗТРИВАНЕ НА ЙЕРАРХИЯ
+    // ==========================================
+
+    // GET: Зарежда формата за редакция на Главен Тип
+    [HttpGet]
+    public async Task<IActionResult> EditMainType(string id)
+    {
+        var mainType = await _context.MainTypes.FirstOrDefaultAsync(m => m.Code == id);
+        if (mainType == null) return NotFound();
+
+        var model = new HierarchyCreateViewModel
+        {
+            MainTypeCode = mainType.Code,
+            MainTypeName = mainType.Name
+        };
+        return View(model);
+    }
+
+    // POST: Записва промените за Главен Тип
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditMainType(HierarchyCreateViewModel model)
+    {
+        var mainType = await _context.MainTypes.FirstOrDefaultAsync(m => m.Code == model.MainTypeCode);
+        if (mainType != null)
+        {
+            mainType.Name = model.MainTypeName.Trim();
+            await _context.SaveChangesAsync();
+            TempData["Success"] = $"✏️ Главният тип '{model.MainTypeName}' беше редактиран успешно!";
+        }
+        return RedirectToAction("Hierarchy");
+    }
+
+    // POST: Изтриване на Главен Тип (Съобразено с твоята Restrict защита)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteMainType(string id)
+    {
+        var mainType = await _context.MainTypes.Include(m => m.AssetGroups).FirstOrDefaultAsync(m => m.Code == id);
+        if (mainType == null) return NotFound();
+
+        if (mainType.AssetGroups.Any())
+        {
+            TempData["Error"] = $"❌ Не можете да изтриете този тип, защото към него има свързани Групи активи!";
+            return RedirectToAction("Hierarchy");
+        }
+
+        _context.MainTypes.Remove(mainType);
+        await _context.SaveChangesAsync();
+        TempData["Success"] = "🗑️ Главният тип беше изтрит успешно от SQL Server!";
+        return RedirectToAction("Hierarchy");
+    }
+
 }

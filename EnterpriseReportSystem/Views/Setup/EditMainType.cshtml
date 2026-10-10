@@ -1,0 +1,32 @@
+﻿@model EnterpriseReportSystem.ViewModels.HierarchyCreateViewModel
+
+<div class="container mt-5" style="max-width: 600px;">
+    <div class="card shadow-lg border-0 rounded-3 border-start border-primary border-4">
+        <div class="card-header bg-dark text-white p-3">
+            <h4 class="mb-0 fw-bold">✏️ Редакция на Главен Тип на Актива</h4>
+        </div>
+        <div class="card-body p-4 bg-light">
+
+            <form asp-action="EditMainType" asp-controller="Setup" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Системен Код (Не може да се променя)</label>
+                    <input asp-for="MainTypeCode" class="form-control bg-white text-muted border-2" readonly="readonly" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Ново наименование на категорията</label>
+                    <input asp-for="MainTypeName" class="form-control border-2 border-primary" placeholder="напр. Живи Животни, Обновена Техника" required="required" />
+                    <span asp-validation-for="MainTypeName" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg flex-grow-1 fw-bold shadow-sm">💾 Запази Промените</button>
+                    <a asp-action="Hierarchy" class="btn btn-secondary btn-lg fw-bold">❌ Отказ</a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
