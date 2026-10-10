@@ -1,0 +1,139 @@
+﻿@model EnterpriseReportSystem.Models.Entities.FileProcessSummary
+
+<div class="container mt-4" style="max-width: 1100px;">
+    <h2 class="mb-4 text-primary fw-bold">⚖️ Сравнителен Контрол и Самодиагностика на Данни</h2>
+
+    <!-- ФОРМА ЗА КАЧВАНЕ И ТЕХНИЧЕСКИ ФИЛТЪР -->
+    <div class="card p-4 shadow-sm mb-4 bg-light">
+        <form asp-action="Compare" method="post" enctype="multipart/form-data" class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label fw-bold">1. Изберете CSV / Текстов файл за одит</label>
+                <input type="file" name="csvFile" class="form-control" accept=".txt,.csv" required />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold">2. Филтър по тип техническа грешка</label>
+                <select name="selectedErrorType" class="form-select">
+                    <option value="">-- Всички видове грешки --</option>
+                    <option value="Празен ред">Само празни редове</option>
+                    <option value="Липсва разделител">Липсващ разделител (;)</option>
+                    <option value="Празно ID">Празно ID на обект</option>
+                    <option value="Грешно количество">Невалидно количество</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100 btn-lg shadow-sm">Стартирай Анализ</button>
+            </div>
+        </form>
+    </div>
+
+    @if (Model.TotalLinesRead > 0)
+    {
+        <!-- ИНФОРМАЦИОННО ТАБЛО ЗА ИНТЕГРИТЕТ -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white text-center p-3 shadow-sm">
+                    <h6>Прочетени редове</h6>
+                    <h3>@Model.TotalLinesRead</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white text-center p-3 shadow-sm">
+                    <h6>Успешно обработени</h6>
+                    <h3>@Model.SuccessfulLines</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-danger text-white text-center p-3 shadow-sm">
+                    <h6>Отхвърлени с грешка</h6>
+                    <h3>@Model.FailedLines</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-dark text-center p-3 shadow-sm">
+                    <h6>Индекс на цялост</h6>
+                    <h3>@Model.SuccessPercentage.ToString("N1")%</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- ДНЕВНИК НА ТЕХНИЧЕСКИТЕ ГРЕШКИ -->
+        @if (Model.Errors.Any())
+        {
+            <div class="alert alert-warning shadow border-danger mb-4" role="alert">
+                <h5 class="alert-heading text-danger fw-bold">🚨 Открити технически несъответствия във файла:</h5>
+                <hr>
+                <div style="max-height: 180px; overflow-y: auto;">
+                    @foreach (var err in Model.Errors)
+                    {
+                        <div class="mb-2 border-bottom pb-1">
+                            🟥 <strong>Ред @err.LineNumber:</strong> Текст: <code class="bg-dark text-white px-1">@err.RawContent</code>
+                            | <span class="badge bg-danger">@err.Reason</span> -> <span class="text-dark">@err.Details</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-success shadow-sm mb-4 text-center fw-bold">
+                🎉 Файлът е прочетен успешно на 100% без технически грешки във форматирането!
+            </div>
+        }
+
+        <!-- СРАВНИТЕЛНА ТАБЛИЦА НА РАЗЛИКИТЕ -->
+        <h4 class="mb-3 text-secondary">Резултат от съпоставката с базата данни:</h4>
+        <div class="table-responsive shadow rounded mb-4">
+            <table class="table table-bordered align-middle bg-white">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>Идентификатор</th>
+                        <th>Наименование на актива</th>
+                        <th>В Системата (SQL)</th>
+                        <th>Във Файла (Одит)</th>
+                        <th>Разлика</th>
+                        <th>Анализ на съответствието</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.DiffLines != null && Model.DiffLines.Any())
+                    {
+                        @foreach (var line in Model.DiffLines)
+                        {
+                            string rowClass = line.Status switch
+                            {
+                                "Съвпада" => "table-success",
+                                "Разлика в бройката" => "table-warning",
+                                "Липсва във файла" => "table-danger",
+                                _ => "table-dark text-white bg-opacity-75"
+                            };
+
+                            <tr class="@rowClass text-dark">
+                                <td class="fw-bold text-center">@line.Id</td>
+                                <td>@line.Name</td>
+                                <td class="text-center fw-bold">@line.SystemCount</td>
+                                <td class="text-center fw-bold">@line.FileCount</td>
+                                <td class="text-center fw-bold">@(line.Difference > 0 ? "+" + line.Difference : line.Difference.ToString())</td>
+                                <td class="fw-bold">@line.Status</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted p-3">
+                                Всички коректни данни от файла бяха технически валидирани. Очаква се синхронизация с реалния регистър.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center shadow-sm p-4" role="alert">
+            <h5 class="alert-heading fw-bold">🔍 Модул за Одит и Засичане на Несъответствия</h5>
+            <p class="mb-0 text-muted">Качете външния си файл с одитни инвентаризации, за да проверите автоматично техническото качество и да засечете разликите с регистрите на SQL Server.</p>
+        </div>
+    }
+</div>
