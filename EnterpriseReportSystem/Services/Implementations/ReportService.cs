@@ -74,8 +74,11 @@ public class ReportService : IReportService
         string mainDel = config.MainDelimiter == "CUSTOM" ? config.CustomMainDelimiter : config.MainDelimiter;
         string innerDel = config.InnerDelimiter == "CUSTOM" ? config.CustomInnerDelimiter : config.InnerDelimiter;
 
-        // Взимаме активните обекти от SQL регистъра за вътрешното търсене и съпоставка
-        var dbAssets = _context.AssetTransactions
+        // Временна памет за успешно прочетените данни от външния източник
+        var fileData = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+        // Взимаме активните трансакции от SQL регистъра за количествено засичане през Entity Framework
+        var transactionsFromDb = _context.AssetTransactions
             .Include(t => t.Operation)
             .Where(t => !t.IsDeleted)
             .ToList();
@@ -94,7 +97,7 @@ public class ReportService : IReportService
                     continue;
                 }
 
-                // РАЗДЕЛЯНЕ НИВО 1: По главния разделител
+                // РАЗДЕЛЯНЕ НИВО 1: По главния разделител (Твоят чист масив)
                 var mainColumns = line.Split(new[] { mainDel }, StringSplitOptions.None);
 
                 // Валидация за минимален брой изисквани колони на база индексите
@@ -105,22 +108,21 @@ public class ReportService : IReportService
                     continue;
                 }
 
-                // Извличаме суровите блокове по индексите от Column Mapping
+                // Извличаме суровите блокове по потребителския Column Mapping
                 string rawAssetBlock = mainColumns[config.AssetIdColumnIndex].Trim();
                 string rawQtyStr = mainColumns[config.QuantityColumnIndex].Trim();
 
                 string detectedAssetId = string.Empty;
                 string detectedChip = string.Empty;
 
-                // РАЗДЕЛЯНЕ НИВО 2: По вътрешния разделител за слепени/разменени данни
+                // РАЗДЕЛЯНЕ НИВО 2: По вътрешния разделител за слепени/разменени данни (Твоят чист масив)
                 var pieces = rawAssetBlock.Split(new[] { innerDel }, StringSplitOptions.RemoveEmptyEntries)
                                           .Select(p => p.Trim())
                                           .ToList();
 
-                // Динамично разпознаване по потребителска сигнатура
+                // Динамично разпознаване по потребителска сигнатура (Пълна свобода)
                 foreach (var piece in pieces)
                 {
-                    // Проверка за Идентификатор (Марка/Баркод)
                     bool matchesPrefix = string.IsNullOrEmpty(config.AssetIdSignature) || piece.StartsWith(config.AssetIdSignature, StringComparison.OrdinalIgnoreCase);
                     bool matchesLength = !config.AssetIdRequiredLength.HasValue || piece.Length == config.AssetIdRequiredLength.Value;
 
@@ -130,7 +132,6 @@ public class ReportService : IReportService
                         continue;
                     }
 
-                    // Проверка за Електронен Чип
                     bool matchesChipPrefix = string.IsNullOrEmpty(config.ChipSignature) || piece.StartsWith(config.ChipSignature, StringComparison.OrdinalIgnoreCase);
                     bool matchesChipLength = !config.ChipRequiredLength.HasValue || piece.Length == config.ChipRequiredLength.Value;
 
@@ -140,24 +141,78 @@ public class ReportService : IReportService
                     }
                 }
 
-                // Валидация на резултатите от потребителските правила
+                // Прилагане на потребителските чекбокс правила за филтрация
                 if (config.TrackAssetId && string.IsNullOrEmpty(detectedAssetId))
                 {
-                    summary.Errors.Add(new ValidationError { LineNumber = currentLine, RawContent = line, Reason = "Непозната сигнатура", Details = "Никое парче текст не отговаря на префикса или дължината за Идентификатор." });
+                    summary.Errors.Add(new ValidationError { LineNumber = currentLine, RawContent = line, Reason = "Непозната сигнатура", Details = "Никое парче текст не отговаря на изискванията за Идентификатор." });
                     continue;
                 }
 
-                if (config.TrackQuantity && (!int.TryParse(rawQtyStr, out int qty) || qty < 0))
+                int qty = 1; // По подразбиране
+                if (config.TrackQuantity && (!int.TryParse(rawQtyStr, out qty) || qty < 0))
                 {
-                    summary.Errors.Add(new ValidationError { LineNumber = currentLine, RawContent = line, Reason = "Грешно количество", Details = $"Стойността '{rawQtyStr}' не е положително число." });
+                    summary.Errors.Add(new ValidationError { LineNumber = currentLine, RawContent = line, Reason = "Грешно количество", Details = $"Стойността '{rawQtyStr}' не е валидно число." });
                     continue;
                 }
 
-                // Ако редът е преминал успешно всички проверки
+                // Записваме пречистените данни
+                if (!string.IsNullOrEmpty(detectedAssetId))
+                {
+                    fileData[detectedAssetId] = qty;
+                }
                 summary.SuccessfulLines++;
             }
         }
 
+        // 2. ИНТЕЛЕГЕНТНО ЗАСИЧАНЕ С РЕАЛНИТЕ БРОЙКИ ОТ SQL SERVER ПРЕЗ LINQ
+        // Пресмятаме текущите крайни баланси за абсолютно всеки заведен обект в SQL
+        var systemCounts = transactionsFromDb
+            .GroupBy(t => t.AssetId)
+            .ToDictionary(
+                g => g.Key,
+                g => g.Sum(t => (int)t.Operation.Direction == 1 ? t.Quantity : ((int)t.Operation.Direction == 2 ? -t.Quantity : 0)),
+                StringComparer.OrdinalIgnoreCase
+            );
+
+        // Съпоставяме официалния регистър от базата данни с качения външен одит
+        foreach (var sysAsset in systemCounts)
+        {
+            var diffLine = new DiffReportLine
+            {
+                Id = sysAsset.Key,
+                Name = $"Регистриран актив в SQL Server база данни",
+                SystemCount = sysAsset.Value
+            };
+
+            if (fileData.TryGetValue(sysAsset.Key, out int fileQty))
+            {
+                diffLine.FileCount = fileQty;
+                diffLine.Status = diffLine.Difference == 0 ? "Съвпада" : "Разлика в бройката";
+                fileData.Remove(sysAsset.Key); // Премахваме го, за да останат само непознатите
+            }
+            else
+            {
+                diffLine.FileCount = 0;
+                diffLine.Status = "Липсва във файла";
+            }
+
+            summary.DiffLines.Add(diffLine);
+        }
+
+        // Обработка на обекти, които ГИ ИМА във външния файл, но ГИ НЯМА в SQL регистъра ни
+        foreach (var fileAsset in fileData)
+        {
+            summary.DiffLines.Add(new DiffReportLine
+            {
+                Id = fileAsset.Key,
+                Name = "⚠️ НЕПОЗНАТ ОБЕКТ (Липсва официален запис в SQL!)",
+                SystemCount = 0,
+                FileCount = fileAsset.Value,
+                Status = "Липсва във файла" // Ще се оцвети в червено/тъмно на екрана
+            });
+        }
+
         return summary;
     }
+
 }
