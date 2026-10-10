@@ -4,8 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using EnterpriseReportSystem.Data;
 using EnterpriseReportSystem.Models.Entities;
 using EnterpriseReportSystem.ViewModels; // Точният път до твоята папка
-using System.Linq;
-using System.Threading.Tasks;
 
 using EnterpriseReportSystem.Common.Enum; // Adding the exact subfolder path
 
