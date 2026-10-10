@@ -1,0 +1,78 @@
+﻿@model EnterpriseReportSystem.ViewModels.AssetTransferViewModel
+
+<div class="container mt-5" style="max-width: 700px;">
+    <div class="card shadow-lg border-0 rounded-3 overflow-hidden border-start border-warning border-4">
+        <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+            <h4 class="mb-0 fw-bold">🔄 Логистично Вътрешно Преместване и Контрол</h4>
+            <span class="badge bg-warning text-dark fw-bold">Контролен Екран</span>
+        </div>
+        <div class="card-body p-4 bg-light">
+
+            @if (TempData["TransferSuccess"] != null)
+            {
+                <div class="alert alert-warning text-center fw-bold shadow-sm">
+                    @TempData["TransferSuccess"]
+                </div>
+            }
+
+            <form asp-action="TransferAsset" asp-controller="Setup" method="post">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <!-- Избор на обект -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold">1. Идентификатор за местене (Ушна марка / Сериен номер)</label>
+                    <input asp-for="AssetId" class="form-control border-2 border-warning" placeholder="Въведете кода на активния обект..." required />
+                    <span asp-validation-for="AssetId" class="text-danger"></span>
+                </div>
+
+                <!-- НОВА ДЕСТИНАЦИЯ -->
+                <div class="card p-3 mb-4 bg-white border-1 shadow-sm rounded-3">
+                    <h6 class="fw-bold text-secondary mb-3">📍 Дестинация на Новото разпределение</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Нова Община:</label>
+                            <input asp-for="NewMunicipality" class="form-control" placeholder="напр. Родопи" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Ново Село / Град:</label>
+                            <input asp-for="NewTownOrVillage" class="form-control" placeholder="напр. с. Ягодово" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Нов Специфичен Обект:</label>
+                            <input asp-for="NewFacility" class="form-control" placeholder="напр. Ферма 2 / Склад В" required />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ДОКУМЕНТ И ДАТА -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Дата на логистичния трансфер</label>
+                        <input asp-for="TransferDate" type="date" class="form-control" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Протокол / Фактура основание</label>
+                        <input asp-for="DocumentReference" class="form-control" placeholder="напр. Протокол №14" required />
+                    </div>
+                </div>
+
+                <!-- ЧЕКБОКС ЗА УПРАВЛЕНИЕ НА ЖИЗНЕНИЯ ЦИКЪЛ -->
+                <div class="card p-3 mb-4 border-danger border-1 bg-white shadow-sm rounded-3">
+                    <div class="form-check form-switch d-flex align-items-center justify-content-between p-0">
+                        <div>
+                            <label class="form-check-label fw-bold text-dark" for="lifecycleSwitch">📊 Състояние на жизнения цикъл на актива</label>
+                            <br />
+                            <small class="text-muted">Оставете маркирано за редовно местене. Отмаркирайте при смърт, брак или пълна ликвидация.</small>
+                        </div>
+                        <input asp-for="IsActive" type="checkbox" class="form-check-input ms-3" style="transform: scale(1.6); cursor: pointer;" id="lifecycleSwitch" checked />
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-warning btn-lg w-100 shadow fw-bold py-3 text-uppercase text-dark">
+                    🚀 Потвърди многократното преместване / Отписване
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
