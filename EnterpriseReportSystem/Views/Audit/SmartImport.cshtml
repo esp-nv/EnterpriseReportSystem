@@ -1,0 +1,168 @@
+﻿@model EnterpriseReportSystem.Models.ViewModels.SmartImportViewModel
+
+<div class="container mt-5" style="max-width: 950px;">
+    <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-header bg-dark text-white p-3 d-flex align-items-center">
+            <h4 class="mb-0 fw-bold">🧩 Магьосник за Импортиране (Вдъхновен от MS Excel Text to Columns)</h4>
+        </div>
+        <div class="card-body p-4 bg-light">
+
+            <form asp-action="ProcessSmartImport" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+
+                <!-- СЕКЦИЯ 1: ИЗБОР НА ФАЙЛ -->
+                <div class="card p-3 mb-4 border-1 shadow-sm">
+                    <h5 class="text-primary fw-bold mb-3">1. Източник на данни</h5>
+                    <div class="mb-2">
+                        <label class="form-label fw-bold">Изберете външен текстов или CSV файл:</label>
+                        <input asp-for="UploadedFile" type="file" class="form-control" accept=".txt,.csv" required />
+                    </div>
+                    <small class="text-muted">Разрешени формати: .txt и .csv с произволно подреждане на данните.</small>
+                </div>
+
+                <!-- СЕКЦИЯ 2: РАЗДЕЛИТЕЛИ (СТИЛ MS EXCEL) -->
+                <div class="card p-3 mb-4 border-1 shadow-sm">
+                    <h5 class="text-primary fw-bold mb-3">2. Настройка на разделителите (Delimiters)</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Главен разделител на реда:</label>
+                            <select asp-for="MainDelimiter" asp-items="Model.DelimiterOptions" class="form-select" id="mainDelSelect"></select>
+                            <input asp-for="CustomMainDelimiter" class="form-control mt-2 d-none" id="customMainDelInput" placeholder="Въведете вашия главен символ (напр. | или @)" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Вътрешен разделител (ако има слепени данни в колона):</label>
+                            <select asp-for="InnerDelimiter" asp-items="Model.DelimiterOptions" class="form-select" id="innerDelSelect"></select>
+                            <input asp-for="CustomInnerDelimiter" class="form-control mt-2 d-none" id="customInnerDelInput" placeholder="Въведете вашия вътрешен символ (напр. + или -)" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- СЕКЦИЯ 3: СИГНАТУРИ И ПРАВИЛА (ПЪЛНА СВОБОДА) -->
+                <div class="card p-3 mb-4 border-1 shadow-sm">
+                    <h5 class="text-primary fw-bold mb-3">3. Динамични правила за разпознаване по сигнатура</h5>
+                    <p class="text-muted small">Оставете полетата празни, ако вашият файл няма специфични префикси или фиксирана дължина.</p>
+                    <div class="row g-3">
+                        <div class="col-md-6 border-end">
+                            <h6 class="fw-bold text-secondary">Правила за Идентификатор (Марка/Баркод):</h6>
+                            <div class="mb-2">
+                                <label class="form-label text-xs">Как започва (Префикс):</label>
+                                <input asp-for="AssetIdSignature" class="form-control" placeholder="напр. BG, DE, MACH" />
+                            </div>
+                            <div>
+                                <label class="form-label">Задължителна дължина (Брой символи):</label>
+                                <input asp-for="AssetIdRequiredLength" type="number" class="form-control" placeholder="напр. 12" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-secondary">Правила за Електронен Чип / Транспондер:</h6>
+                            <div class="mb-2">
+                                <label class="form-label">Как започва (Префикс):</label>
+                                <input asp-for="ChipSignature" class="form-control" placeholder="напр. 1000, 999" />
+                            </div>
+                            <div>
+                                <label class="form-label">Задължителна дължина (Брой символи):</label>
+                                <input asp-for="ChipRequiredLength" type="number" class="form-control" placeholder="напр. 10" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- СЕКЦИЯ 4: COLUMN MAPPING & ЧЕКБОКСОВЕ (КАРТИРАНЕ НА КОЛОНИТЕ) -->
+                <div class="card p-3 mb-4 border-1 shadow-sm">
+                    <h5 class="text-primary fw-bold mb-3">4. Свързване на колоните (Column Mapping)</h5>
+                    <p class="text-muted small">Посочете поредния номер на колоната във вашия файл (започвайки от 0), която съответства на нашите полета, и отметнете дали искате да я следите.</p>
+                    
+                    <div class="row g-3 text-center fw-bold text-secondary border-bottom pb-2 mb-2 d-none d-md-flex">
+                        <div class="col-md-4 text-start">Данни за следене</div>
+                        <div class="col-md-4">Индекс на колоната (0, 1, 2...)</div>
+                        <div class="col-md-4">Активно засичане?</div>
+                    </div>
+
+                    <!-- Ред 1: Идентификатор -->
+                    <div class="row g-3 align-items-center mb-3 pb-2 border-bottom">
+                        <div class="col-md-4 text-start">
+                            <label class="form-label mb-0 fw-bold">🆔 Идентификатор (Марка / Баркод)</label>
+                        </div>
+                        <div class="col-md-4">
+                            <input asp-for="AssetIdColumnIndex" type="number" min="0" class="form-control text-center" />
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <input asp-for="TrackAssetId" type="checkbox" class="form-check-input" style="transform: scale(1.3);" />
+                        </div>
+                    </div>
+
+                    <!-- Ред 2: Чип -->
+                    <div class="row g-3 align-items-center mb-3 pb-2 border-bottom">
+                        <div class="col-md-4 text-start">
+                            <label class="form-label mb-0 fw-bold">📡 Електронен Чип</label>
+                        </div>
+                        <div class="col-md-4">
+                            <input asp-for="ChipColumnIndex" type="number" min="0" class="form-control text-center" />
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <input asp-for="TrackChip" type="checkbox" class="form-check-input" style="transform: scale(1.3);" />
+                        </div>
+                    </div>
+
+                    <!-- Ред 3: Дата -->
+                    <div class="row g-3 align-items-center mb-3 pb-2 border-bottom">
+                        <div class="col-md-4 text-start">
+                            <label class="form-label mb-0 fw-bold">📅 Дата и Час на отчитане</label>
+                        </div>
+                        <div class="col-md-4">
+                            <input asp-for="DateColumnIndex" type="number" min="0" class="form-control text-center" />
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <input asp-for="TrackDate" type="checkbox" class="form-check-input" style="transform: scale(1.3);" />
+                        </div>
+                    </div>
+
+                    <!-- Ред 4: Количество -->
+                    <div class="row g-3 align-items-center mb-3">
+                        <div class="col-md-4 text-start">
+                            <label class="form-label mb-0 fw-bold">🔢 Количество (Бройки)</label>
+                        </div>
+                        <div class="col-md-4">
+                            <input asp-for="QuantityColumnIndex" type="number" min="0" class="form-control text-center" />
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <input asp-for="TrackQuantity" type="checkbox" class="form-check-input" style="transform: scale(1.3);" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-dark btn-lg w-100 shadow fw-bold py-3 text-uppercase">
+                        🚀 Изпълни интелигентна съпоставка (Стил Excel)
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- ДИНАМИЧЕН JAVASCRIPT ЗА СВОБОДНИТЕ ТЕКСТОВИ РАЗДЕЛИТЕЛИ -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        setupCustomDelimiterToggle("mainDelSelect", "customMainDelInput");
+        setupCustomDelimiterToggle("innerDelSelect", "customInnerDelInput");
+    });
+
+    function setupCustomDelimiterToggle(selectId, inputId) {
+        var selectEl = document.getElementById(selectId);
+        var inputEl = document.getElementById(inputId);
+
+        if (selectEl && inputEl) {
+            selectEl.addEventListener("change", function () {
+                if (this.value === "CUSTOM") {
+                    inputEl.classList.remove("d-none");
+                    inputEl.setAttribute("required", "required");
+                } else {
+                    inputEl.classList.add("d-none");
+                    inputEl.removeAttribute("required");
+                }
+            });
+        }
+    }
+</script>
