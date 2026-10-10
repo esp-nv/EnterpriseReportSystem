@@ -57,12 +57,15 @@
                                 <small class="text-muted">📍 @asset.Facility (@asset.TownOrVillage)</small>
                             </td>
                             <td>
-                                <span class="badge @(asset.Group.IsAnimal ? "bg-success" : "bg-info text-dark")">
-                                    @(asset.Group.IsAnimal ? "Животно" : "Стока")
+                                <!-- Премахваме хардкоднатото "ANIMAL". Знакът идва напълно динамично от SQL Server -->
+                                <span class="badge bg-dark text-white text-uppercase">
+                                    @asset.Group.MainType?.Name
                                 </span>
                                 <br />
                                 <small class="text-secondary fw-bold">@asset.Group.Name</small>
                             </td>
+
+
                             <td class="fw-bold bg-light">@asset.InitialCount</td>
                             <td class="text-success fw-bold">+@asset.InputCount</td>
                             <td class="text-danger fw-bold">-@asset.OutputCount</td>

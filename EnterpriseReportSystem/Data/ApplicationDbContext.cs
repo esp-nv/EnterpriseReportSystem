@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using EnterpriseReportSystem.Models.Entities;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace EnterpriseReportSystem.Data;
 
@@ -11,32 +13,47 @@ public class ApplicationDbContext : DbContext
     {
     }
 
+    // 1. ДЕФИНИРАНЕ НА ВСИЧКИ РЕЛАЦИОННИ ТАБЛИЦИ В SQL SERVER
+    public DbSet<MainType> MainTypes { get; set; } = null!;
     public DbSet<AssetGroup> AssetGroups { get; set; } = null!;
+    public DbSet<AssetSubGroup> AssetSubGroups { get; set; } = null!;
     public DbSet<OperationType> OperationTypes { get; set; } = null!;
     public DbSet<AssetTransaction> AssetTransactions { get; set; } = null!;
-    public object MainTypes { get; internal set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // 1. Първични ключове на номенклатурите
+        // 2. ПОСТАВЯНЕ НА ПЪРВИЧНИТЕ КЛЮЧОВЕ (PRIMARY KEYS)
+        modelBuilder.Entity<MainType>().HasKey(m => m.Code);
         modelBuilder.Entity<AssetGroup>().HasKey(g => g.Code);
+        modelBuilder.Entity<AssetSubGroup>().HasKey(s => s.Code);
         modelBuilder.Entity<OperationType>().HasKey(o => o.Code);
 
-        // 2. Твоят код: Предотвратяване на каскадно триене за ВСИЧКИ връзки в системата
+        // 3. КОНФИГУРИРАНЕ НА ЙЕРАРХИЧНИТЕ ВРЪЗКИ (ONE-TO-MANY)
+        modelBuilder.Entity<AssetGroup>()
+            .HasOne(g => g.MainType)
+            .WithMany(m => m.AssetGroups)
+            .HasForeignKey(g => g.MainTypeCode)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<AssetSubGroup>()
+            .HasOne(s => s.AssetGroup)
+            .WithMany(g => g.AssetSubGroups)
+            .HasForeignKey(s => s.AssetGroupCode)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // 4. ТВОЯТА ЗАЩИТА: Предотвратяване на каскадно триене за абсолютно ВСИЧКИ връзки
         foreach (var foreignKey in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
         {
             foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
         }
 
-        // 3. Автоматичен Глобален Филтър за Soft Delete за трансакциите (или всеки друг наследник)
-        modelBuilder.Entity<AssetTransaction>()
-            .HasQueryFilter(t => !t.IsDeleted);
+        // 5. ТВОЯТ ГЛОБАЛЕН ФИЛТЪР: Автоматично скриване на логически изтритите трансакции
+        modelBuilder.Entity<AssetTransaction>().HasQueryFilter(t => !t.IsDeleted);
     }
 
-    // 4. Магията на автоматизацията: Пренаписваме метода SaveChanges, 
-    // за да може при команда .Remove() обектът да се маркира като изтрит, вместо да се заличи от SQL
+    // 6. ТВОЯТА МАГИЯ ЗА АВТОМАТИЧЕН SOFT DELETE
     public override int SaveChanges()
     {
         UpdateSoftDeleteStatuses();
@@ -53,13 +70,11 @@ public class ApplicationDbContext : DbContext
     {
         foreach (var entry in ChangeTracker.Entries<ISoftDeletable>())
         {
-            switch (entry.State)
+            if (entry.State == EntityState.Deleted)
             {
-                case EntityState.Deleted:
-                    entry.State = EntityState.Modified; // Сменяме операцията на Update
-                    entry.Entity.IsDeleted = true;      // Маркираме като изтрит
-                    entry.Entity.DeletedOn = System.DateTime.Now;
-                    break;
+                entry.State = EntityState.Modified; // Превръщаме триенето в обновяване
+                entry.Entity.IsDeleted = true;      // Маркираме като изтрит
+                entry.Entity.DeletedOn = System.DateTime.Now;
             }
         }
     }

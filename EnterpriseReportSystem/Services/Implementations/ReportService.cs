@@ -24,9 +24,14 @@ public class ReportService : IReportService
 
         foreach (var asset in currentRegistry)
         {
+            // Вътре в GenerateTurnoverReport метода на ReportService.cs:
             var assetTransactions = _context.AssetTransactions
+                .Include(t => t.Operation)
+                .Include(t => t.ToGroup)
+                    .ThenInclude(g => g.MainType) // Зареждаме Главния тип динамично от SQL
                 .Where(t => t.AssetId == asset.Id && !t.IsDeleted)
                 .ToList();
+
 
             asset.InputCount = assetTransactions
                 .Where(t => (int)t.Operation.Direction == 1) // Income = 1 (Раждане, покупка)

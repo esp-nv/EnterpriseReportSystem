@@ -27,8 +27,9 @@ namespace EnterpriseReportSystem.Migrations
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<bool>("IsAnimal")
-                        .HasColumnType("bit");
+                    b.Property<string>("MainTypeCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -36,7 +37,29 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasKey("Code");
 
+                    b.HasIndex("MainTypeCode");
+
                     b.ToTable("AssetGroups");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.AssetSubGroup", b =>
+                {
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AssetGroupCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Code");
+
+                    b.HasIndex("AssetGroupCode");
+
+                    b.ToTable("AssetSubGroups");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.AssetTransaction", b =>
@@ -93,6 +116,20 @@ namespace EnterpriseReportSystem.Migrations
                     b.ToTable("AssetTransactions");
                 });
 
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.MainType", b =>
+                {
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Code");
+
+                    b.ToTable("MainTypes");
+                });
+
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.OperationType", b =>
                 {
                     b.Property<string>("Code")
@@ -108,6 +145,28 @@ namespace EnterpriseReportSystem.Migrations
                     b.HasKey("Code");
 
                     b.ToTable("OperationTypes");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.AssetGroup", b =>
+                {
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.MainType", "MainType")
+                        .WithMany("AssetGroups")
+                        .HasForeignKey("MainTypeCode")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("MainType");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.AssetSubGroup", b =>
+                {
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.AssetGroup", "AssetGroup")
+                        .WithMany("AssetSubGroups")
+                        .HasForeignKey("AssetGroupCode")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AssetGroup");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.AssetTransaction", b =>
@@ -133,6 +192,16 @@ namespace EnterpriseReportSystem.Migrations
                     b.Navigation("Operation");
 
                     b.Navigation("ToGroup");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.AssetGroup", b =>
+                {
+                    b.Navigation("AssetSubGroups");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.MainType", b =>
+                {
+                    b.Navigation("AssetGroups");
                 });
 #pragma warning restore 612, 618
         }
