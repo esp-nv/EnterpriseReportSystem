@@ -2,7 +2,7 @@
 
 namespace EnterpriseReportSystem.Models.Entities;
 
-public class AssetTransaction
+public class AssetTransaction : ISoftDeletable
 {
     // Уникален идентификатор на самата трансакция
     public string Id { get; set; } = Guid.NewGuid().ToString();
@@ -29,4 +29,8 @@ public class AssetTransaction
 
     // Документ или основание за операцията (напр. Протокол №5, Акт за раждане)
     public string DocumentReference { get; set; } = string.Empty;
+
+    // ИМПЛЕМЕНТАЦИЯ НА SOFT DELETE (Поправката на грешката)
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedOn { get; set; }
 }
