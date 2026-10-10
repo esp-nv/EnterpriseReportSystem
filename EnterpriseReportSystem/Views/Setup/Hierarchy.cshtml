@@ -1,0 +1,81 @@
+﻿@model EnterpriseReportSystem.ViewModels.HierarchyCreateViewModel
+
+<div class="container mt-4" style="max-width: 850px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-dark fw-bold">⚙️ Конфигурация на Номенклатурна Йерархия</h2>
+        <span class="badge bg-secondary p-2">SQL Server Релации</span>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success text-center fw-bold shadow-sm alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+        </div>
+    }
+
+    <!-- ПАНЕЛ 1: ГЛАВЕН ТИП -->
+    <div class="card p-4 mb-4 shadow-sm border-start border-primary border-4 rounded-3">
+        <h5 class="text-primary fw-bold mb-3">Ниво 1: Главен Тип на Актива (За какво се отнася)</h5>
+        <form asp-action="CreateMainType" asp-controller="Setup" method="post" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Системен Код</label>
+                <input asp-for="MainTypeCode" class="form-control border-2" placeholder="напр. ANIMAL, MACHINE, GRAIN" required />
+            </div>
+            <div class="col-md-5">
+                <label class="form-label fw-bold">Наименование на категорията</label>
+                <input asp-for="MainTypeName" class="form-control border-2" placeholder="напр. Живи Животни, Техника" required />
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100 fw-bold shadow-sm">💾 Добави Тип</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ПАНЕЛ 2: ОСНОВНА ГРУПА -->
+    <div class="card p-4 mb-4 shadow-sm border-start border-success border-4 rounded-3">
+        <h5 class="text-success fw-bold mb-3">Ниво 2: Основна Счетоводна Група</h5>
+        <form asp-action="CreateGroup" asp-controller="Setup" method="post" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Към Главен Тип</label>
+                <select asp-for="SelectedMainTypeCode" asp-items="ViewBag.MainTypes" class="form-select border-2" required>
+                    <option value="">-- Изберете --</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Код на Групата</label>
+                <input asp-for="GroupCode" class="form-control border-2" placeholder="напр. DPJ, TRACTORS" required />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Име (напр. Едри Преживни)</label>
+                <input asp-for="GroupName" class="form-control border-2" placeholder="напр. Дребни преживни" required />
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success w-100 fw-bold shadow-sm">💾 Запиши</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ПАНЕЛ 3: СПЕЦИФИЧНА ПОДГРУПА -->
+    <div class="card p-4 mb-4 shadow-sm border-start border-dark border-4 rounded-3">
+        <h5 class="text-dark fw-bold mb-3">Ниво 3: Оперативна Подгрупа активи (Възраст / Спецификация)</h5>
+        <form asp-action="CreateSubGroup" asp-controller="Setup" method="post" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Към Основна Група</label>
+                <select asp-for="SelectedGroupCode" asp-items="ViewBag.Groups" class="form-select border-2" required>
+                    <option value="">-- Изберете --</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Код на Подгрупата</label>
+                <input asp-for="SubGroupCode" class="form-control border-2" placeholder="напр. TELETAS_UNDER_6M" required />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Име (напр. Агнета до 6 месеца)</label>
+                <input asp-for="SubGroupName" class="form-control border-2" placeholder="напр. Телета над 6м" required />
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-dark w-100 fw-bold shadow-sm">💾 Запиши</button>
+            </div>
+        </form>
+    </div>
+</div>
