@@ -164,7 +164,9 @@ public class ApplicationDbContext : DbContext
             s.Property(x => x.MeasurementUnit).IsRequired().HasMaxLength(ValidationConstants.MeasurementUnitMaxLength);
         });
 
-        // 5. Типове Операции и Счетоводен Журнал + Новите Бележки
+        // =========================================================================
+        // 5. ТИПОВЕ ОПЕРАЦИИ И СЧЕТОВОДЕН ЖУРНАЛ (ЕДИНСТВЕН ЧИСТ БЛОК БЕЗ ДУБЛИРАНЕ)
+        // =========================================================================
         modelBuilder.Entity<OperationType>(o =>
         {
             o.Property(x => x.Code).IsRequired().HasMaxLength(ValidationConstants.OperationCodeMaxLength);
@@ -173,21 +175,12 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<AssetTransaction>(t =>
         {
-            t.Property(x => x.AssetId).IsRequired().HasMaxLength(ValidationConstants.AssetIdMaxLength);
-            t.Property(x => x.FromFacility).IsRequired().HasMaxLength(ValidationConstants.FacilityTextMaxLength);
-            t.Property(x => x.ToFacility).IsRequired().HasMaxLength(ValidationConstants.FacilityTextMaxLength);
-            t.Property(x => x.DocumentReference).IsRequired().HasMaxLength(ValidationConstants.DocumentRefMaxLength);
-            t.Property(x => x.Notes).HasMaxLength(ValidationConstants.TransactionNotesMaxLength);
-        });
-
-        // 5.1 ЗАЩИТА ЗА ЖУРНАЛА НА ТРАНСАКЦИИТЕ (AssetTransactions)
-        modelBuilder.Entity<AssetTransaction>(t =>
-        {
-            t.Property(x => x.AssetId).IsRequired();
+            // Първични счетоводни и текстови ограничения
+            t.Property(x => x.AssetId).IsRequired(); // Число (int) - без MaxLength!
             t.Property(x => x.DocumentReference).IsRequired().HasMaxLength(ValidationConstants.DocumentRefMaxLength);
             t.Property(x => x.Notes).HasMaxLength(ValidationConstants.TransactionNotesMaxLength);
 
-            // Счетоводни числови връзки без каскадно триене
+            // Числови холдингови връзки към обектите/фермите без каскадно триене
             t.HasOne(x => x.FromFacility)
              .WithMany()
              .HasForeignKey(x => x.FromFacilityId)
