@@ -248,6 +248,7 @@ public class ReportService : IReportService
         decimal rate = await GetExchangeRateAsync(foreignCurrencyId, bgnCurrencyId, transaction.TransactionDate);
         return transaction.Quantity * 1.00m * rate;
     }
+
     // КОРЕКЦИЯ: Добавихме <bool> в дефиницията на метода, за да съвпадне на 100% с интерфейса
     public async Task<bool> CreateTransactionAsync(int assetId, int quantity, int? fromFacilityId, int? toFacilityId, DateTime transactionDate, string docRef, string notes, int opId)
     {

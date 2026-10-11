@@ -48,4 +48,8 @@ public static class ValidationConstants
     // Спецификации на активите (Породи / Модели)
     public const int SpecificationNameMaxLength = 100;
 
+    // Ограничения за Динамични Характеристики (EAV модел)
+    public const int AttributeNameMaxLength = 60;   // напр. "Пол", "Номер на двигател"
+    public const int AttributeValueMaxLength = 250;  // напр. "Женско", "ДВГ-987654"
+
 }

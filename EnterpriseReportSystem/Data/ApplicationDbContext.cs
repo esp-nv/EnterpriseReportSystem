@@ -40,6 +40,10 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<AssetSpecification> AssetSpecifications { get; set; } = null!;
 
+    
+    public DbSet<AssetAttribute> AssetAttributes { get; set; } = null!;
+    public DbSet<AssetAttributeValue> AssetAttributeValues { get; set; } = null!;
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -218,6 +222,10 @@ public class ApplicationDbContext : DbContext
         }
 
         modelBuilder.Entity<AssetTransaction>().HasQueryFilter(t => !t.IsDeleted);
+
+        // АВТОМАТИЧНО ЗАРЕЖДАНЕ НА ВСИЧКИ ВЪНШНИ КОНФИГУРАЦИИ ОТ ПРОЕКТА
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+
     }
 
     public override int SaveChanges()

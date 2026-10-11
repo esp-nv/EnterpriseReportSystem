@@ -1,21 +1,24 @@
-﻿using EnterpriseReportSystem.Common.Enum;
+﻿using System.ComponentModel.DataAnnotations;
+using EnterpriseReportSystem.Common.Enum;
 
 namespace EnterpriseReportSystem.Models.Entities.Ledger;
 
 public class OperationType
 {
-    // ТВОЯТ НОВ ЧИСЛОВ ПЪРВИЧЕН КЛЮЧ
+    // 1. Уникален числов идентификатор (Identity)
     public int Id { get; set; }
 
-    // Уникален код на операцията (напр. OP_BIRTH, OP_SALE)
+    // 2. Системен код (напр. OP_BUY, OP_BIRTH)
+    [Required]
     public string Code { get; set; } = string.Empty;
 
-    // Наименование за потребителя (напр. Раждане, Продажба)
+    // 3. Наименование на български език за потребителя
+    [Required]
     public string Name { get; set; } = string.Empty;
 
-    // Посока на движението (Income = 1, Expense = 2, Internal = 3)
+    // 4. Твоят Combobox (Enum посока: Приход = 1, Разход = 2, Трансфер = 3)
     public OperationDirection Direction { get; set; }
 
-    // true = променя бройката в Оборотката, false = само хронологично събитие
-    public bool IsFinancial { get; set; } = true;
+    // 5. Контролният флаг, който ще използваме да броим или проверяваме финансови суми
+    public bool IsFinancial { get; set; }
 }
