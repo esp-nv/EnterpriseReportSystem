@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+﻿using EnterpriseReportSystem.Common.Enum;
 using EnterpriseReportSystem.Data;
-using EnterpriseReportSystem.ViewModels;
-using EnterpriseReportSystem.Common.Enum;
 using EnterpriseReportSystem.Models.Entities.Hierarchy;
 using EnterpriseReportSystem.Models.Entities.Ledger;
+using EnterpriseReportSystem.Models.Entities.Structure;
+
+using EnterpriseReportSystem.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace EnterpriseReportSystem.Controllers;
 
@@ -214,4 +216,94 @@ public class SetupController : Controller
 
         return View(model);
     }
+
+    // ==========================================
+    // 5. УПРАВЛЕНИЕ НА ФИРМИ И ФИЗИЧЕСКИ ЛИЦА
+    // ==========================================
+
+    // GET: Зарежда новия Холдингов Dashboard със 100% строга типизация без ViewBag
+    [HttpGet]
+    public async Task<IActionResult> ManageHolding()
+    {
+        var towns = await _context.TownsOrVillages.ToListAsync();
+        var companies = await _context.CompaniesOrPersons
+            .Include(c => c.RegisteredTown)
+            .ToListAsync();
+
+        var viewModel = new ManageHoldingViewModel
+        {
+            TownOptions = towns.Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name }).ToList(),
+            ExistingCompanies = companies
+        };
+
+        return View(viewModel);
+    }
+
+    // POST: Записва нов субект (Фирма или Лице) през новия типизиран модел
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateCompany(ManageHoldingViewModel model)
+    {
+        if (model != null && !string.IsNullOrEmpty(model.ClientCode))
+        {
+            var newEntity = new CompanyOrPerson
+            {
+                ClientCode = model.ClientCode.Trim().ToUpper(),
+                Name = model.Name.Trim(),
+                TaxIdentifier = model.TaxIdentifier.Trim(),
+                RegisteredTownId = model.RegisteredTownId
+            };
+
+            _context.CompaniesOrPersons.Add(newEntity);
+            await _context.SaveChangesAsync();
+            TempData["HoldingSuccess"] = $"🎉 Субектът '{model.Name}' беше записан успешно в регистъра!";
+        }
+        return RedirectToAction("ManageHolding");
+    }
+
+
+    // ==========================================
+    // 6. УПРАВЛЕНИЕ НА ФИЗИЧЕСКИ ОБЕКТИ (ФЕРМИ / БАЗИ)
+    // ==========================================
+
+    // POST: Записва нов физически обект с автоматичен одитен дневник (Log)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateFacility(string facilityCode, string facilityName, string postalCode, int townId, int companyId, string notes)
+    {
+        if (!string.IsNullOrEmpty(facilityCode) && !string.IsNullOrEmpty(facilityName))
+        {
+            var facility = new Facility
+            {
+                FacilityCode = facilityCode.Trim().ToUpper(),
+                Name = facilityName.Trim(),
+                PostalCode = postalCode.Trim(),
+                TownOrVillageId = townId,
+                CompanyOrPersonId = companyId,
+                IsActive = true,
+                Notes = string.IsNullOrEmpty(notes) ? "Първоначално завеждане" : notes.Trim(),
+                CreatedOn = DateTime.Now
+            };
+
+            _context.Facilities.Add(facility);
+            await _context.SaveChangesAsync();
+
+            // АВТОМАТИЗАЦИЯ НА ОДИТНИЯ ДНЕВНИК (FacilityLog)
+            var auditLog = new FacilityLog
+            {
+                FacilityId = facility.Id,
+                LogDate = DateTime.Now,
+                EventType = "CREATED",
+                OldValue = "[Няма - Нова регистрация]",
+                NewValue = $"Код: {facility.FacilityCode}; Име: {facility.Name}; Активен: True"
+            };
+            _context.FacilityLogs.Add(auditLog);
+            await _context.SaveChangesAsync();
+
+            TempData["HoldingSuccess"] = $"🎉 Физическият обект '{facilityName}' беше заведен успешно заедно с неговия Одитен дневник!";
+        }
+        return RedirectToAction("ManageHolding");
+    }
+
+
 }
