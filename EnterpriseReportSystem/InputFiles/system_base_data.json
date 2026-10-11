@@ -1,0 +1,81 @@
+{
+  "Currencies": [
+    {
+      "Code": "BGN",
+      "Name": "Български лев"
+    },
+    {
+      "Code": "EUR",
+      "Name": "Евро"
+    },
+    {
+      "Code": "USD",
+      "Name": "Щатски долар"
+    }
+  ],
+  "OperationTypes": [
+    {
+      "Code": "OP_BUY",
+      "Name": "Покупка / Доставка от доставчик",
+      "Direction": 1,
+      "IsFinancial": true
+    },
+    {
+      "Code": "OP_BIRTH",
+      "Name": "Раждане / Приплод на терен",
+      "Direction": 1,
+      "IsFinancial": false
+    },
+    {
+      "Code": "OP_SALE",
+      "Name": "Продажба / Реализация на пазара",
+      "Direction": 2,
+      "IsFinancial": true
+    },
+    {
+      "Code": "OP_WRITE_OFF",
+      "Name": "Брак / Смърт / Отписване",
+      "Direction": 2,
+      "IsFinancial": false
+    },
+    {
+      "Code": "OP_LOGISTIC_TRANSFER",
+      "Name": "Логистично вътрешно преместване",
+      "Direction": 3,
+      "IsFinancial": false
+    },
+    {
+      "Code": "OP_INTER_COMPANY_SALE",
+      "Name": "Междуфирмена продажба в холдинга",
+      "Direction": 3,
+      "IsFinancial": true
+    }
+  ],
+  "AssetAttributes": [
+    {
+      "Name": "Пол (Мъжко/Женско)",
+      "ContextType": 1,
+      "TargetId": 1
+    },
+    {
+      "Name": "Номер на двигател (ДВГ)",
+      "ContextType": 1,
+      "TargetId": 2
+    },
+    {
+      "Name": "Номер на шаси (Рама)",
+      "ContextType": 1,
+      "TargetId": 2
+    },
+    {
+      "Name": "Пътен лист №",
+      "ContextType": 2,
+      "TargetId": 5
+    },
+    {
+      "Name": "Ветеринарен медицински протокол",
+      "ContextType": 2,
+      "TargetId": 4
+    }
+  ]
+}

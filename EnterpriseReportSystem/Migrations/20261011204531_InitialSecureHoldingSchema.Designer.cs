@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EnterpriseReportSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20261011203832_InitialSecureHoldingSchema")]
+    [Migration("20261011204531_InitialSecureHoldingSchema")]
     partial class InitialSecureHoldingSchema
     {
         /// <inheritdoc />
