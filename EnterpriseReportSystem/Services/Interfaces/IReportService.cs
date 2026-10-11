@@ -16,4 +16,9 @@ public interface IReportService
 
     // 3. НОВИЯТ ДОГОВОР: Интелигентен одит и съпоставка на външни файлове по потребителски правила
     FileProcessSummary ProcessSmartImport(Stream fileStream, SmartImportViewModel config);
+
+    //4. Валута 
+    Task<decimal> GetExchangeRateAsync(int fromCurrencyId, int toCurrencyId, DateTime transactionDate);
+    Task<decimal> CalculateAssetValueInBgnAsync(int transactionId);
+
 }

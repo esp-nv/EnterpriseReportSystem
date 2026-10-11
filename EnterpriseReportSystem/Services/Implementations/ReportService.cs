@@ -217,4 +217,57 @@ public class ReportService : IReportService
         return summary;
     }
 
+    // =========================================================================
+    // ТВОЯТ ВАЛУТЕН ДВИГАТЕЛ: Автоматично намиране на курс по диапазон (<= на датата)
+    // =========================================================================
+    public async Task<decimal> GetExchangeRateAsync(int fromCurrencyId, int toCurrencyId, DateTime transactionDate)
+    {
+        // 1. Ако валутите съвпадат, курсът винаги е 1.00000
+        if (fromCurrencyId == toCurrencyId) return 1.00000m;
+
+        // 2. Проверка за Фиксиран курс в базата данни (независим от датата)
+        var fixedRate = await _context.ExchangeRateHistories
+            .Where(r => r.FromCurrencyId == fromCurrencyId && r.ToCurrencyId == toCurrencyId && r.IsFixed)
+            .Select(r => r.Rate)
+            .FirstOrDefaultAsync();
+
+        if (fixedRate > 0) return fixedRate;
+
+        // 3. ТВОЯТА ФОРМУЛА: Плаващ курс по диапазон (<= на датата на трансакцията)
+        var floatingRate = await _context.ExchangeRateHistories
+            .Where(r => r.FromCurrencyId == fromCurrencyId
+                     && r.ToCurrencyId == toCurrencyId
+                     && !r.IsFixed
+                     && r.RateDate.Date <= transactionDate.Date)
+            .OrderByDescending(r => r.RateDate) // Взима най-близкия последно въведен курс назад във времето
+            .Select(r => r.Rate)
+            .FirstOrDefaultAsync();
+
+        // Ако няма въведен курс за диапазона, връщаме 1.00000 като счетоводна защита срещу зануляване
+        return floatingRate > 0 ? floatingRate : 1.00000m;
+    }
+
+    // Автоматично преизчисляване на левовата себестойност на трансакция
+    public async Task<decimal> CalculateAssetValueInBgnAsync(int transactionId)
+    {
+        var transaction = await _context.AssetTransactions
+            .Include(t => t.Operation)
+            .FirstOrDefaultAsync(t => t.Id == transactionId);
+
+        if (transaction == null) return 0.00000m;
+
+        // Приемаме ID = 1 за основна национална валута (BGN) в SQL Server
+        int bgnCurrencyId = 1;
+
+        // Взимаме валутата, посочена в трансакцията (Тук в реалния модел ще добавим CurrencyId)
+        int foreignCurrencyId = 2; // Временно заложено за USD/EUR тест
+
+        // Извикваме валутния двигател по диапазон на датата на трансакцията
+        decimal rate = await GetExchangeRateAsync(foreignCurrencyId, bgnCurrencyId, transaction.TransactionDate);
+
+        // Връщаме крайната левова себестойност: Количество х Единична цена във валута х Намерения курс
+        return transaction.Quantity * 1.00m * rate;
+    }
+
+
 }
