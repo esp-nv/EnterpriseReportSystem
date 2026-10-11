@@ -269,5 +269,26 @@ public class ReportService : IReportService
         return transaction.Quantity * 1.00m * rate;
     }
 
+    // ТВОЯТ СЕРВИЗЕН МЕТОД ЗА ЗАПИС ПО МОДЕЛА ОТ STUDENT MANAGEMENT
+    public async Task<bool> CreateTransactionAsync(int assetId, int quantity, int? fromFacilityId, int? toFacilityId, DateTime transactionDate, string docRef, string notes, int opId)
+    {
+        var transaction = new AssetTransaction
+        {
+            AssetId = assetId,
+            Quantity = quantity,
+            FromFacilityId = fromFacilityId,
+            ToFacilityId = toFacilityId,
+            TransactionDate = transactionDate,
+            DocumentReference = string.IsNullOrEmpty(docRef) ? "Първоначално завеждане" : docRef.Trim(),
+            Notes = string.IsNullOrEmpty(notes) ? "Заприходяване на нов оперативен актив" : notes.Trim(),
+            OperationId = opId,
+            IsDeleted = false,
+            DeletedOn = null
+        };
+
+        _context.AssetTransactions.Add(transaction);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 
 }

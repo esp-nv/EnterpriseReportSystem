@@ -21,4 +21,6 @@ public interface IReportService
     Task<decimal> GetExchangeRateAsync(int fromCurrencyId, int toCurrencyId, DateTime transactionDate);
     Task<decimal> CalculateAssetValueInBgnAsync(int transactionId);
 
+    Task<bool> CreateTransactionAsync(int assetId, int quantity, int? fromFacilityId, int? toFacilityId, DateTime transactionDate, string docRef, string notes, int opId);
+
 }
