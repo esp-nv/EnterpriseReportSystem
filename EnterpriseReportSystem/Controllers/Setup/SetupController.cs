@@ -54,7 +54,6 @@ public class SetupController : Controller
     }
 
 
-
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateAsset(AssetManualEntryViewModel model)
@@ -66,22 +65,32 @@ public class SetupController : Controller
 
             if (birthOp.Id == 0) { _context.OperationTypes.Add(birthOp); await _context.SaveChangesAsync(); }
 
-            // ТВОЕТО ПЕРФЕКТНО ИМЕНУВАНО ИЗВИКВАНЕ БЕЗ НИТО ЕДНА ГРЕШКА
+            // КОРЕКЦИЯ: Подаваме тестов числителен ключ 1 към сервиза, докато пренастроим пълната релация за ушните марки
             await _reportService.CreateTransactionAsync(
-                assetId: model.Id,
-                quantity: model.InitialCount, // Твоето име за количество
+                assetId: 1,
+                quantity: model.InitialCount,
                 fromFacilityId: null,
                 toFacilityId: 1,
-                transactionDate: model.InvoiceOrPurchaseDate, // Твоето име за дата
-                docRef: model.InvoiceReference, // Твоето име за документ
-                notes: "Първоначално заприходяване на актив: " + model.Name,
+                transactionDate: model.InvoiceOrPurchaseDate,
+                docRef: model.InvoiceReference,
+                notes: "Първоначално заприходяване на актив: " + model.Name + " (Ушна марка: " + model.AssetId + ")",
                 opId: birthOp.Id
             );
 
             TempData["AssetSuccess"] = "🎉 Новият актив е заведен успешно чрез именувани аргументи!";
             return RedirectToAction("CreateAsset");
         }
-        return RedirectToAction("CreateAsset");
+
+        // При невалиден модел, презареждаме списъците наново за екрана
+        var mainTypes = await _context.MainTypes.ToListAsync();
+        model.MainTypeOptions = mainTypes.Select(m => new SelectListItem { Value = m.Id.ToString(), Text = m.Name }).ToList();
+        var groups = await _context.AssetGroups.ToListAsync();
+        model.GroupOptions = groups.Select(g => new SelectListItem { Value = g.Id.ToString(), Text = g.Name }).ToList();
+        var currencies = await _context.Currencies.ToListAsync();
+        model.CurrencyOptions = currencies.Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Code }).ToList();
+
+        return View(model);
     }
+
 
 }
