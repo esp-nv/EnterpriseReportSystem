@@ -31,14 +31,22 @@ public class SetupController : Controller
     public async Task<IActionResult> CreateAsset()
     {
         var model = new AssetManualEntryViewModel();
-        var subGroups = await _context.AssetSubGroups.ToListAsync();
 
+        // 1. Зареждаме подгрупите
+        var subGroups = await _context.AssetSubGroups.ToListAsync();
         model.SubGroupOptions = subGroups
             .Select(s => new SelectListItem { Value = s.Id.ToString(), Text = $"{s.Code} - {s.Name}" })
             .ToList();
 
+        // 2. ФИНАНСОВА НАСТРОЙКА: Зареждаме реалните валути от SQL Server
+        var currencies = await _context.Currencies.ToListAsync();
+        model.CurrencyOptions = currencies
+            .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Code })
+            .ToList();
+
         return View(model);
     }
+
 
     [HttpPost]
     [ValidateAntiForgeryToken]

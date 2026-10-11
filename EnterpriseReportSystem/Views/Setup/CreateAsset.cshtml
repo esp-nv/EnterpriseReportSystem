@@ -6,10 +6,7 @@
 }
 
 <div class="container my-5" style="max-width: 900px;">
-    <!-- Основна рамка с фин контур и по-мека сянка -->
     <div class="card shadow-sm border border-light-subtle rounded-3">
-
-        <!-- Модерен, по-лек хедър -->
         <div class="card-header bg-dark text-white p-3 border-0 rounded-top-3 d-flex align-items-center">
             <h5 class="mb-0 fw-bold fs-6 text-uppercase tracking-wider">
                 <i class="bi bi-box-seam me-2 text-warning"></i> Първоначално заприходяване на актив
@@ -18,126 +15,85 @@
 
         <div class="card-body p-4 bg-light-subtle">
 
-            @if (TempData["AssetSuccess"] != null)
-            {
-                <div class="alert alert-success border-0 shadow-sm alert-dismissible fade show fw-bold mb-4" role="alert">
-                    <i class="bi bi-check-circle-fill me-2"></i> @TempData["AssetSuccess"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-
             <form asp-action="CreateAsset" asp-controller="Setup" method="post" class="needs-validation" novalidate>
                 @Html.AntiForgeryToken()
 
-                <!-- СЕКЦИЯ 1: ОСНОВНИ ДАННИ (Обособена в бяла под-карта) -->
+                <!-- СЕКЦИЯ 1: ИДЕНТИФИКАЦИЯ -->
                 <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white">
                     <h6 class="fw-bold text-dark mb-3 border-bottom pb-2 text-uppercase fs-7 text-secondary">
                         <i class="bi bi-info-circle me-2 text-primary"></i> Идентификация и Номенклатура
                     </h6>
-
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label asp-for="Id" class="form-label small fw-bold text-muted">Инвентарен Номер / ID</label>
-                            <input asp-for="Id" type="number" class="form-control form-control-sm rounded-2" min="1" required
-                                   placeholder="напр. 1045">
-                            <div class="invalid-feedback small">Въведете числово ID.</div>
+                            <input asp-for="Id" type="number" class="form-control form-control-sm rounded-2" min="1" required>
                         </div>
-
                         <div class="col-md-8">
                             <label asp-for="Name" class="form-label small fw-bold text-muted">Име / Описание на актива</label>
-                            <input asp-for="Name" type="text" class="form-control form-control-sm rounded-2" required
-                                   maxlength="@ValidationConstants.CompanyNameMaxLength"
-                                   placeholder="напр. Юница - Херефорд">
-                            <div class="invalid-feedback small">Името е задължително (макс. @ValidationConstants.CompanyNameMaxLength знака).</div>
+                            <input asp-for="Name" type="text" class="form-control form-control-sm rounded-2" required placeholder="напр. Юница - Херефорд">
                         </div>
-
-                        <div class="col-md-8">
+                        <div class="col-md-12">
                             <label asp-for="SelectedSubGroupCode" class="form-label small fw-bold text-muted">Счетоводна Подгрупа (Ниво 3)</label>
                             <select asp-for="SelectedSubGroupCode" asp-items="Model.SubGroupOptions" class="form-select form-select-sm rounded-2" required>
                                 <option value="">-- Изберете оперативна подгрупа --</option>
                             </select>
-                            <div class="invalid-feedback small">Моля, изберете подгрупа.</div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label asp-for="InitialCount" class="form-label small fw-bold text-muted">Начално Количество</label>
-                            <input asp-for="InitialCount" type="number" class="form-control form-control-sm rounded-2" min="1" required
-                                   placeholder="Бройки">
-                            <div class="invalid-feedback small">Минимум 1 бройка.</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- СЕКЦИЯ 2: СЧЕТОВОДНИ ИНДИКАТОРИ -->
+                <!-- СЕКЦИЯ 2: ФИНАНСОВИ ПОЛЕТА И ТЕГЛО (ТОВА, КОЕТО ЛИПСВАШЕ!) -->
                 <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white">
                     <h6 class="fw-bold text-dark mb-3 border-bottom pb-2 text-uppercase fs-7 text-secondary">
-                        <i class="bi bi-file-earmark-text me-2 text-success"></i> Документи и Хронология
+                        <i class="bi bi-cash-coin me-2 text-warning"></i> Търговско и Количествено изражение
                     </h6>
-
                     <div class="row g-3">
-                        <div class="col-md-6">
-                            <label asp-for="InvoiceOrPurchaseDate" class="form-label small fw-bold text-muted">Дата на заприходяване</label>
+                        <div class="col-md-3">
+                            <label asp-for="InitialCount" class="form-label small fw-bold text-muted">Количество (Бройки)</label>
+                            <input asp-for="InitialCount" type="number" class="form-control form-control-sm rounded-2" min="1" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label asp-for="Weight" class="form-label small fw-bold text-muted">Общо Тегло (кг)</label>
+                            <input asp-for="Weight" type="number" step="0.01" class="form-control form-control-sm rounded-2" placeholder="напр. 450.50">
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Price" class="form-label small fw-bold text-muted">Единична Цена (Доставка)</label>
+                            <input asp-for="Price" type="number" step="0.01" class="form-control form-control-sm rounded-2" required placeholder="0.00">
+                        </div>
+                        <div class="col-md-2">
+                            <label asp-for="SelectedCurrencyId" class="form-label small fw-bold text-muted">Валута</label>
+                            <select asp-for="SelectedCurrencyId" asp-items="Model.CurrencyOptions" class="form-select form-select-sm rounded-2" required>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- СЕКЦИЯ 3: ХРОНОЛОГИЯ И БЕЛЕЖКИ -->
+                <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white">
+                    <h6 class="fw-bold text-dark mb-3 border-bottom pb-2 text-uppercase fs-7 text-secondary">
+                        <i class="bi bi-file-earmark-text me-2 text-success"></i> Документи и Теренни Бележки
+                    </h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label asp-for="InvoiceOrPurchaseDate" class="form-label small fw-bold text-muted">Дата на покупка</label>
                             <input asp-for="InvoiceOrPurchaseDate" type="date" class="form-control form-control-sm rounded-2" required>
-                            <div class="invalid-feedback small">Изберете валидна дата.</div>
                         </div>
-
-                        <div class="col-md-6">
+                        <div class="col-md-8">
                             <label asp-for="InvoiceReference" class="form-label small fw-bold text-muted">Основание (Фактура / Протокол №)</label>
-                            <input asp-for="InvoiceReference" type="text" class="form-control form-control-sm rounded-2" required
-                                   maxlength="@ValidationConstants.DocumentRefMaxLength"
-                                   placeholder="напр. Фактура 00010452">
-                            <div class="invalid-feedback small">Задължително поле (макс. @ValidationConstants.DocumentRefMaxLength знака).</div>
+                            <input asp-for="InvoiceReference" type="text" class="form-control form-control-sm rounded-2" required placeholder="напр. Фактура 00010452">
+                        </div>
+                        <div class="col-md-12">
+                            <label asp-for="Notes" class="form-label small fw-bold text-muted">Счетоводни бележки и GPS координати на терена</label>
+                            <textarea asp-for="Notes" class="form-control form-control-sm rounded-2" rows="2" maxlength="500" placeholder="Въведете коментар или координати (напр. 42.14, 24.75)"></textarea>
                         </div>
                     </div>
                 </div>
 
-                <!-- СЕКЦИЯ 3: ГЕОГРАФСКА И ЛОКАЦИОННА ОБВЪРЗАНОСТ -->
-                <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white">
-                    <h6 class="fw-bold text-dark mb-3 border-bottom pb-2 text-uppercase fs-7 text-secondary">
-                        <i class="bi bi-geo-alt me-2 text-danger"></i> Локационно разпределение
-                    </h6>
-
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label asp-for="Municipality" class="form-label small fw-bold text-muted">Община</label>
-                            <input asp-for="Municipality" type="text" class="form-control form-control-sm rounded-2" placeholder="напр. Община Марица">
-                        </div>
-                        <div class="col-md-4">
-                            <label asp-for="TownOrVillage" class="form-label small fw-bold text-muted">Населено място</label>
-                            <input asp-for="TownOrVillage" type="text" class="form-control form-control-sm rounded-2" placeholder="напр. с. Труд">
-                        </div>
-                        <div class="col-md-4">
-                            <label asp-for="Facility" class="form-label small fw-bold text-muted">Физически Обект (Ферма/База)</label>
-                            <input asp-for="Facility" type="text" class="form-control form-control-sm rounded-2" placeholder="напр. Стопански двор - Сектор А">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- БУТОН ЗА ДЕЙСТВИЕ -->
                 <div class="mt-4 pt-2 text-end">
                     <button type="submit" class="btn btn-dark btn-md px-5 fw-bold rounded-2 shadow-sm">
                         <i class="bi bi-save me-2 text-warning"></i> Заведи Актив в SQL Server
                     </button>
                 </div>
             </form>
-
         </div>
     </div>
 </div>
-
-<script>
-    (function () {
-        'use strict'
-        var forms = document.querySelectorAll('.needs-validation')
-        Array.prototype.slice.call(forms)
-            .forEach(function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (!form.checkValidity()) {
-                        event.preventDefault()
-                        event.stopPropagation()
-                    }
-                    form.classList.add('was-validated')
-                }, false)
-            })
-    })()
-</script>
