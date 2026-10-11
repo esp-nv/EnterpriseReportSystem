@@ -5,11 +5,7 @@ using EnterpriseReportSystem.Data;
 using EnterpriseReportSystem.ViewModels;
 using EnterpriseReportSystem.Common.Enum;
 using EnterpriseReportSystem.Models.Entities.Hierarchy;
-using EnterpriseReportSystem.Models.Entities.Location;
-using EnterpriseReportSystem.Models.Entities.Structure;
 using EnterpriseReportSystem.Models.Entities.Ledger;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EnterpriseReportSystem.Controllers;
 
@@ -46,14 +42,42 @@ public class SetupController : Controller
         }
         else if (submitButton == "Group" && !string.IsNullOrEmpty(model.GroupCode))
         {
-            var group = new AssetGroup { Code = model.GroupCode.Trim().ToUpper(), Name = model.GroupName.Trim(), MainTypeCode = model.SelectedMainTypeCode };
+            // 1. Намираме съответния Главен тип в SQL по неговия текстов код
+            var parentMainType = await _context.MainTypes.FirstOrDefaultAsync(m => m.Code == model.SelectedMainTypeCode);
+            if (parentMainType == null)
+            {
+                TempData["Error"] = "❌ Избраният Главен тип не съществува!";
+                return RedirectToAction("Hierarchy");
+            }
+
+            // 2. Записваме новата група, като закачаме числовия му Идентификатор (Id)
+            var group = new AssetGroup
+            {
+                Code = model.GroupCode.Trim().ToUpper(),
+                Name = model.GroupName.Trim(),
+                MainTypeId = parentMainType.Id // ЧИЛИЯ КЛЮЧ
+            };
             _context.AssetGroups.Add(group);
             await _context.SaveChangesAsync();
             TempData["Success"] = $"🎉 Групата '{model.GroupName}' е записана успешно в SQL Server!";
         }
         else if (submitButton == "SubGroup" && !string.IsNullOrEmpty(model.SubGroupCode))
         {
-            var subGroup = new AssetSubGroup { Code = model.SubGroupCode.Trim().ToUpper(), Name = model.SubGroupName.Trim(), AssetGroupCode = model.SelectedGroupCode };
+            // 3. Намираме съответната Група в SQL по нейния текстов код
+            var parentGroup = await _context.AssetGroups.FirstOrDefaultAsync(g => g.Code == model.SelectedGroupCode);
+            if (parentGroup == null)
+            {
+                TempData["Error"] = "❌ Избраната Основна група не съществува!";
+                return RedirectToAction("Hierarchy");
+            }
+
+            // 4. Записваме подгрупата, като закачаме числовия й Идентификатор (Id)
+            var subGroup = new AssetSubGroup
+            {
+                Code = model.SubGroupCode.Trim().ToUpper(),
+                Name = model.SubGroupName.Trim(),
+                AssetGroupId = parentGroup.Id // ЧИСЛОВИЯ КЛЮЧ
+            };
             _context.AssetSubGroups.Add(subGroup);
             await _context.SaveChangesAsync();
             TempData["Success"] = $"🎉 Подгрупата '{model.SubGroupName}' е записана успешно в SQL Server!";
@@ -61,6 +85,7 @@ public class SetupController : Controller
 
         return RedirectToAction("Hierarchy");
     }
+
 
     private async Task PopulateHierarchyListsAsync()
     {
