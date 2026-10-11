@@ -22,47 +22,84 @@ namespace EnterpriseReportSystem.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.AssetGroup", b =>
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetGroup", b =>
                 {
-                    b.Property<string>("Code")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<string>("MainTypeCode")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MainTypeId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Code");
+                    b.HasKey("Id");
 
-                    b.HasIndex("MainTypeCode");
+                    b.HasIndex("MainTypeId");
 
                     b.ToTable("AssetGroups");
                 });
 
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.AssetSubGroup", b =>
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetSubGroup", b =>
                 {
-                    b.Property<string>("Code")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<string>("AssetGroupCode")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AssetGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MeasurementUnit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Code");
+                    b.HasKey("Id");
 
-                    b.HasIndex("AssetGroupCode");
+                    b.HasIndex("AssetGroupId");
 
                     b.ToTable("AssetSubGroups");
                 });
 
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.AssetTransaction", b =>
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.MainType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MainTypes");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Ledger.AssetTransaction", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -82,8 +119,8 @@ namespace EnterpriseReportSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FromGroupCode")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int?>("FromGroupId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -99,38 +136,24 @@ namespace EnterpriseReportSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ToGroupCode")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int?>("ToGroupId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("TransactionDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FromGroupCode");
+                    b.HasIndex("FromGroupId");
 
                     b.HasIndex("OperationCode");
 
-                    b.HasIndex("ToGroupCode");
+                    b.HasIndex("ToGroupId");
 
                     b.ToTable("AssetTransactions");
                 });
 
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.MainType", b =>
-                {
-                    b.Property<string>("Code")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Code");
-
-                    b.ToTable("MainTypes");
-                });
-
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.OperationType", b =>
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Ledger.OperationType", b =>
                 {
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(450)");
@@ -150,44 +173,217 @@ namespace EnterpriseReportSystem.Migrations
                     b.ToTable("OperationTypes");
                 });
 
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.AssetGroup", b =>
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Municipality", b =>
                 {
-                    b.HasOne("EnterpriseReportSystem.Models.Entities.MainType", "MainType")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RegionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RegionId");
+
+                    b.ToTable("Municipality");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Region", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Region");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.CompanyOrPerson", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClientCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RegisteredTownId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TaxIdentifier")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RegisteredTownId");
+
+                    b.ToTable("CompanyOrPerson");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.Facility", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompanyOrPersonId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FacilityCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TownOrVillageId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyOrPersonId");
+
+                    b.HasIndex("TownOrVillageId");
+
+                    b.ToTable("Facility");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.FacilityLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FacilityId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("LogDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NewValue")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OldValue")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FacilityId");
+
+                    b.ToTable("FacilityLog");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.TownOrVillage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("MunicipalityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MunicipalityId");
+
+                    b.ToTable("TownOrVillage");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetGroup", b =>
+                {
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Hierarchy.MainType", "MainType")
                         .WithMany("AssetGroups")
-                        .HasForeignKey("MainTypeCode")
+                        .HasForeignKey("MainTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("MainType");
                 });
 
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.AssetSubGroup", b =>
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetSubGroup", b =>
                 {
-                    b.HasOne("EnterpriseReportSystem.Models.Entities.AssetGroup", "AssetGroup")
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetGroup", "AssetGroup")
                         .WithMany("AssetSubGroups")
-                        .HasForeignKey("AssetGroupCode")
+                        .HasForeignKey("AssetGroupId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("AssetGroup");
                 });
 
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.AssetTransaction", b =>
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Ledger.AssetTransaction", b =>
                 {
-                    b.HasOne("EnterpriseReportSystem.Models.Entities.AssetGroup", "FromGroup")
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetGroup", "FromGroup")
                         .WithMany()
-                        .HasForeignKey("FromGroupCode")
+                        .HasForeignKey("FromGroupId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("EnterpriseReportSystem.Models.Entities.OperationType", "Operation")
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Ledger.OperationType", "Operation")
                         .WithMany()
                         .HasForeignKey("OperationCode")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("EnterpriseReportSystem.Models.Entities.AssetGroup", "ToGroup")
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetGroup", "ToGroup")
                         .WithMany()
-                        .HasForeignKey("ToGroupCode")
+                        .HasForeignKey("ToGroupId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("FromGroup");
@@ -197,14 +393,97 @@ namespace EnterpriseReportSystem.Migrations
                     b.Navigation("ToGroup");
                 });
 
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.AssetGroup", b =>
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Municipality", b =>
+                {
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Region", "Region")
+                        .WithMany("Municipalities")
+                        .HasForeignKey("RegionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Region");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.CompanyOrPerson", b =>
+                {
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.TownOrVillage", "RegisteredTown")
+                        .WithMany()
+                        .HasForeignKey("RegisteredTownId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("RegisteredTown");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.Facility", b =>
+                {
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Structure.CompanyOrPerson", "CompanyOrPerson")
+                        .WithMany("Facilities")
+                        .HasForeignKey("CompanyOrPersonId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.TownOrVillage", "TownOrVillage")
+                        .WithMany()
+                        .HasForeignKey("TownOrVillageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CompanyOrPerson");
+
+                    b.Navigation("TownOrVillage");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.FacilityLog", b =>
+                {
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Structure.Facility", "Facility")
+                        .WithMany("FacilityLogs")
+                        .HasForeignKey("FacilityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Facility");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.TownOrVillage", b =>
+                {
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Municipality", "Municipality")
+                        .WithMany("TownsOrVillages")
+                        .HasForeignKey("MunicipalityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Municipality");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetGroup", b =>
                 {
                     b.Navigation("AssetSubGroups");
                 });
 
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.MainType", b =>
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.MainType", b =>
                 {
                     b.Navigation("AssetGroups");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Municipality", b =>
+                {
+                    b.Navigation("TownsOrVillages");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Region", b =>
+                {
+                    b.Navigation("Municipalities");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.CompanyOrPerson", b =>
+                {
+                    b.Navigation("Facilities");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.Facility", b =>
+                {
+                    b.Navigation("FacilityLogs");
                 });
 #pragma warning restore 612, 618
         }
