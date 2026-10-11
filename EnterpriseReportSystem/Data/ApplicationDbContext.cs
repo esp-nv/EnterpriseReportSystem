@@ -5,9 +5,6 @@ using EnterpriseReportSystem.Models.Entities.Ledger;
 using EnterpriseReportSystem.Models.Entities.Location;
 using EnterpriseReportSystem.Models.Entities.Structure;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EnterpriseReportSystem.Data;
 
@@ -40,6 +37,9 @@ public class ApplicationDbContext : DbContext
     // 5. ВАЛУТНА СЧЕТОВОДНА АРХИТЕКТУРА
     public DbSet<Currency> Currencies { get; set; } = null!;
     public DbSet<ExchangeRateHistory> ExchangeRateHistories { get; set; } = null!;
+
+    public DbSet<AssetSpecification> AssetSpecifications { get; set; } = null!;
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -199,6 +199,17 @@ public class ApplicationDbContext : DbContext
             fl.Property(x => x.OldValue).IsRequired().HasMaxLength(ValidationConstants.LogValueMaxLength);
             fl.Property(x => x.NewValue).IsRequired().HasMaxLength(ValidationConstants.LogValueMaxLength);
         });
+
+        modelBuilder.Entity<AssetSpecification>(spec =>
+        {
+            spec.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.SpecificationNameMaxLength);
+
+            spec.HasOne(x => x.AssetSubGroup)
+                .WithMany()
+                .HasForeignKey(x => x.AssetSubGroupId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
 
         // ГЛОБАЛНО ПРЕДОТВРАТЯВАНЕ НА КАСКАДНО ТРИЕНЕ
         foreach (var foreignKey in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))

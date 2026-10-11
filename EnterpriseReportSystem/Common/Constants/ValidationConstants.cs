@@ -44,6 +44,8 @@ public static class ValidationConstants
     public const int RegionNameMaxLength = 40; // За областите(напр. "Област Бургас") 40 символа са напълно достатъчни.
     public const int MunicipalityNameMaxLength = 60; //За общините 60 символа дават отлична гъвкавост.
     public const int TownOrVillageNameMaxLength = 100; // За населените места запазваме до 100 символа поради дълги комбинирани имена.
-   
+
+    // Спецификации на активите (Породи / Модели)
+    public const int SpecificationNameMaxLength = 100;
 
 }

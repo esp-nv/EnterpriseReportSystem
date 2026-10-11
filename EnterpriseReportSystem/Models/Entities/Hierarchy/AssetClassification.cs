@@ -1,13 +1,15 @@
-﻿using EnterpriseReportSystem.Models.Entities.Hierarchy;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace EnterpriseReportSystem.Models.Entities;
+namespace EnterpriseReportSystem.Models.Entities.Hierarchy;
 
-public class AssetClassification
+public class AssetSpecification
 {
-    public int Id { get; set; } // Цифрово уникално ID
-    public string Name { get; set; } = string.Empty; // напр. Ил дьо Франс, John Deere, Тип 500
+    public int Id { get; set; }
 
-    // ВЪНШНИЯТ КЛЮЧ: Свързва спецификацията с конкретната подгрупа (Ниво 3)
-    public string AssetSubGroupCode { get; set; } = string.Empty;
+    [Required]
+    public string Name { get; set; } = string.Empty; // Име на породата (напр. "Херефорд") или модела ("John Deere 6R")
+
+    // Връзка към Подгрупата (Ниво 3), за да знаем тази порода/модел за кое животно/машина се отнася
+    public int AssetSubGroupId { get; set; }
     public AssetSubGroup AssetSubGroup { get; set; } = null!;
 }
