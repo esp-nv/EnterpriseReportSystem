@@ -149,6 +149,28 @@ public class ApplicationDbContext : DbContext
             s.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.HierarchyNameMaxLength);
             s.Property(x => x.MeasurementUnit).IsRequired().HasMaxLength(ValidationConstants.MeasurementUnitMaxLength);
         });
+        // 5. ЗАЩИТА ЗА ЖУРНАЛА НА ТРАНСАКЦИИТЕ (AssetTransactions)
+        modelBuilder.Entity<AssetTransaction>(t =>
+        {
+            t.Property(x => x.AssetId).IsRequired().HasMaxLength(ValidationConstants.AssetIdMaxLength);
+            t.Property(x => x.FromFacility).IsRequired().HasMaxLength(ValidationConstants.FacilityTextMaxLength);
+            t.Property(x => x.ToFacility).IsRequired().HasMaxLength(ValidationConstants.FacilityTextMaxLength);
+            t.Property(x => x.DocumentReference).IsRequired().HasMaxLength(ValidationConstants.DocumentRefMaxLength);
+        });
+
+        // 6. ЗАЩИТА ЗА ТИПОВЕТЕ ОПЕРАЦИИ (OperationTypes)
+        modelBuilder.Entity<OperationType>(o =>
+        {
+            o.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.OperationNameMaxLength);
+        });
+
+        // 7. ЗАЩИТА ЗА ОДИТНИЯ ДНЕВНИК (FacilityLogs)
+        modelBuilder.Entity<FacilityLog>(fl =>
+        {
+            fl.Property(x => x.EventType).IsRequired().HasMaxLength(ValidationConstants.LogEventTypeMaxLength);
+            fl.Property(x => x.OldValue).IsRequired().HasMaxLength(ValidationConstants.LogValueMaxLength);
+            fl.Property(x => x.NewValue).IsRequired().HasMaxLength(ValidationConstants.LogValueMaxLength);
+        });
 
 
 
