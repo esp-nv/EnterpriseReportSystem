@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using EnterpriseReportSystem.Models.Entities;
+﻿using EnterpriseReportSystem.Models.Entities;
+using EnterpriseReportSystem.Models.Entities.Hierarchy;
+using EnterpriseReportSystem.Models.Entities.Ledger;
+using EnterpriseReportSystem.Models.Entities.Structure;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using EnterpriseReportSystem.Models.Entities.Hierarchy;
-using EnterpriseReportSystem.Models.Entities.Ledger;
 
 namespace EnterpriseReportSystem.Data;
 
@@ -26,34 +27,73 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // 2. ПОСТАВЯНЕ НА ПЪРВИЧНИТЕ КЛЮЧОВЕ (PRIMARY KEYS)
-        modelBuilder.Entity<MainType>().HasKey(m => m.Code);
-        modelBuilder.Entity<AssetGroup>().HasKey(g => g.Code);
-        modelBuilder.Entity<AssetSubGroup>().HasKey(s => s.Code);
+        // 1. ПОСТАВЯНЕ НА ЧИСЛОВИТЕ ПЪРВИЧНИ КЛЮЧОВЕ (PRIMARY KEYS)
+        modelBuilder.Entity<MainType>().HasKey(m => m.Id);
+        modelBuilder.Entity<AssetGroup>().HasKey(g => g.Id);
+        modelBuilder.Entity<AssetSubGroup>().HasKey(s => s.Id);
         modelBuilder.Entity<OperationType>().HasKey(o => o.Code);
 
-        // 3. КОНФИГУРИРАНЕ НА ЙЕРАРХИЧНИТЕ ВРЪЗКИ (ONE-TO-MANY)
+        // 2. КОНФИГУРИРАНЕ НА ГЕОГРАФСКИТЕ ВРЪЗКИ (ОБЛАСТ -> ОБЩИНА -> СЕЛО)
+        modelBuilder.Entity<Municipality>()
+            .HasOne(m => m.Region)
+            .WithMany(r => r.Municipalities)
+            .HasForeignKey(m => m.RegionId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<TownOrVillage>()
+            .HasOne(t => t.Municipality)
+            .WithMany(m => m.TownOrVillages)
+            .HasForeignKey(t => t.MunicipalityId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // 3. КОНФИГУРИРАНЕ НА ЙЕРАРХИЧНИТЕ ВРЪЗКИ ЧРЕЗ ЧИСЛОВИ ИДЕНТИФИКАТОРИ (Id КЛЮЧОВЕ)
         modelBuilder.Entity<AssetGroup>()
             .HasOne(g => g.MainType)
             .WithMany(m => m.AssetGroups)
-            .HasForeignKey(g => g.MainTypeCode)
+            .HasForeignKey(g => g.MainTypeId) // ПРАВИЛНИЯТ ЧИСЛОВ КЛЮЧ
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<AssetSubGroup>()
             .HasOne(s => s.AssetGroup)
             .WithMany(g => g.AssetSubGroups)
-            .HasForeignKey(s => s.AssetGroupCode)
+            .HasForeignKey(s => s.AssetGroupId) // ПРАВИЛНИЯТ ЧИСЛОВ КЛЮЧ
             .OnDelete(DeleteBehavior.Restrict);
 
-        // 4. ТВОЯТА ЗАЩИТА: Предотвратяване на каскадно триене за абсолютно ВСИЧКИ връзки
+        // 4. КОНФИГУРИРАНЕ НА МУЛТИ-ФИРМЕНИТЕ ОБЕКТИ И АДМИНИСТРАЦИЯТА
+        modelBuilder.Entity<CompanyOrPerson>()
+            .HasOne(c => c.RegisteredTown)
+            .WithMany()
+            .HasForeignKey(c => c.RegisteredTownId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Facility>()
+            .HasOne(f => f.CompanyOrPerson)
+            .WithMany(c => c.Facilities)
+            .HasForeignKey(f => f.CompanyOrPersonId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Facility>()
+            .HasOne(f => f.TownOrVillage)
+            .WithMany()
+            .HasForeignKey(f => f.TownOrVillageId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<FacilityLog>()
+            .HasOne(fl => fl.Facility)
+            .WithMany(f => f.FacilityLogs)
+            .HasForeignKey(fl => fl.FacilityId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // ТВОЯТА ЗЛАТНА ЗАЩИТА: Предотвратяване на каскадно триене за абсолютно ВСИЧКИ връзки
         foreach (var foreignKey in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
         {
             foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
         }
 
-        // 5. ТВОЯТ ГЛОБАЛЕН ФИЛТЪР: Автоматично скриване на логически изтритите трансакции
+        // ТВОЯТ ГЛОБАЛЕН ФИЛТЪР: Скриване на логически изтритите трансакции през Soft Delete
         modelBuilder.Entity<AssetTransaction>().HasQueryFilter(t => !t.IsDeleted);
     }
+
 
     // 6. ТВОЯТА МАГИЯ ЗА АВТОМАТИЧЕН SOFT DELETE
     public override int SaveChanges()
