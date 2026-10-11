@@ -5,6 +5,8 @@ namespace EnterpriseReportSystem.Models.Entities.Ledger;
 
 public class AssetAttribute
 {
+
+    // Регистър на динамичните белези
     public int Id { get; set; }
 
     [Required]

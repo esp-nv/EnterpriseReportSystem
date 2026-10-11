@@ -4,6 +4,8 @@ namespace EnterpriseReportSystem.Models.Entities.Ledger;
 
 public class AssetAttributeValue
 {
+    //Реалните стойности за конкретния актив
+
     public int Id { get; set; }
 
     // Свързваме със счетоводната трансакция в Журнала
