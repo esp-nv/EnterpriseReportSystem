@@ -1,6 +1,7 @@
 ﻿using System;
 using EnterpriseReportSystem.Data;
 using EnterpriseReportSystem.Models.Entities;
+using EnterpriseReportSystem.Models.Entities.Ledger;
 using EnterpriseReportSystem.Models.ViewModels;
 using EnterpriseReportSystem.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;

@@ -1,4 +1,5 @@
-﻿using EnterpriseReportSystem.Services.Interfaces;
+﻿using EnterpriseReportSystem.Models.Entities.Hierarchy;
+using EnterpriseReportSystem.Services.Interfaces;
 using System;
 
 namespace EnterpriseReportSystem.Models.Entities;

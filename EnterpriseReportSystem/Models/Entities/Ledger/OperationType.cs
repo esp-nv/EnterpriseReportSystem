@@ -1,6 +1,6 @@
 ﻿using EnterpriseReportSystem.Common.Enum;
 
-namespace EnterpriseReportSystem.Models.Entities;
+namespace EnterpriseReportSystem.Models.Entities.Ledger;
 
 public class OperationType
 {

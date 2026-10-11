@@ -1,6 +1,7 @@
-﻿using System;
+﻿using EnterpriseReportSystem.Models.Entities.Hierarchy;
+using System;
 
-namespace EnterpriseReportSystem.Models.Entities;
+namespace EnterpriseReportSystem.Models.Entities.Ledger;
 
 public class AssetTransaction : ISoftDeletable
 {

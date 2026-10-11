@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using EnterpriseReportSystem.Models.Entities;
+using EnterpriseReportSystem.Models.Entities.Ledger;
 using EnterpriseReportSystem.Models.ViewModels;
 
 namespace EnterpriseReportSystem.Services.Interfaces;
