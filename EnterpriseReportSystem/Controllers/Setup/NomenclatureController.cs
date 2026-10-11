@@ -4,8 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using EnterpriseReportSystem.Data;
 using EnterpriseReportSystem.Models.Entities.Hierarchy;
 using EnterpriseReportSystem.ViewModels;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EnterpriseReportSystem.Controllers.Setup; // СИНХРОНИЗИРАН NAMESPACE ПЪТ
 

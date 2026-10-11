@@ -1,12 +1,8 @@
 ﻿using EnterpriseReportSystem.Data;
 using EnterpriseReportSystem.Models.Entities;
-using EnterpriseReportSystem.Models.Entities.Ledger;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EnterpriseReportSystem.Controllers.Setup; // СИНХРОНИЗИРАН NAMESPACE ПЪТ
 
