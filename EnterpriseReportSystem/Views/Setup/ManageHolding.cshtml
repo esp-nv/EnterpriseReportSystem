@@ -39,11 +39,12 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label small fw-bold">Административно Седалище</label>
-                        <select asp-for="RegisteredTownId" asp-items="(List<SelectListItem>)ViewData[\" Towns\"]" class="form-select" required>
+                        <label class="form-label small fw-bold">Административно Седалище (Град / Село)</label>
+                        <select asp-for="RegisteredTownId" asp-items="(List<SelectListItem>)ViewData[" Towns"]" class="form-select" required>
                             <option value="">-- Изберете град/село --</option>
                         </select>
                     </div>
+
 
                     <button type="submit" class="btn btn-primary w-100 fw-bold">💾 Запиши Субект</button>
                 </form>
