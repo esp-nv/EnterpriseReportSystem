@@ -1,96 +1,128 @@
-﻿@model EnterpriseReportSystem.ViewModels.AssetManualEntryViewModel
+﻿@using EnterpriseReportSystem.Common.Constants
+@model EnterpriseReportSystem.ViewModels.AssetManualEntryViewModel
 
-<div class="container mt-5" style="max-width: 750px;">
-    <div class="card shadow border-0 rounded-3 overflow-hidden">
-        <div class="card-header bg-success text-white p-3 d-flex justify-content-between align-items-center">
-            <h4 class="mb-0 fw-bold">➕ Оперативен екран: Първоначално Завеждане на Актив</h4>
-            <span class="badge bg-light text-success fw-bold">ViewModel Защита</span>
+@{
+    ViewData["Title"] = "Завеждане на нов оперативен актив";
+}
+
+<div class="container mt-4" style="max-width: 800px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark text-white p-3">
+            <h5 class="mb-0 fw-bold"><i class="bi i-plus-circle me-2"></i> Первоначално заприходяване на актив в Холдинга</h5>
         </div>
-        <div class="card-body p-4 bg-light">
+        <div class="card-body p-4">
 
             @if (TempData["AssetSuccess"] != null)
             {
-                <div class="alert alert-success text-center fw-bold shadow-sm">
-                    @TempData["AssetSuccess"]
+                <div class="alert alert-success alert-dismissible fade show fw-bold mb-4" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i> @TempData["AssetSuccess"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             }
 
-            <form asp-action="CreateAsset" asp-controller="Setup" method="post">
+            <form asp-action="CreateAsset" asp-controller="Setup" method="post" class="needs-validation" novalidate>
                 @Html.AntiForgeryToken()
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                <!-- ОСНОВНИ ДАННИ ЗА ОБЕКТА -->
-                <div class="row g-3 mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Идентификатор (Ушна марка / Сериен номер / Баркод)</label>
-                        <input asp-for="Id" class="form-control border-2 border-success" placeholder="напр. BG-10024 или MACH-55" required />
-                        <span asp-validation-for="Id" class="text-danger"></span>
+                <div class="row">
+                    <!-- 1. ИДЕНТИФИКАТОР НА АКТИВА (ЧИСЛО) -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Id" class="form-label small fw-bold">Инвентарен Номер / ID на Актив</label>
+                        <input asp-for="Id" type="number" class="form-select" min="1" required
+                               placeholder="Въведете числово ID (напр. 1045)">
+                        <div class="invalid-feedback">Моля, въведете валидно положително число за Идентификатор.</div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Наименование / Име на актива</label>
-                        <input asp-for="Name" class="form-control border-2" placeholder="напр. Крава Малина, Трактор John Deere" required />
-                        <span asp-validation-for="Name" class="text-danger"></span>
+
+                    <!-- 2. НАИМЕНОВАНИЕ / СИГНАТУРА НА АКТИВА -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Name" class="form-label small fw-bold">Име / Описание на актива</label>
+                        <input asp-for="Name" type="text" class="form-control" required
+                               maxlength="@ValidationConstants.CompanyNameMaxLength"
+                               placeholder="напр. Юница - Херефорд">
+                        <div class="invalid-feedback">Името е задължително и не може да надхвърля @ValidationConstants.CompanyNameMaxLength символа.</div>
                     </div>
                 </div>
 
-                <!-- ЙЕРАРХИЧНА ПОДГРУПА ОТ SQL SERVER -->
-                <div class="mb-4">
-                    <label class="form-label fw-bold text-dark">Изберете Счетоводна Подгрупа (От SQL номенклатурите):</label>
-                    <select asp-for="SelectedSubGroupCode" asp-items="Model.SubGroupOptions" class="form-select form-select-lg border-2 border-primary" required>
-                        <option value="">-- Изберете оперативна подгрупа --</option>
-                    </select>
-                    <span asp-validation-for="SelectedSubGroupCode" class="text-danger"></span>
-                </div>
-
-                <!-- БЛОК ЗА ДВЕТЕ НЕЗАВИСИМИ ДАТИ -->
-                <div class="card p-3 mb-4 bg-white border-1 shadow-sm rounded-3 border-start border-warning border-4">
-                    <h6 class="fw-bold text-warning mb-3">📅 Хронологични Времеви Показатели (Свободен избор)</h6>
-                    <div class="row g-3 mb-2">
-                        <div class="col-md-6">
-                            <label class="form-label small fw-bold text-secondary">1. Физическа дата (Раждане / Производство):</label>
-                            <input asp-for="ManufactureOrBirthDate" type="date" class="form-control border-2" required />
-                            <span asp-validation-for="ManufactureOrBirthDate" class="text-danger"></span>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label small fw-bold text-secondary">2. Счетоводна дата (Завеждане / Фактура):</label>
-                            <input asp-for="InvoiceOrPurchaseDate" type="date" class="form-control border-2" required />
-                            <span asp-validation-for="InvoiceOrPurchaseDate" class="text-danger"></span>
-                        </div>
+                <div class="row">
+                    <!-- 3. ИЗБОР НА ОПЕРАТИВНА ПОДГРУПА ОТ SQL (ЧИСЛОВ КЛЮЧ) -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="SelectedSubGroupCode" class="form-label small fw-bold">Счетоводна Подгрупа (Ниво 3)</label>
+                        <select asp-for="SelectedSubGroupCode" asp-items="Model.SubGroupOptions" class="form-select" required>
+                            <option value="">-- Изберете оперативна подгрупа --</option>
+                        </select>
+                        <div class="invalid-feedback">Моля, изберете подгрупа от номенклатурата.</div>
                     </div>
-                    <div class="mt-2">
-                        <label class="form-label small fw-bold">Номер на Фактура / Предавателен Протокол:</label>
-                        <input asp-for="InvoiceReference" class="form-control" placeholder="напр. Фактура №10002564" />
+
+                    <!-- 4. НАЧАЛНО КОЛИЧЕСТВО БРОЙКИ -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="InitialCount" class="form-label small fw-bold">Първоначално заприходено количество</label>
+                        <input asp-for="InitialCount" type="number" class="form-control" min="1" required
+                               placeholder="Количество бройки">
+                        <div class="invalid-feedback">Количеството трябва да бъде минимум 1 бройка.</div>
                     </div>
                 </div>
 
-                <!-- ГЕОГРАФСКА И ЛОГИСТИЧНА ЛОКАЦИЯ -->
-                <h6 class="text-secondary fw-bold mt-4 mb-2 border-bottom pb-2">📍 Начална Локация при зачисляване</h6>
-                <div class="row g-3 mb-4">
-                    <div class="col-md-4">
-                        <label class="form-label small">Община</label>
-                        <input asp-for="Municipality" class="form-control" placeholder="напр. Марица" />
+                <hr class="text-muted my-4">
+                <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-file-earmark-text me-2"></i> Търговски и Хронологични Индикатори</h6>
+
+                <div class="row">
+                    <!-- 5. ДАТА НА ФАКТУРА / ПОКУПКА -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="InvoiceOrPurchaseDate" class="form-label small fw-bold">Дата на покупка / заприходяване</label>
+                        <input asp-for="InvoiceOrPurchaseDate" type="date" class="form-control" required>
+                        <div class="invalid-feedback">Моля, изберете валидна дата на заприходяване.</div>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label small">Град / Село</label>
-                        <input asp-for="TownOrVillage" class="form-control" placeholder="напр. с. Труд" />
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label small">Конкретен Обект / Склад / Ферма</label>
-                        <input asp-for="Facility" class="form-control" placeholder="напр. Ферма 1" />
+
+                    <!-- 6. ФАКТУРА / ДОКУМЕНТ ОФИЦИАЛНО ОСНОВАНИЕ -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="InvoiceReference" class="form-label small fw-bold">Основание / Документ (Фактура №)</label>
+                        <input asp-for="InvoiceReference" type="text" class="form-control" required
+                               maxlength="@ValidationConstants.DocumentRefMaxLength"
+                               placeholder="напр. Фактура 00010452">
+                        <div class="invalid-feedback">Документът е задължителен и не може да надхвърля @ValidationConstants.DocumentRefMaxLength знака.</div>
                     </div>
                 </div>
 
-                <!-- КОЛИЧЕСТВО -->
-                <div class="mb-4">
-                    <label class="form-label fw-bold text-success">Начално зачислено количество (Бройки / Кг):</label>
-                    <input asp-for="InitialCount" type="number" class="form-control border-2 border-success" min="1" required />
-                    <span asp-validation-for="InitialCount" class="text-danger"></span>
+                <!-- 7. ГЕОГРАФСКИ И ЛОКАЦИОННИ ПОЛЕТА (ЗА БЪДЕЩО РАЗШИРЕНИЕ) -->
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Municipality" class="form-label small fw-bold">Община</label>
+                        <input asp-for="Municipality" type="text" class="form-control" placeholder="Въведете община">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="TownOrVillage" class="form-label small fw-bold">Населено място</label>
+                        <input asp-for="TownOrVillage" type="text" class="form-control" placeholder="Град / Село">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Facility" class="form-label small fw-bold">Физически Обект (Ферма/База)</label>
+                        <input asp-for="Facility" type="text" class="form-control" placeholder="Име на ферма">
+                    </div>
                 </div>
 
-                <button type="submit" class="btn btn-success btn-lg w-100 shadow fw-bold py-3 text-uppercase">
-                    💾 Запиши дълготрайно в SQL Server база данни
-                </button>
+                <div class="mt-4 text-end">
+                    <button type="submit" class="btn btn-dark btn-lg px-5 fw-bold shadow-sm">
+                        <i class="bi bi-save me-2"></i> Заведи Актив в SQL Server
+                    </button>
+                </div>
             </form>
+
         </div>
     </div>
 </div>
+
+<!-- СКРИПТ ЗА АКТИВИРАНЕ НА БРАУЗЪРНАТА HTML5 ВАЛИДАЦИЯ НА BOOTSTRAP -->
+<script>
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</script>
