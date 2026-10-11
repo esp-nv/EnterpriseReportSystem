@@ -34,4 +34,16 @@ public static class ValidationConstants
     public const int LogEventTypeMaxLength = 30;
     public const int LogValueMaxLength = 1000; // По-голяма дължина за детайлно описание на промените
 
+    public const int CompanyAddressMaxLength = 150;
+
+    public const int FacilityAddressMaxLength = 150; // — Специфична константа за точния адрес/местност на фермата или склада[local].
+    public const int OperationCodeMaxLength = 20;
+    //— Отделна къса константа за уникалния код на операцията(напр.OP_TRANSFER) [finance].
+    public const int TransactionNotesMaxLength = 500; // — Специална константа за новото счетоводно поле Notes в Журнала [finance]
+
+    public const int RegionNameMaxLength = 40; // За областите(напр. "Област Бургас") 40 символа са напълно достатъчни.
+    public const int MunicipalityNameMaxLength = 60; //За общините 60 символа дават отлична гъвкавост.
+    public const int TownOrVillageNameMaxLength = 100; // За населените места запазваме до 100 символа поради дълги комбинирани имена.
+   
+
 }

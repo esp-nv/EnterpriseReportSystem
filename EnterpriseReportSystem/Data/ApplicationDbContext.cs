@@ -171,6 +171,68 @@ public class ApplicationDbContext : DbContext
             fl.Property(x => x.OldValue).IsRequired().HasMaxLength(ValidationConstants.LogValueMaxLength);
             fl.Property(x => x.NewValue).IsRequired().HasMaxLength(ValidationConstants.LogValueMaxLength);
         });
+        // ==========================================
+        // ГЕОГРАФСКА ЗАЩИТА СЪС САМОСТОЯТЕЛНИ КОНСТАНТИ
+        // ==========================================
+        modelBuilder.Entity<Region>(r =>
+        {
+            r.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.RegionNameMaxLength); // 40
+        });
+
+        modelBuilder.Entity<Municipality>(m =>
+        {
+            m.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.MunicipalityNameMaxLength); // 60
+        });
+
+        modelBuilder.Entity<TownOrVillage>(t =>
+        {
+            t.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.TownOrVillageNameMaxLength); // 100
+            t.Property(x => x.PostalCode).IsRequired().HasMaxLength(ValidationConstants.PostalCodeMaxLength); // 10
+        });
+
+        // ==========================================
+        // ЗАЩИТА ЗА СУБЕКТИТЕ И ФИЗИЧЕСКИТЕ АДРЕСИ
+        // ==========================================
+        modelBuilder.Entity<CompanyOrPerson>(c =>
+        {
+            c.Property(x => x.ClientCode).IsRequired().HasMaxLength(ValidationConstants.ClientCodeMaxLength); // 20
+            c.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.CompanyNameMaxLength); // 150
+            c.Property(x => x.TaxIdentifier).IsRequired().HasMaxLength(ValidationConstants.TaxIdentifierMaxLength); // 15
+
+            // Новата колона за физически адрес на фирмата/лицето
+            c.Property(x => x.Address).IsRequired().HasMaxLength(ValidationConstants.CompanyAddressMaxLength); // 150
+        });
+
+        modelBuilder.Entity<Facility>(f =>
+        {
+            f.Property(x => x.FacilityCode).IsRequired().HasMaxLength(ValidationConstants.FacilityCodeMaxLength); // 30
+            f.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.FacilityNameMaxLength); // 100
+            f.Property(x => x.PostalCode).IsRequired().HasMaxLength(ValidationConstants.PostalCodeMaxLength); // 10
+            f.Property(x => x.Notes).HasMaxLength(ValidationConstants.NotesMaxLength); // 500
+
+            // Новата колона за точен адрес / местност на самата ферма/база
+            f.Property(x => x.Address).IsRequired().HasMaxLength(ValidationConstants.FacilityAddressMaxLength); // 150
+        });
+
+        // ==========================================
+        // ТИПОВЕ ОПЕРАЦИИ И СЧЕТОВОДЕН ЖУРНАЛ
+        // ==========================================
+        modelBuilder.Entity<OperationType>(o =>
+        {
+            o.Property(x => x.Code).IsRequired().HasMaxLength(ValidationConstants.OperationCodeMaxLength); // 20
+            o.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.OperationNameMaxLength); // 100
+        });
+
+        modelBuilder.Entity<AssetTransaction>(t =>
+        {
+            t.Property(x => x.AssetId).IsRequired().HasMaxLength(ValidationConstants.AssetIdMaxLength); // 50
+            t.Property(x => x.FromFacility).IsRequired().HasMaxLength(ValidationConstants.FacilityTextMaxLength); // 100
+            t.Property(x => x.ToFacility).IsRequired().HasMaxLength(ValidationConstants.FacilityTextMaxLength); // 100
+            t.Property(x => x.DocumentReference).IsRequired().HasMaxLength(ValidationConstants.DocumentRefMaxLength); // 150
+
+            // Новата колона за счетоводни бележки по трансакцията
+            t.Property(x => x.Notes).HasMaxLength(ValidationConstants.TransactionNotesMaxLength); // 500
+        });
 
 
 
