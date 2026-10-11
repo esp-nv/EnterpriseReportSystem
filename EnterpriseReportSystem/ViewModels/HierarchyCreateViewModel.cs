@@ -1,4 +1,5 @@
-﻿namespace EnterpriseReportSystem.ViewModels; // Коренната папка ViewModels
+﻿
+namespace EnterpriseReportSystem.ViewModels; // Коренната папка ViewModels
 
 public class HierarchyCreateViewModel
 {

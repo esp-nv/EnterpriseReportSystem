@@ -2,9 +2,12 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EnterpriseReportSystem.Data;
-using EnterpriseReportSystem.Models.Entities;
 using EnterpriseReportSystem.ViewModels;
 using EnterpriseReportSystem.Common.Enum;
+using EnterpriseReportSystem.Models.Entities.Hierarchy;
+using EnterpriseReportSystem.Models.Entities.Location;
+using EnterpriseReportSystem.Models.Entities.Structure;
+using EnterpriseReportSystem.Models.Entities.Ledger;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,7 +22,10 @@ public class SetupController : Controller
         _context = context;
     }
 
-    // 1. GET: Зарежда екрана на адрес /Setup/Hierarchy
+    // ==========================================
+    // 1. УПРАВЛЕНИЕ НА ЙЕРАРХИЯТА (Hierarchy.cshtml)
+    // ==========================================
+
     [HttpGet]
     public async Task<IActionResult> Hierarchy()
     {
@@ -27,7 +33,6 @@ public class SetupController : Controller
         return View(new HierarchyCreateViewModel());
     }
 
-    // 2. POST: Поема записите на СЪЩИЯ адрес /Setup/Hierarchy (Елиминира 404 грешките напълно)
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Hierarchy(HierarchyCreateViewModel model, string submitButton)
@@ -66,6 +71,10 @@ public class SetupController : Controller
         ViewBag.Groups = groups.Select(g => new SelectListItem { Value = g.Code, Text = g.Name }).ToList();
     }
 
+    // ==========================================
+    // 2. УПРАВЛЕНИЕ НА АКТИВИТЕ (CreateAsset.cshtml)
+    // ==========================================
+
     [HttpGet]
     public async Task<IActionResult> CreateAsset()
     {
@@ -75,7 +84,10 @@ public class SetupController : Controller
         return View(model);
     }
 
-    // 3. GET: Зарежда празната HTML форма за Приход / Разход
+    // ==========================================
+    // 3. СЧЕТОВОДЕН ЖУРНАЛ (LogOperation.cshtml)
+    // ==========================================
+
     [HttpGet]
     public async Task<IActionResult> LogOperation()
     {
@@ -85,7 +97,6 @@ public class SetupController : Controller
         return View(model);
     }
 
-    // 4. POST: Записва трансакцията за Приход / Разход в базата данни
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> LogOperation(AssetOperationViewModel model)
@@ -120,14 +131,16 @@ public class SetupController : Controller
         return View(model);
     }
 
-    // 5. GET: Loads the empty Logistic Transfer form
+    // ==========================================
+    // 4. ЛОГИСТИЧЕН ТРАНСФЕР (TransferAsset.cshtml)
+    // ==========================================
+
     [HttpGet]
     public IActionResult TransferAsset()
     {
         return View(new AssetTransferViewModel());
     }
 
-    // 6. POST: Processes the movement and updates the lifecycle status in SQL Server
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> TransferAsset(AssetTransferViewModel model)
@@ -176,168 +189,4 @@ public class SetupController : Controller
 
         return View(model);
     }
-
-    // ==========================================
-    // 3. РЕДАКЦИЯ И ИЗТРИВАНЕ НА ЙЕРАРХИЯ
-    // ==========================================
-
-    // GET: Зарежда формата за редакция на Главен Тип
-    [HttpGet]
-    public async Task<IActionResult> EditMainType(string id)
-    {
-        var mainType = await _context.MainTypes.FirstOrDefaultAsync(m => m.Code == id);
-        if (mainType == null) return NotFound();
-
-        var model = new HierarchyCreateViewModel
-        {
-            MainTypeCode = mainType.Code,
-            MainTypeName = mainType.Name
-        };
-        return View(model);
-    }
-
-    // POST: Записва промените за Главен Тип
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> EditMainType(HierarchyCreateViewModel model)
-    {
-        var mainType = await _context.MainTypes.FirstOrDefaultAsync(m => m.Code == model.MainTypeCode);
-        if (mainType != null)
-        {
-            mainType.Name = model.MainTypeName.Trim();
-            await _context.SaveChangesAsync();
-            TempData["Success"] = $"✏️ Главният тип '{model.MainTypeName}' беше редактиран успешно!";
-        }
-        return RedirectToAction("Hierarchy");
-    }
-
-    // POST: Изтриване на Главен Тип (Съобразено с твоята Restrict защита)
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteMainType(string id)
-    {
-        var mainType = await _context.MainTypes.Include(m => m.AssetGroups).FirstOrDefaultAsync(m => m.Code == id);
-        if (mainType == null) return NotFound();
-
-        if (mainType.AssetGroups.Any())
-        {
-            TempData["Error"] = $"❌ Не можете да изтриете този тип, защото към него има свързани Групи активи!";
-            return RedirectToAction("Hierarchy");
-        }
-
-        _context.MainTypes.Remove(mainType);
-        await _context.SaveChangesAsync();
-        TempData["Success"] = "🗑️ Главният тип беше изтрит успешно от SQL Server!";
-        return RedirectToAction("Hierarchy");
-    }
-
-    // ==========================================
-    // РЕДАКЦИЯ И ИЗТРИВАНЕ НА ГРУПИ (НИВО 2)
-    // ==========================================
-
-    [HttpGet]
-    public async Task<IActionResult> EditGroup(string id)
-    {
-        var group = await _context.AssetGroups.FirstOrDefaultAsync(g => g.Code == id);
-        if (group == null) return NotFound();
-
-        var mainTypes = await _context.MainTypes.ToListAsync();
-        ViewBag.MainTypes = mainTypes.Select(m => new SelectListItem { Value = m.Code, Text = m.Name }).ToList();
-
-        var model = new HierarchyCreateViewModel
-        {
-            GroupCode = group.Code,
-            GroupName = group.Name,
-            SelectedMainTypeCode = group.MainTypeCode
-        };
-        return View(model);
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> EditGroup(HierarchyCreateViewModel model)
-    {
-        var group = await _context.AssetGroups.FirstOrDefaultAsync(g => g.Code == model.GroupCode);
-        if (group != null)
-        {
-            group.Name = model.GroupName.Trim();
-            group.MainTypeCode = model.SelectedMainTypeCode;
-            await _context.SaveChangesAsync();
-            TempData["Success"] = $"✏️ Групата '{model.GroupName}' беше редактирана успешно!";
-        }
-        return RedirectToAction("Hierarchy");
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteGroup(string id)
-    {
-        var group = await _context.AssetGroups.Include(g => g.AssetSubGroups).FirstOrDefaultAsync(g => g.Code == id);
-        if (group == null) return NotFound();
-
-        if (group.AssetSubGroups.Any())
-        {
-            TempData["Error"] = $"❌ Не можете да изтриете тази Група, защото към нея има свързани Подгрупи активи!";
-            return RedirectToAction("Hierarchy");
-        }
-
-        _context.AssetGroups.Remove(group);
-        await _context.SaveChangesAsync();
-        TempData["Success"] = "🗑️ Счетоводната група беше изтрита успешно от SQL Server!";
-        return RedirectToAction("Hierarchy");
-    }
-
-    // ==========================================
-    // РЕДАКЦИЯ И ИЗТРИВАНЕ НА ПОДГРУПИ (НИВО 3)
-    // ==========================================
-
-    [HttpGet]
-    public async Task<IActionResult> EditSubGroup(string id)
-    {
-        var subGroup = await _context.AssetSubGroups.FirstOrDefaultAsync(s => s.Code == id);
-        if (subGroup == null) return NotFound();
-
-        var groups = await _context.AssetGroups.ToListAsync();
-        ViewBag.Groups = groups.Select(g => new SelectListItem { Value = g.Code, Text = g.Name }).ToList();
-
-        var model = new HierarchyCreateViewModel
-        {
-            SubGroupCode = subGroup.Code,
-            SubGroupName = subGroup.Name,
-            SelectedGroupCode = subGroup.AssetGroupCode
-        };
-        return View(model);
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> EditSubGroup(HierarchyCreateViewModel model)
-    {
-        var subGroup = await _context.AssetSubGroups.FirstOrDefaultAsync(s => s.Code == model.SubGroupCode);
-        if (subGroup != null)
-        {
-            subGroup.Name = model.SubGroupName.Trim();
-            subGroup.AssetGroupCode = model.SelectedGroupCode;
-            await _context.SaveChangesAsync();
-            TempData["Success"] = $"✏️ Подгрупата '{model.SubGroupName}' беше редактирана успешно!";
-        }
-        return RedirectToAction("Hierarchy");
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteSubGroup(string id)
-    {
-        var subGroup = await _context.AssetSubGroups.FirstOrDefaultAsync(s => s.Code == id);
-        if (subGroup == null) return NotFound();
-
-        // Забележка: Тук при реално въведени активи Entity Framework автоматично 
-        // ще хвърли изключение поради Restrict, но ние пречистваме контрола
-        _context.AssetSubGroups.Remove(subGroup);
-        await _context.SaveChangesAsync();
-        TempData["Success"] = "🗑️ Оперативната подгрупа беше изтрита успешно!";
-        return RedirectToAction("Hierarchy");
-    }
-
-
 }
