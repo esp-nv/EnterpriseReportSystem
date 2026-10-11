@@ -5,6 +5,9 @@ using EnterpriseReportSystem.Models.Entities.Ledger;
 using EnterpriseReportSystem.Models.Entities.Location;
 using EnterpriseReportSystem.Models.Entities.Structure;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace EnterpriseReportSystem.Data;
 
@@ -23,7 +26,7 @@ public class ApplicationDbContext : DbContext
     // 2. ТРИСТЕМЕННА ГЕОГРАФСКА ЛОКАЦИЯ (ОБЛАСТ -> ОБЩИНА -> СЕЛО/ГРАД)
     public DbSet<Region> Regions { get; set; } = null!;
     public DbSet<Municipality> Municipalities { get; set; } = null!;
-    public DbSet<TownOrVillage> TownsOrVillages { get; set; } = null!; // ОФИЦИАЛНО С "S" НА TOWNS
+    public DbSet<TownOrVillage> TownsOrVillages { get; set; } = null!;
 
     // 3. МУЛТИ-ФИРМЕНА СТРУКТУРА НА ХОЛДИНГА И ОДИТЕН ДНЕВНИК
     public DbSet<CompanyOrPerson> CompaniesOrPersons { get; set; } = null!;
@@ -36,14 +39,15 @@ public class ApplicationDbContext : DbContext
 
     // 5. ВАЛУТНА СЧЕТОВОДНА АРХИТЕКТУРА
     public DbSet<Currency> Currencies { get; set; } = null!;
-    public DbSet<ExchangeRateHistory> ExchangeRateHistories { get; set; } = null!; // ТАЗИ ЛИПСВАШЕ
-
+    public DbSet<ExchangeRateHistory> ExchangeRateHistories { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // КОНФИГУРИРАНЕ НА ГЕОГРАФСКИТЕ ВРЪЗКИ (ОБЛАСТ -> ОБЩИНА -> СЕЛО)
+        // ==========================================
+        // РЕЛАЦИОННИ ВРЪЗКИ (FOREIGN KEYS)
+        // ==========================================
         modelBuilder.Entity<Municipality>()
             .HasOne(m => m.Region)
             .WithMany(r => r.Municipalities)
@@ -52,11 +56,10 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<TownOrVillage>()
             .HasOne(t => t.Municipality)
-            .WithMany(m => m.TownsOrVillages) // СИНХРОНИЗИРАНО С "S"
+            .WithMany(m => m.TownsOrVillages)
             .HasForeignKey(t => t.MunicipalityId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // КОНФИГУРИРАНЕ НА МУЛТИ-ФИРМЕНИТЕ ОБЕКТИ И АДМИНИСТРАЦИЯТА
         modelBuilder.Entity<CompanyOrPerson>()
             .HasOne(c => c.RegisteredTown)
             .WithMany()
@@ -81,7 +84,6 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(fl => fl.FacilityId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // КОНФИГУРИРАНЕ НА ХРОНОЛОГИЯТА НА ВАЛУТНИТЕ КУРСОВЕ
         modelBuilder.Entity<ExchangeRateHistory>()
             .HasOne(e => e.FromCurrency)
             .WithMany()
@@ -94,46 +96,58 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(e => e.ToCurrencyId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Намери конфигурацията на ExchangeRateHistory в OnModelCreating и добави третия ред:
-        modelBuilder.Entity<ExchangeRateHistory>()
-            .HasOne(e => e.FromCurrency).WithMany().HasForeignKey(e => e.FromCurrencyId).OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<ExchangeRateHistory>()
-            .HasOne(e => e.ToCurrency).WithMany().HasForeignKey(e => e.ToCurrencyId).OnDelete(DeleteBehavior.Restrict);
-
-        // ТВОЯТА ФИНАНСОВА ЗАЩИТА: Задаваме децинална точност за валутните курсове (18 цифри общо, 5 след запетаята)
+        // Настройки за децимална точност (18 цифри общо, 5 след запетаята)
         modelBuilder.Entity<ExchangeRateHistory>()
             .Property(e => e.Rate)
             .HasColumnType("decimal(18,5)");
+
         // ==========================================
-        // ТВОЯТА ЗАЩИТА С ГЛОБАЛНИ КОНСТАНТИ 
+        // ЖЕЛЯЗНА ЗАЩИТА С ТВОИТЕ НЕЗАВИСИМИ КОНСТАНТИ
         // ==========================================
 
-        // 1. ЗАЩИТА ЗА ВАЛУТИТЕ (Currencies)
+        // 1. Географски нива (Самостоятелни)
+        modelBuilder.Entity<Region>(r =>
+        {
+            r.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.RegionNameMaxLength);
+        });
+
+        modelBuilder.Entity<Municipality>(m =>
+        {
+            m.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.MunicipalityNameMaxLength);
+        });
+
+        modelBuilder.Entity<TownOrVillage>(t =>
+        {
+            t.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.TownOrVillageNameMaxLength);
+            t.Property(x => x.PostalCode).IsRequired().HasMaxLength(ValidationConstants.PostalCodeMaxLength);
+        });
+
+        // 2. Валутна архитектура
         modelBuilder.Entity<Currency>(c =>
         {
             c.Property(x => x.Code).IsRequired().HasMaxLength(ValidationConstants.CurrencyCodeLength);
             c.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.CurrencyNameMaxLength);
         });
 
-        // 2. ЗАЩИТА ЗА СУБЕКТИТЕ (CompaniesOrPersons)
+        // 3. Мулти-фирмена холдингова структура + Новите Адреси
         modelBuilder.Entity<CompanyOrPerson>(c =>
         {
             c.Property(x => x.ClientCode).IsRequired().HasMaxLength(ValidationConstants.ClientCodeMaxLength);
             c.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.CompanyNameMaxLength);
             c.Property(x => x.TaxIdentifier).IsRequired().HasMaxLength(ValidationConstants.TaxIdentifierMaxLength);
+            c.Property(x => x.Address).IsRequired().HasMaxLength(ValidationConstants.CompanyAddressMaxLength);
         });
 
-        // 3. ЗАЩИТА ЗА ФИЗИЧЕСКИТЕ ОБЕКТИ (Facilities)
         modelBuilder.Entity<Facility>(f =>
         {
             f.Property(x => x.FacilityCode).IsRequired().HasMaxLength(ValidationConstants.FacilityCodeMaxLength);
             f.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.FacilityNameMaxLength);
             f.Property(x => x.PostalCode).IsRequired().HasMaxLength(ValidationConstants.PostalCodeMaxLength);
             f.Property(x => x.Notes).HasMaxLength(ValidationConstants.NotesMaxLength);
+            f.Property(x => x.Address).IsRequired().HasMaxLength(ValidationConstants.FacilityAddressMaxLength);
         });
 
-        // 4. ЗАЩИТА ЗА ЙЕРАРХИЯТА (Нива 1, 2, 3)
+        // 4. Номенклатурна Йерархия
         modelBuilder.Entity<MainType>(m => {
             m.Property(x => x.Code).IsRequired().HasMaxLength(ValidationConstants.HierarchyCodeMaxLength);
             m.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.HierarchyNameMaxLength);
@@ -149,100 +163,37 @@ public class ApplicationDbContext : DbContext
             s.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.HierarchyNameMaxLength);
             s.Property(x => x.MeasurementUnit).IsRequired().HasMaxLength(ValidationConstants.MeasurementUnitMaxLength);
         });
-        // 5. ЗАЩИТА ЗА ЖУРНАЛА НА ТРАНСАКЦИИТЕ (AssetTransactions)
+
+        // 5. Типове Операции и Счетоводен Журнал + Новите Бележки
+        modelBuilder.Entity<OperationType>(o =>
+        {
+            o.Property(x => x.Code).IsRequired().HasMaxLength(ValidationConstants.OperationCodeMaxLength);
+            o.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.OperationNameMaxLength);
+        });
+
         modelBuilder.Entity<AssetTransaction>(t =>
         {
             t.Property(x => x.AssetId).IsRequired().HasMaxLength(ValidationConstants.AssetIdMaxLength);
             t.Property(x => x.FromFacility).IsRequired().HasMaxLength(ValidationConstants.FacilityTextMaxLength);
             t.Property(x => x.ToFacility).IsRequired().HasMaxLength(ValidationConstants.FacilityTextMaxLength);
             t.Property(x => x.DocumentReference).IsRequired().HasMaxLength(ValidationConstants.DocumentRefMaxLength);
+            t.Property(x => x.Notes).HasMaxLength(ValidationConstants.TransactionNotesMaxLength);
         });
 
-        // 6. ЗАЩИТА ЗА ТИПОВЕТЕ ОПЕРАЦИИ (OperationTypes)
-        modelBuilder.Entity<OperationType>(o =>
-        {
-            o.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.OperationNameMaxLength);
-        });
-
-        // 7. ЗАЩИТА ЗА ОДИТНИЯ ДНЕВНИК (FacilityLogs)
+        // 6. Одитен Дневник
         modelBuilder.Entity<FacilityLog>(fl =>
         {
             fl.Property(x => x.EventType).IsRequired().HasMaxLength(ValidationConstants.LogEventTypeMaxLength);
             fl.Property(x => x.OldValue).IsRequired().HasMaxLength(ValidationConstants.LogValueMaxLength);
             fl.Property(x => x.NewValue).IsRequired().HasMaxLength(ValidationConstants.LogValueMaxLength);
         });
-        // ==========================================
-        // ГЕОГРАФСКА ЗАЩИТА СЪС САМОСТОЯТЕЛНИ КОНСТАНТИ
-        // ==========================================
-        modelBuilder.Entity<Region>(r =>
-        {
-            r.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.RegionNameMaxLength); // 40
-        });
 
-        modelBuilder.Entity<Municipality>(m =>
-        {
-            m.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.MunicipalityNameMaxLength); // 60
-        });
-
-        modelBuilder.Entity<TownOrVillage>(t =>
-        {
-            t.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.TownOrVillageNameMaxLength); // 100
-            t.Property(x => x.PostalCode).IsRequired().HasMaxLength(ValidationConstants.PostalCodeMaxLength); // 10
-        });
-
-        // ==========================================
-        // ЗАЩИТА ЗА СУБЕКТИТЕ И ФИЗИЧЕСКИТЕ АДРЕСИ
-        // ==========================================
-        modelBuilder.Entity<CompanyOrPerson>(c =>
-        {
-            c.Property(x => x.ClientCode).IsRequired().HasMaxLength(ValidationConstants.ClientCodeMaxLength); // 20
-            c.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.CompanyNameMaxLength); // 150
-            c.Property(x => x.TaxIdentifier).IsRequired().HasMaxLength(ValidationConstants.TaxIdentifierMaxLength); // 15
-
-            // Новата колона за физически адрес на фирмата/лицето
-            c.Property(x => x.Address).IsRequired().HasMaxLength(ValidationConstants.CompanyAddressMaxLength); // 150
-        });
-
-        modelBuilder.Entity<Facility>(f =>
-        {
-            f.Property(x => x.FacilityCode).IsRequired().HasMaxLength(ValidationConstants.FacilityCodeMaxLength); // 30
-            f.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.FacilityNameMaxLength); // 100
-            f.Property(x => x.PostalCode).IsRequired().HasMaxLength(ValidationConstants.PostalCodeMaxLength); // 10
-            f.Property(x => x.Notes).HasMaxLength(ValidationConstants.NotesMaxLength); // 500
-
-            // Новата колона за точен адрес / местност на самата ферма/база
-            f.Property(x => x.Address).IsRequired().HasMaxLength(ValidationConstants.FacilityAddressMaxLength); // 150
-        });
-
-        // ==========================================
-        // ТИПОВЕ ОПЕРАЦИИ И СЧЕТОВОДЕН ЖУРНАЛ
-        // ==========================================
-        modelBuilder.Entity<OperationType>(o =>
-        {
-            o.Property(x => x.Code).IsRequired().HasMaxLength(ValidationConstants.OperationCodeMaxLength); // 20
-            o.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.OperationNameMaxLength); // 100
-        });
-
-        modelBuilder.Entity<AssetTransaction>(t =>
-        {
-            t.Property(x => x.AssetId).IsRequired().HasMaxLength(ValidationConstants.AssetIdMaxLength); // 50
-            t.Property(x => x.FromFacility).IsRequired().HasMaxLength(ValidationConstants.FacilityTextMaxLength); // 100
-            t.Property(x => x.ToFacility).IsRequired().HasMaxLength(ValidationConstants.FacilityTextMaxLength); // 100
-            t.Property(x => x.DocumentReference).IsRequired().HasMaxLength(ValidationConstants.DocumentRefMaxLength); // 150
-
-            // Новата колона за счетоводни бележки по трансакцията
-            t.Property(x => x.Notes).HasMaxLength(ValidationConstants.TransactionNotesMaxLength); // 500
-        });
-
-
-
-        // ТВОЯТА ЗЛАТНА ЗАЩИТА: Предотвратяване на каскадно триене за абсолютно ВСИЧКИ връзки
+        // ГЛОБАЛНО ПРЕДОТВРАТЯВАНЕ НА КАСКАДНО ТРИЕНЕ
         foreach (var foreignKey in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
         {
             foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
         }
 
-        // ТВОЯТ ГЛОБАЛЕН ФИЛТЪР: Скриване на логически изтритите трансакции през Soft Delete
         modelBuilder.Entity<AssetTransaction>().HasQueryFilter(t => !t.IsDeleted);
     }
 
