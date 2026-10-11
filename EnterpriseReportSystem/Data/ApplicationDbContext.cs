@@ -1,4 +1,5 @@
-﻿using EnterpriseReportSystem.Models.Entities;
+﻿using EnterpriseReportSystem.Common.Constants;
+using EnterpriseReportSystem.Models.Entities;
 using EnterpriseReportSystem.Models.Entities.Hierarchy;
 using EnterpriseReportSystem.Models.Entities.Ledger;
 using EnterpriseReportSystem.Models.Entities.Location;
@@ -100,11 +101,54 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<ExchangeRateHistory>()
             .HasOne(e => e.ToCurrency).WithMany().HasForeignKey(e => e.ToCurrencyId).OnDelete(DeleteBehavior.Restrict);
 
-        // ТВОЯТА ФИНАНСОВА ЗАЩИТА: Задаваме децинална точност за валутните курсове (18 цифри общо, 4 след запетаята)
+        // ТВОЯТА ФИНАНСОВА ЗАЩИТА: Задаваме децинална точност за валутните курсове (18 цифри общо, 5 след запетаята)
         modelBuilder.Entity<ExchangeRateHistory>()
             .Property(e => e.Rate)
             .HasColumnType("decimal(18,5)");
+        // ==========================================
+        // ТВОЯТА ЗАЩИТА С ГЛОБАЛНИ КОНСТАНТИ 
+        // ==========================================
 
+        // 1. ЗАЩИТА ЗА ВАЛУТИТЕ (Currencies)
+        modelBuilder.Entity<Currency>(c =>
+        {
+            c.Property(x => x.Code).IsRequired().HasMaxLength(ValidationConstants.CurrencyCodeLength);
+            c.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.CurrencyNameMaxLength);
+        });
+
+        // 2. ЗАЩИТА ЗА СУБЕКТИТЕ (CompaniesOrPersons)
+        modelBuilder.Entity<CompanyOrPerson>(c =>
+        {
+            c.Property(x => x.ClientCode).IsRequired().HasMaxLength(ValidationConstants.ClientCodeMaxLength);
+            c.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.CompanyNameMaxLength);
+            c.Property(x => x.TaxIdentifier).IsRequired().HasMaxLength(ValidationConstants.TaxIdentifierMaxLength);
+        });
+
+        // 3. ЗАЩИТА ЗА ФИЗИЧЕСКИТЕ ОБЕКТИ (Facilities)
+        modelBuilder.Entity<Facility>(f =>
+        {
+            f.Property(x => x.FacilityCode).IsRequired().HasMaxLength(ValidationConstants.FacilityCodeMaxLength);
+            f.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.FacilityNameMaxLength);
+            f.Property(x => x.PostalCode).IsRequired().HasMaxLength(ValidationConstants.PostalCodeMaxLength);
+            f.Property(x => x.Notes).HasMaxLength(ValidationConstants.NotesMaxLength);
+        });
+
+        // 4. ЗАЩИТА ЗА ЙЕРАРХИЯТА (Нива 1, 2, 3)
+        modelBuilder.Entity<MainType>(m => {
+            m.Property(x => x.Code).IsRequired().HasMaxLength(ValidationConstants.HierarchyCodeMaxLength);
+            m.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.HierarchyNameMaxLength);
+        });
+
+        modelBuilder.Entity<AssetGroup>(g => {
+            g.Property(x => x.Code).IsRequired().HasMaxLength(ValidationConstants.HierarchyCodeMaxLength);
+            g.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.HierarchyNameMaxLength);
+        });
+
+        modelBuilder.Entity<AssetSubGroup>(s => {
+            s.Property(x => x.Code).IsRequired().HasMaxLength(ValidationConstants.HierarchyCodeMaxLength);
+            s.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.HierarchyNameMaxLength);
+            s.Property(x => x.MeasurementUnit).IsRequired().HasMaxLength(ValidationConstants.MeasurementUnitMaxLength);
+        });
 
 
 
