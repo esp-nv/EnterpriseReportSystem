@@ -18,8 +18,13 @@
             <form asp-action="CreateAsset" asp-controller="Setup" method="post" class="needs-validation" novalidate>
                 @Html.AntiForgeryToken()
 
-                <!-- СЕКЦИЯ 1: ИДЕНТИФИКАЦИЯ -->
+                <!-- СКРИТО СЛУЖЕБНО ПОЛЕ: Пренася автоматичното Id скрито от потребителя -->
+                <input type="hidden" asp-for="Id" value="0" />
+
+                <!-- СЕКЦИЯ 1: ИДЕНТИФИКАЦИЯ (ПОПРАВЕНА И ЧИСТА) -->
                 <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white">
+                    <!-- Останалият ти код за секцията остава абсолютно същият -->
+
                     <h6 class="fw-bold text-dark mb-3 border-bottom pb-2 text-uppercase fs-7 text-secondary">
                         <i class="bi bi-info-circle me-2 text-primary"></i> Идентификация и Номенклатура
                     </h6>
