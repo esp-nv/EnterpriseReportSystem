@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using EnterpriseReportSystem.Data;
 using EnterpriseReportSystem.Models.Entities;
 using EnterpriseReportSystem.Models.Entities.Ledger;
@@ -12,7 +16,6 @@ public class ReportService : IReportService
 {
     private readonly ApplicationDbContext _context;
 
-    // Връзката с SQL Server се инжектира автоматично през Dependency Injection
     public ReportService(ApplicationDbContext context)
     {
         _context = context;
@@ -25,21 +28,19 @@ public class ReportService : IReportService
 
         foreach (var asset in currentRegistry)
         {
-            // Вътре в GenerateTurnoverReport метода на ReportService.cs:
+            int targetAssetIntId = int.TryParse(asset.Id, out int parsedId) ? parsedId : 1;
+
             var assetTransactions = _context.AssetTransactions
                 .Include(t => t.Operation)
-                .Include(t => t.ToGroup)
-                    .ThenInclude(g => g.MainType) // Зареждаме Главния тип динамично от SQL
-                .Where(t => t.AssetId == asset.Id && !t.IsDeleted)
+                .Where(t => t.AssetId == targetAssetIntId && !t.IsDeleted)
                 .ToList();
 
-
             asset.InputCount = assetTransactions
-                .Where(t => (int)t.Operation.Direction == 1) // Income = 1 (Раждане, покупка)
+                .Where(t => (int)t.Operation.Direction == 1)
                 .Sum(t => t.Quantity);
 
             asset.OutputCount = assetTransactions
-                .Where(t => (int)t.Operation.Direction == 2) // Expense = 2 (Продажба, смърт, брак)
+                .Where(t => (int)t.Operation.Direction == 2)
                 .Sum(t => t.Quantity);
 
             result.Add(asset);
@@ -66,20 +67,18 @@ public class ReportService : IReportService
         return query.ToList();
     }
 
-    // 3. ИНТЕЛЕГЕНТНИЯТ ПАРСЕР (ВЕЧЕ Е НА ПРАВИЛНОТО МЯСТО ВЪТРЕ В КЛАСА)
+    // 3. ИНТЕЛЕГЕНТНИЯТ ПАРСЕР (КОРИГИРАН ЗА ЧИСЛОВИ КЛЮЧОВЕ)
     public FileProcessSummary ProcessSmartImport(Stream fileStream, SmartImportViewModel config)
     {
         var summary = new FileProcessSummary();
         int currentLine = 0;
 
-        // Определяне на Главния и Вътрешния разделител въз основа на избора "CUSTOM"
         string mainDel = config.MainDelimiter == "CUSTOM" ? config.CustomMainDelimiter : config.MainDelimiter;
         string innerDel = config.InnerDelimiter == "CUSTOM" ? config.CustomInnerDelimiter : config.InnerDelimiter;
 
-        // Временна памет за успешно прочетените данни от външния източник
-        var fileData = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        // КОРЕКЦИЯ 1: Речникът пази числови ИД-та на активите
+        var fileData = new Dictionary<int, int>();
 
-        // Взимаме активните трансакции от SQL регистъра за количествено засичане през Entity Framework
         var transactionsFromDb = _context.AssetTransactions
             .Include(t => t.Operation)
             .Where(t => !t.IsDeleted)
@@ -99,38 +98,33 @@ public class ReportService : IReportService
                     continue;
                 }
 
-                // РАЗДЕЛЯНЕ НИВО 1: По главния разделител (Твоят чист масив)
                 var mainColumns = line.Split(new[] { mainDel }, StringSplitOptions.None);
 
-                // Валидация за минимален брой изисквани колони на база индексите
                 int maxRequiredIndex = new[] { config.AssetIdColumnIndex, config.ChipColumnIndex, config.DateColumnIndex, config.QuantityColumnIndex }.Max();
                 if (mainColumns.Length <= maxRequiredIndex)
                 {
-                    summary.Errors.Add(new ValidationError { LineNumber = currentLine, RawContent = line, Reason = "Липсваща колона", Details = $"Файлът съдържа {mainColumns.Length} колони, а се изисква индекс {maxRequiredIndex}." });
+                    summary.Errors.Add(new ValidationError { LineNumber = currentLine, RawContent = line, Reason = "Липасваща колона", Details = $"Файлът съдържа {mainColumns.Length} колони." });
                     continue;
                 }
 
-                // Извличаме суровите блокове по потребителския Column Mapping
                 string rawAssetBlock = mainColumns[config.AssetIdColumnIndex].Trim();
                 string rawQtyStr = mainColumns[config.QuantityColumnIndex].Trim();
 
-                string detectedAssetId = string.Empty;
+                string detectedAssetIdStr = string.Empty;
                 string detectedChip = string.Empty;
 
-                // РАЗДЕЛЯНЕ НИВО 2: По вътрешния разделител за слепени/разменени данни (Твоят чист масив)
                 var pieces = rawAssetBlock.Split(new[] { innerDel }, StringSplitOptions.RemoveEmptyEntries)
                                           .Select(p => p.Trim())
                                           .ToList();
 
-                // Динамично разпознаване по потребителска сигнатура (Пълна свобода)
                 foreach (var piece in pieces)
                 {
                     bool matchesPrefix = string.IsNullOrEmpty(config.AssetIdSignature) || piece.StartsWith(config.AssetIdSignature, StringComparison.OrdinalIgnoreCase);
                     bool matchesLength = !config.AssetIdRequiredLength.HasValue || piece.Length == config.AssetIdRequiredLength.Value;
 
-                    if (matchesPrefix && matchesLength && string.IsNullOrEmpty(detectedAssetId))
+                    if (matchesPrefix && matchesLength && string.IsNullOrEmpty(detectedAssetIdStr))
                     {
-                        detectedAssetId = piece;
+                        detectedAssetIdStr = piece;
                         continue;
                     }
 
@@ -143,45 +137,42 @@ public class ReportService : IReportService
                     }
                 }
 
-                // Прилагане на потребителските чекбокс правила за филтрация
-                if (config.TrackAssetId && string.IsNullOrEmpty(detectedAssetId))
+                if (config.TrackAssetId && string.IsNullOrEmpty(detectedAssetIdStr))
                 {
-                    summary.Errors.Add(new ValidationError { LineNumber = currentLine, RawContent = line, Reason = "Непозната сигнатура", Details = "Никое парче текст не отговаря на изискванията за Идентификатор." });
+                    summary.Errors.Add(new ValidationError { LineNumber = currentLine, RawContent = line, Reason = "Непозната сигнатура", Details = "Липсва Идентификатор." });
                     continue;
                 }
 
-                int qty = 1; // По подразбиране
+                int qty = 1;
                 if (config.TrackQuantity && (!int.TryParse(rawQtyStr, out qty) || qty < 0))
                 {
-                    summary.Errors.Add(new ValidationError { LineNumber = currentLine, RawContent = line, Reason = "Грешно количество", Details = $"Стойността '{rawQtyStr}' не е валидно число." });
+                    summary.Errors.Add(new ValidationError { LineNumber = currentLine, RawContent = line, Reason = "Грешно количество", Details = $"Стойността '{rawQtyStr}' не е число." });
                     continue;
                 }
 
-                // Записваме пречистените данни
-                if (!string.IsNullOrEmpty(detectedAssetId))
+                // КОРЕКЦИЯ 2: Парсваме текстовия код от файла към число преди запис в речника
+                if (!string.IsNullOrEmpty(detectedAssetIdStr) && int.TryParse(detectedAssetIdStr, out int parsedAssetId))
                 {
-                    fileData[detectedAssetId] = qty;
+                    fileData[parsedAssetId] = qty;
                 }
                 summary.SuccessfulLines++;
             }
         }
 
-        // 2. ИНТЕЛЕГЕНТНО ЗАСИЧАНЕ С РЕАЛНИТЕ БРОЙКИ ОТ SQL SERVER ПРЕЗ LINQ
-        // Пресмятаме текущите крайни баланси за абсолютно всеки заведен обект в SQL
+        // Пресмятаме текущите баланси от SQL
         var systemCounts = transactionsFromDb
-            .GroupBy(t => t.AssetId)
-            .ToDictionary(
-                g => g.Key,
-                g => g.Sum(t => (int)t.Operation.Direction == 1 ? t.Quantity : ((int)t.Operation.Direction == 2 ? -t.Quantity : 0)),
-                StringComparer.OrdinalIgnoreCase
-            );
+           .GroupBy(t => t.AssetId)
+           .ToDictionary(
+               g => g.Key,
+               g => g.Sum(t => (int)t.Operation.Direction == 1 ? t.Quantity : ((int)t.Operation.Direction == 2 ? -t.Quantity : 0))
+           );
 
-        // Съпоставяме официалния регистър от базата данни с качения външен одит
+        // Съпоставяме данните (int търси int - без грешки)
         foreach (var sysAsset in systemCounts)
         {
             var diffLine = new DiffReportLine
             {
-                Id = sysAsset.Key,
+                Id = sysAsset.Key.ToString(), // Чист каст към стринг за модела на отчета
                 Name = $"Регистриран актив в SQL Server база данни",
                 SystemCount = sysAsset.Value
             };
@@ -190,7 +181,7 @@ public class ReportService : IReportService
             {
                 diffLine.FileCount = fileQty;
                 diffLine.Status = diffLine.Difference == 0 ? "Съвпада" : "Разлика в бройката";
-                fileData.Remove(sysAsset.Key); // Премахваме го, за да останат само непознатите
+                fileData.Remove(sysAsset.Key);
             }
             else
             {
@@ -201,16 +192,16 @@ public class ReportService : IReportService
             summary.DiffLines.Add(diffLine);
         }
 
-        // Обработка на обекти, които ГИ ИМА във външния файл, но ГИ НЯМА в SQL регистъра ни
+        // Обработка на непознати активи
         foreach (var fileAsset in fileData)
         {
             summary.DiffLines.Add(new DiffReportLine
             {
-                Id = fileAsset.Key,
+                Id = fileAsset.Key.ToString(),
                 Name = "⚠️ НЕПОЗНАТ ОБЕКТ (Липсва официален запис в SQL!)",
                 SystemCount = 0,
                 FileCount = fileAsset.Value,
-                Status = "Липсва във файла" // Ще се оцвети в червено/тъмно на екрана
+                Status = "Липсва във файла"
             });
         }
 
@@ -218,14 +209,12 @@ public class ReportService : IReportService
     }
 
     // =========================================================================
-    // ТВОЯТ ВАЛУТЕН ДВИГАТЕЛ: Автоматично намиране на курс по диапазон (<= на датата)
+    // ТВОЯТ ВАЛУТЕН ДВИГАТЕЛ
     // =========================================================================
     public async Task<decimal> GetExchangeRateAsync(int fromCurrencyId, int toCurrencyId, DateTime transactionDate)
     {
-        // 1. Ако валутите съвпадат, курсът винаги е 1.00000
         if (fromCurrencyId == toCurrencyId) return 1.00000m;
 
-        // 2. Проверка за Фиксиран курс в базата данни (независим от датата)
         var fixedRate = await _context.ExchangeRateHistories
             .Where(r => r.FromCurrencyId == fromCurrencyId && r.ToCurrencyId == toCurrencyId && r.IsFixed)
             .Select(r => r.Rate)
@@ -233,21 +222,18 @@ public class ReportService : IReportService
 
         if (fixedRate > 0) return fixedRate;
 
-        // 3. ТВОЯТА ФОРМУЛА: Плаващ курс по диапазон (<= на датата на трансакцията)
         var floatingRate = await _context.ExchangeRateHistories
             .Where(r => r.FromCurrencyId == fromCurrencyId
                      && r.ToCurrencyId == toCurrencyId
                      && !r.IsFixed
                      && r.RateDate.Date <= transactionDate.Date)
-            .OrderByDescending(r => r.RateDate) // Взима най-близкия последно въведен курс назад във времето
+            .OrderByDescending(r => r.RateDate)
             .Select(r => r.Rate)
             .FirstOrDefaultAsync();
 
-        // Ако няма въведен курс за диапазона, връщаме 1.00000 като счетоводна защита срещу зануляване
         return floatingRate > 0 ? floatingRate : 1.00000m;
     }
 
-    // Автоматично преизчисляване на левовата себестойност на трансакция
     public async Task<decimal> CalculateAssetValueInBgnAsync(int transactionId)
     {
         var transaction = await _context.AssetTransactions
@@ -256,21 +242,13 @@ public class ReportService : IReportService
 
         if (transaction == null) return 0.00000m;
 
-        // Приемаме ID = 1 за основна национална валута (BGN) в SQL Server
         int bgnCurrencyId = 1;
+        int foreignCurrencyId = 2;
 
-        // Взимаме валутата, посочена в трансакцията (Тук в реалния модел ще добавим CurrencyId)
-        int foreignCurrencyId = 2; // Временно заложено за USD/EUR тест
-
-        // Извикваме валутния двигател по диапазон на датата на трансакцията
         decimal rate = await GetExchangeRateAsync(foreignCurrencyId, bgnCurrencyId, transaction.TransactionDate);
-
-        // Връщаме крайната левова себестойност: Количество х Единична цена във валута х Намерения курс
         return transaction.Quantity * 1.00m * rate;
     }
-
-    // ТВОЯТ СЕРВИЗЕН МЕТОД ЗА ЗАПИС ПО МОДЕЛА ОТ STUDENT MANAGEMENT
-    public async Task<bool> CreateTransactionAsync(int assetId, int quantity, int? fromFacilityId, int? toFacilityId, DateTime transactionDate, string docRef, string notes, int opId)
+    public async Task CreateTransactionAsync(int assetId, int quantity, int? fromFacilityId, int? toFacilityId, DateTime transactionDate, string docRef, string notes, int opId)
     {
         var transaction = new AssetTransaction
         {
@@ -285,10 +263,8 @@ public class ReportService : IReportService
             IsDeleted = false,
             DeletedOn = null
         };
-
         _context.AssetTransactions.Add(transaction);
         await _context.SaveChangesAsync();
         return true;
     }
-
 }
