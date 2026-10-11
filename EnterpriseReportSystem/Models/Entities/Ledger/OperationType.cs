@@ -4,6 +4,9 @@ namespace EnterpriseReportSystem.Models.Entities.Ledger;
 
 public class OperationType
 {
+    // ТВОЯТ НОВ ЧИСЛОВ ПЪРВИЧЕН КЛЮЧ
+    public int Id { get; set; }
+
     // Уникален код на операцията (напр. OP_BIRTH, OP_SALE)
     public string Code { get; set; } = string.Empty;
 
@@ -13,6 +16,6 @@ public class OperationType
     // Посока на движението (Income = 1, Expense = 2, Internal = 3)
     public OperationDirection Direction { get; set; }
 
-    // НОВОТО ПОЛЕ: true = променя бройката в Оборотката, false = само хронологично събитие (напр. ваксинация, сервиз)
+    // true = променя бройката в Оборотката, false = само хронологично събитие
     public bool IsFinancial { get; set; } = true;
 }
