@@ -180,6 +180,25 @@ public class ApplicationDbContext : DbContext
             t.Property(x => x.Notes).HasMaxLength(ValidationConstants.TransactionNotesMaxLength);
         });
 
+        // 5.1 ЗАЩИТА ЗА ЖУРНАЛА НА ТРАНСАКЦИИТЕ (AssetTransactions)
+        modelBuilder.Entity<AssetTransaction>(t =>
+        {
+            t.Property(x => x.AssetId).IsRequired();
+            t.Property(x => x.DocumentReference).IsRequired().HasMaxLength(ValidationConstants.DocumentRefMaxLength);
+            t.Property(x => x.Notes).HasMaxLength(ValidationConstants.TransactionNotesMaxLength);
+
+            // Счетоводни числови връзки без каскадно триене
+            t.HasOne(x => x.FromFacility)
+             .WithMany()
+             .HasForeignKey(x => x.FromFacilityId)
+             .OnDelete(DeleteBehavior.Restrict);
+
+            t.HasOne(x => x.ToFacility)
+             .WithMany()
+             .HasForeignKey(x => x.ToFacilityId)
+             .OnDelete(DeleteBehavior.Restrict);
+        });
+
         // 6. Одитен Дневник
         modelBuilder.Entity<FacilityLog>(fl =>
         {
