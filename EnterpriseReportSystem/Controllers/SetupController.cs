@@ -1,5 +1,6 @@
 ﻿using EnterpriseReportSystem.Common.Enum;
 using EnterpriseReportSystem.Data;
+using EnterpriseReportSystem.Models.Entities;
 using EnterpriseReportSystem.Models.Entities.Hierarchy;
 using EnterpriseReportSystem.Models.Entities.Ledger;
 using EnterpriseReportSystem.Models.Entities.Structure;
@@ -270,9 +271,6 @@ public class SetupController : Controller
         return RedirectToAction("ManageHolding");
     }
 
-
-
-
     // ==========================================
     // 6. УПРАВЛЕНИЕ НА ФИЗИЧЕСКИ ОБЕКТИ (ФЕРМИ / БАЗИ)
     // ==========================================
@@ -316,5 +314,52 @@ public class SetupController : Controller
         return RedirectToAction("ManageHolding");
     }
 
+
+    // ==========================================
+    // 7. ВАЛУТЕН КАЛКУЛАТОР - ХРОНОЛОГИЯ НА КУРСОВЕТЕ
+    // ==========================================
+
+    // GET: Подготвя данните за валутните курсове
+    [HttpGet]
+    public async Task<IActionResult> ManageRates()
+    {
+        var currencies = await _context.Currencies.ToListAsync();
+
+        // Превръщаме списъка с валути в опции за падащи менюта в твой стил
+        ViewData["Currencies"] = currencies
+            .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = $"{c.Code} - {c.Name}" })
+            .ToList();
+
+        return View();
+    }
+
+    // POST: Записва нов хронологичен валутен курс с твоята дата-диапазон логика
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateExchangeRate(int fromCurrencyId, int toCurrencyId, decimal rate, DateTime rateDate, bool isFixed)
+    {
+        if (rate > 0 && fromCurrencyId != toCurrencyId)
+        {
+            var exchangeRate = new ExchangeRateHistory
+            {
+                FromCurrencyId = fromCurrencyId,
+                ToCurrencyId = toCurrencyId,
+                Rate = rate,
+                RateDate = rateDate.Date, // Записваме само чистата дата за проверка по диапазон
+                IsFixed = isFixed
+            };
+
+            _context.ExchangeRateHistory.Add(exchangeRate);
+            await _context.SaveChangesAsync();
+
+            TempData["RateSuccess"] = "🎉 Валутният курс е заведен успешно в хронологичния регистър на SQL Server!";
+        }
+        else
+        {
+            TempData["RateError"] = "❌ Невалидни валути или стойност на курса!";
+        }
+
+        return RedirectToAction("ManageRates");
+    }
 
 }
