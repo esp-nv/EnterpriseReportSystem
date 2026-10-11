@@ -32,13 +32,19 @@ public class SetupController : Controller
     {
         var model = new AssetManualEntryViewModel();
 
-        // 1. Зареждаме подгрупите
-        var subGroups = await _context.AssetSubGroups.ToListAsync();
-        model.SubGroupOptions = subGroups
-            .Select(s => new SelectListItem { Value = s.Id.ToString(), Text = $"{s.Code} - {s.Name}" })
+        // 1. Зареждаме Ниво 1 (ДМА, ДНМА, Животни)
+        var mainTypes = await _context.MainTypes.ToListAsync();
+        model.MainTypeOptions = mainTypes
+            .Select(m => new SelectListItem { Value = m.Id.ToString(), Text = m.Name })
             .ToList();
 
-        // 2. ФИНАНСОВА НАСТРОЙКА: Зареждаме реалните валути от SQL Server
+        // 2. Зареждаме Ниво 2 (Групи)
+        var groups = await _context.AssetGroups.ToListAsync();
+        model.GroupOptions = groups
+            .Select(g => new SelectListItem { Value = g.Id.ToString(), Text = $"{g.Code} - {g.Name}" })
+            .ToList();
+
+        // 3. Зареждаме Валутите
         var currencies = await _context.Currencies.ToListAsync();
         model.CurrencyOptions = currencies
             .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Code })
@@ -46,6 +52,7 @@ public class SetupController : Controller
 
         return View(model);
     }
+
 
 
     [HttpPost]

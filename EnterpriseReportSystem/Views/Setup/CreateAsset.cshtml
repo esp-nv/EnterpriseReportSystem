@@ -7,49 +7,65 @@
 
 <div class="container my-5" style="max-width: 900px;">
     <div class="card shadow-sm border border-light-subtle rounded-3">
-        <div class="card-header bg-dark text-white p-3 border-0 rounded-top-3 d-flex align-items-center">
-            <h5 class="mb-0 fw-bold fs-6 text-uppercase tracking-wider">
-                <i class="bi bi-box-seam me-2 text-warning"></i> Първоначално заприходяване на актив
+        <div class="card-header bg-dark text-white p-3 border-0 rounded-top-3">
+            <h5 class="mb-0 fw-bold fs-6 text-uppercase">
+                <i class="bi bi-box-seam text-warning me-2"></i> Первоначално заприходяване на актив
             </h5>
         </div>
 
-        <div class="card-body p-4 bg-light-subtle">
+        <form asp-action="CreateAsset" asp-controller="Setup" method="post" class="needs-validation" novalidate>
+            @Html.AntiForgeryToken()
 
-            <form asp-action="CreateAsset" asp-controller="Setup" method="post" class="needs-validation" novalidate>
-                @Html.AntiForgeryToken()
+            <!-- СКРИТО СЛУЖЕБНО ПОЛЕ: Пренася автоматичното Id скрито от потребителя -->
+            <input type="hidden" asp-for="Id" value="0" />
 
-                <!-- СКРИТО СЛУЖЕБНО ПОЛЕ: Пренася автоматичното Id скрито от потребителя -->
-                <input type="hidden" asp-for="Id" value="0" />
-
-                <!-- СЕКЦИЯ 1: ИДЕНТИФИКАЦИЯ (ПОПРАВЕНА И ЧИСТА) -->
-                <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white">
-                    <!-- Останалият ти код за секцията остава абсолютно същият -->
+            <!-- СЕКЦИЯ 1: ИДЕНТИФИКАЦИЯ (ПОПРАВЕНА И ЧИСТА) -->
+            <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white">
 
                     <h6 class="fw-bold text-dark mb-3 border-bottom pb-2 text-uppercase fs-7 text-secondary">
-                        <i class="bi bi-info-circle me-2 text-primary"></i> Идентификация и Номенклатура
+                        <i class="bi bi-info-circle text-primary me-2"></i> Идентификация и Номенклатурна Йерархия
                     </h6>
                     <div class="row g-3">
+                        <!-- Свободно текстово поле за Ушна марка -->
                         <div class="col-md-4">
-                            <label asp-for="Id" class="form-label small fw-bold text-muted">Инвентарен Номер / ID</label>
-                            <input asp-for="Id" type="number" class="form-control form-control-sm rounded-2" min="1" required>
+                            <label asp-for="AssetId" class="form-label small fw-bold text-muted">Ушна марка / Инвентарен №</label>
+                            <input asp-for="AssetId" type="text" class="form-control form-control-sm rounded-2" required placeholder="напр. BG 123456">
                         </div>
                         <div class="col-md-8">
-                            <label asp-for="Name" class="form-label small fw-bold text-muted">Име / Описание на актива</label>
+                            <label asp-for="Name" class="form-label small fw-bold text-muted">Име / Спецификация на актива</label>
                             <input asp-for="Name" type="text" class="form-control form-control-sm rounded-2" required placeholder="напр. Юница - Херефорд">
                         </div>
-                        <div class="col-md-12">
-                            <label asp-for="SelectedSubGroupCode" class="form-label small fw-bold text-muted">Счетоводна Подгрупа (Ниво 3)</label>
-                            <select asp-for="SelectedSubGroupCode" asp-items="Model.SubGroupOptions" class="form-select form-select-sm rounded-2" required>
-                                <option value="">-- Изберете оперативна подгрупа --</option>
+
+                        <!-- Падащ списък за ДМА / ДНМА / Животни -->
+                        <div class="col-md-4">
+                            <label asp-for="SelectedMainTypeId" class="form-label small fw-bold text-muted">Категория (ДМА / Животно)</label>
+                            <select asp-for="SelectedMainTypeId" asp-items="Model.MainTypeOptions" id="mainTypeSelect" class="form-select form-select-sm rounded-2" required>
+                                <option value="">-- Изберете категория --</option>
+                            </select>
+                        </div>
+
+                        <!-- Взаимосвързан списък: Ниво 2 (Група) -->
+                        <div class="col-md-4">
+                            <label asp-for="SelectedGroupId" class="form-label small fw-bold text-muted">Счетоводна Група (Ниво 2)</label>
+                            <select asp-for="SelectedGroupId" asp-items="Model.GroupOptions" id="groupSelect" class="form-select form-select-sm rounded-2" required>
+                                <option value="">-- Изберете група --</option>
+                            </select>
+                        </div>
+
+                        <!-- Взаимосвързан списък: Ниво 3 (Подгрупа) -->
+                        <div class="col-md-4">
+                            <label asp-for="SelectedSubGroupId" class="form-label small fw-bold text-muted">Подгрупа (Ниво 3)</label>
+                            <select asp-for="SelectedSubGroupId" asp-items="Model.SubGroupOptions" id="subGroupSelect" class="form-select form-select-sm rounded-2" required>
+                                <option value="">-- Първо изберете група --</option>
                             </select>
                         </div>
                     </div>
                 </div>
 
-                <!-- СЕКЦИЯ 2: ФИНАНСОВИ ПОЛЕТА И ТЕГЛО (ТОВА, КОЕТО ЛИПСВАШЕ!) -->
+                <!-- СЕКЦИЯ 2: ФИНАНСИ -->
                 <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white">
                     <h6 class="fw-bold text-dark mb-3 border-bottom pb-2 text-uppercase fs-7 text-secondary">
-                        <i class="bi bi-cash-coin me-2 text-warning"></i> Търговско и Количествено изражение
+                        <i class="bi bi-cash-coin text-warning me-2"></i> Търговско и Количествено изражение
                     </h6>
                     <div class="row g-3">
                         <div class="col-md-3">
@@ -58,10 +74,10 @@
                         </div>
                         <div class="col-md-3">
                             <label asp-for="Weight" class="form-label small fw-bold text-muted">Общо Тегло (кг)</label>
-                            <input asp-for="Weight" type="number" step="0.01" class="form-control form-control-sm rounded-2" placeholder="напр. 450.50">
+                            <input asp-for="Weight" type="number" step="0.01" class="form-control form-control-sm rounded-2" placeholder="0.00">
                         </div>
                         <div class="col-md-4">
-                            <label asp-for="Price" class="form-label small fw-bold text-muted">Единична Цена (Доставка)</label>
+                            <label asp-for="Price" class="form-label small fw-bold text-muted">Единична Цена</label>
                             <input asp-for="Price" type="number" step="0.01" class="form-control form-control-sm rounded-2" required placeholder="0.00">
                         </div>
                         <div class="col-md-2">
@@ -72,10 +88,10 @@
                     </div>
                 </div>
 
-                <!-- СЕКЦИЯ 3: ХРОНОЛОГИЯ И БЕЛЕЖКИ -->
+                <!-- СЕКЦИЯ 3: ХРОНОЛОГИЯ -->
                 <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white">
                     <h6 class="fw-bold text-dark mb-3 border-bottom pb-2 text-uppercase fs-7 text-secondary">
-                        <i class="bi bi-file-earmark-text me-2 text-success"></i> Документи и Теренни Бележки
+                        <i class="bi bi-file-earmark-text text-success me-2"></i> Документи и Теренни Бележки
                     </h6>
                     <div class="row g-3">
                         <div class="col-md-4">
@@ -88,17 +104,48 @@
                         </div>
                         <div class="col-md-12">
                             <label asp-for="Notes" class="form-label small fw-bold text-muted">Счетоводни бележки и GPS координати на терена</label>
-                            <textarea asp-for="Notes" class="form-control form-control-sm rounded-2" rows="2" maxlength="500" placeholder="Въведете коментар или координати (напр. 42.14, 24.75)"></textarea>
+                            <textarea asp-for="Notes" class="form-control form-control-sm rounded-2" rows="2" maxlength="500" placeholder="Въведете координати или коментар"></textarea>
                         </div>
                     </div>
                 </div>
 
                 <div class="mt-4 pt-2 text-end">
                     <button type="submit" class="btn btn-dark btn-md px-5 fw-bold rounded-2 shadow-sm">
-                        <i class="bi bi-save me-2 text-warning"></i> Заведи Актив в SQL Server
+                        <i class="bi bi-save text-warning me-2"></i> Заведи Актив в SQL Server
                     </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<!-- JAVASCRIPT ЗА АВТОМАТИЧНО СВЪРЗВАНЕ НА СПИСЪЦИТЕ (КАСКАДЕН ФИЛТЪР) -->
+<script>
+    document.getElementById("groupSelect").addEventListener("change", async function () {
+        var groupId = this.value;
+        var subGroupSelect = document.getElementById("subGroupSelect");
+
+        subGroupSelect.innerHTML = '<option value="">-- Зареждане... --</option>';
+
+        if (!groupId) {
+            subGroupSelect.innerHTML = '<option value="">-- Първо изберете група --</option>';
+            return;
+        }
+
+        try {
+            // Фетчваме подгрупите динамично според избраната група
+            var response = await fetch('/Setup/GetSubGroupsByGroup?groupId=' + groupId);
+            var subGroups = await response.json();
+
+            subGroupSelect.innerHTML = '<option value="">-- Изберете подгрупа --</option>';
+            subGroups.forEach(function (item) {
+                var option = document.createElement("option");
+                option.value = item.id;
+                option.text = item.code + " - " + item.name;
+                subGroupSelect.appendChild(option);
+            });
+        } catch (error) {
+            subGroupSelect.innerHTML = '<option value="">-- Грешка при зареждане --</option>';
+        }
+    });
+</script>
