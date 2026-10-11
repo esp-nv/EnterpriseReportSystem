@@ -40,11 +40,13 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(m => m.RegionId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // Update exactly this block around Line 43-47 to match the corrected collection property:
         modelBuilder.Entity<TownOrVillage>()
             .HasOne(t => t.Municipality)
-            .WithMany(m => m.TownOrVillages)
+            .WithMany(m => m.TownsOrVillages) // ADDED THE 's' HERE to match the Municipality entity collection
             .HasForeignKey(t => t.MunicipalityId)
             .OnDelete(DeleteBehavior.Restrict);
+
 
         // 3. КОНФИГУРИРАНЕ НА ЙЕРАРХИЧНИТЕ ВРЪЗКИ ЧРЕЗ ЧИСЛОВИ ИДЕНТИФИКАТОРИ (Id КЛЮЧОВЕ)
         modelBuilder.Entity<AssetGroup>()
