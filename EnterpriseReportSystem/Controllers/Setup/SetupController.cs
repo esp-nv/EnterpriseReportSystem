@@ -92,5 +92,26 @@ public class SetupController : Controller
         return View(model);
     }
 
+    // =========================================================================
+    // КАСКАДЕН АПИ ФИЛТЪР: Връща подгрупите (Ниво 3) за конкретна група (Ниво 2)
+    // =========================================================================
+    [HttpGet]
+    public async Task<IActionResult> GetSubGroupsByGroup(int groupId)
+    {
+        // 1. Извличаме от SQL подгрупите, които принадлежат строго на избраната група
+        var subGroups = await _context.AssetSubGroups
+            .Where(s => s.AssetGroupId == groupId)
+            .OrderBy(s => s.Code)
+            .Select(s => new
+            {
+                id = s.Id, // Предаваме числовия първичен ключ
+                code = s.Code,
+                name = s.Name
+            })
+            .ToListAsync();
+
+        // 2. Връщаме данните като лек и бърз JSON масив за браузъра
+        return Json(subGroups);
+    }
 
 }
