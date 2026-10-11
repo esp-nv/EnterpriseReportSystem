@@ -1,4 +1,4 @@
-﻿
+﻿using EnterpriseReportSystem.Models.Entities.Location;
 namespace EnterpriseReportSystem.Models.Entities.Structure;
 
 public class Facility

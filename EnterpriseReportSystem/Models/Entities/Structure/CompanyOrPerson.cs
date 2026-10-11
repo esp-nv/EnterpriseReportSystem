@@ -1,4 +1,6 @@
-﻿namespace EnterpriseReportSystem.Models.Entities.Structure;
+﻿using EnterpriseReportSystem.Models.Entities.Location;
+
+namespace EnterpriseReportSystem.Models.Entities.Structure;
 
 public class CompanyOrPerson
 {
