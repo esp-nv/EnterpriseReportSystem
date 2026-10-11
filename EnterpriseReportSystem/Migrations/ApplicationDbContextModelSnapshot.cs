@@ -22,6 +22,59 @@ namespace EnterpriseReportSystem.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Currency", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Currencies");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.ExchangeRateHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("FromCurrencyId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsFixed")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("Rate")
+                        .HasColumnType("decimal(18,5)");
+
+                    b.Property<DateTime>("RateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ToCurrencyId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FromCurrencyId");
+
+                    b.HasIndex("ToCurrencyId");
+
+                    b.ToTable("ExchangeRateHistories");
+                });
+
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetGroup", b =>
                 {
                     b.Property<int>("Id")
@@ -125,9 +178,8 @@ namespace EnterpriseReportSystem.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("OperationCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("OperationId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -146,7 +198,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("FromGroupId");
 
-                    b.HasIndex("OperationCode");
+                    b.HasIndex("OperationId");
 
                     b.HasIndex("ToGroupId");
 
@@ -155,8 +207,15 @@ namespace EnterpriseReportSystem.Migrations
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Ledger.OperationType", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<string>("Code")
-                        .HasColumnType("nvarchar(450)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Direction")
                         .HasColumnType("int");
@@ -168,12 +227,12 @@ namespace EnterpriseReportSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Code");
+                    b.HasKey("Id");
 
                     b.ToTable("OperationTypes");
                 });
 
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Municipality", b =>
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Location.Municipality", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -192,10 +251,10 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("RegionId");
 
-                    b.ToTable("Municipality");
+                    b.ToTable("Municipalities");
                 });
 
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Region", b =>
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Location.Region", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -209,7 +268,33 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Region");
+                    b.ToTable("Regions");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Location.TownOrVillage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("MunicipalityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MunicipalityId");
+
+                    b.ToTable("TownsOrVillages");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.CompanyOrPerson", b =>
@@ -239,7 +324,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("RegisteredTownId");
 
-                    b.ToTable("CompanyOrPerson");
+                    b.ToTable("CompaniesOrPersons");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.Facility", b =>
@@ -284,7 +369,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("TownOrVillageId");
 
-                    b.ToTable("Facility");
+                    b.ToTable("Facilities");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.FacilityLog", b =>
@@ -317,33 +402,26 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("FacilityId");
 
-                    b.ToTable("FacilityLog");
+                    b.ToTable("FacilityLogs");
                 });
 
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.TownOrVillage", b =>
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.ExchangeRateHistory", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Currency", "FromCurrency")
+                        .WithMany()
+                        .HasForeignKey("FromCurrencyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Currency", "ToCurrency")
+                        .WithMany()
+                        .HasForeignKey("ToCurrencyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Property<int>("MunicipalityId")
-                        .HasColumnType("int");
+                    b.Navigation("FromCurrency");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MunicipalityId");
-
-                    b.ToTable("TownOrVillage");
+                    b.Navigation("ToCurrency");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetGroup", b =>
@@ -377,7 +455,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasOne("EnterpriseReportSystem.Models.Entities.Ledger.OperationType", "Operation")
                         .WithMany()
-                        .HasForeignKey("OperationCode")
+                        .HasForeignKey("OperationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -393,9 +471,9 @@ namespace EnterpriseReportSystem.Migrations
                     b.Navigation("ToGroup");
                 });
 
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Municipality", b =>
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Location.Municipality", b =>
                 {
-                    b.HasOne("EnterpriseReportSystem.Models.Entities.Region", "Region")
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Location.Region", "Region")
                         .WithMany("Municipalities")
                         .HasForeignKey("RegionId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -404,9 +482,20 @@ namespace EnterpriseReportSystem.Migrations
                     b.Navigation("Region");
                 });
 
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Location.TownOrVillage", b =>
+                {
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Location.Municipality", "Municipality")
+                        .WithMany("TownsOrVillages")
+                        .HasForeignKey("MunicipalityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Municipality");
+                });
+
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.CompanyOrPerson", b =>
                 {
-                    b.HasOne("EnterpriseReportSystem.Models.Entities.TownOrVillage", "RegisteredTown")
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Location.TownOrVillage", "RegisteredTown")
                         .WithMany()
                         .HasForeignKey("RegisteredTownId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -423,7 +512,7 @@ namespace EnterpriseReportSystem.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("EnterpriseReportSystem.Models.Entities.TownOrVillage", "TownOrVillage")
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Location.TownOrVillage", "TownOrVillage")
                         .WithMany()
                         .HasForeignKey("TownOrVillageId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -445,17 +534,6 @@ namespace EnterpriseReportSystem.Migrations
                     b.Navigation("Facility");
                 });
 
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.TownOrVillage", b =>
-                {
-                    b.HasOne("EnterpriseReportSystem.Models.Entities.Municipality", "Municipality")
-                        .WithMany("TownsOrVillages")
-                        .HasForeignKey("MunicipalityId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Municipality");
-                });
-
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetGroup", b =>
                 {
                     b.Navigation("AssetSubGroups");
@@ -466,12 +544,12 @@ namespace EnterpriseReportSystem.Migrations
                     b.Navigation("AssetGroups");
                 });
 
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Municipality", b =>
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Location.Municipality", b =>
                 {
                     b.Navigation("TownsOrVillages");
                 });
 
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Region", b =>
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Location.Region", b =>
                 {
                     b.Navigation("Municipalities");
                 });

@@ -93,6 +93,20 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(e => e.ToCurrencyId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // Намери конфигурацията на ExchangeRateHistory в OnModelCreating и добави третия ред:
+        modelBuilder.Entity<ExchangeRateHistory>()
+            .HasOne(e => e.FromCurrency).WithMany().HasForeignKey(e => e.FromCurrencyId).OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ExchangeRateHistory>()
+            .HasOne(e => e.ToCurrency).WithMany().HasForeignKey(e => e.ToCurrencyId).OnDelete(DeleteBehavior.Restrict);
+
+        // ТВОЯТА ФИНАНСОВА ЗАЩИТА: Задаваме децинална точност за валутните курсове (18 цифри общо, 4 след запетаята)
+        modelBuilder.Entity<ExchangeRateHistory>()
+            .Property(e => e.Rate)
+            .HasColumnType("decimal(18,5)");
+
+
+
 
         // ТВОЯТА ЗЛАТНА ЗАЩИТА: Предотвратяване на каскадно триене за абсолютно ВСИЧКИ връзки
         foreach (var foreignKey in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
