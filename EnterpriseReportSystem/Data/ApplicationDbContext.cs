@@ -32,6 +32,10 @@ public class ApplicationDbContext : DbContext
     public DbSet<AssetAttribute> AssetAttributes { get; set; } = null!;
     public DbSet<AssetAttributeValue> AssetAttributeValues { get; set; } = null!;
 
+    // РЕЛАЦИОННИ DB SET ТАБЛИЦИ (ДОБАВЯНЕ НА СПЕЦИФИКАЦИИТЕ)
+    public DbSet<AssetSpecification> AssetSpecifications { get; set; } = null!;
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
