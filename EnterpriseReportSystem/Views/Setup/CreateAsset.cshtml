@@ -52,13 +52,24 @@
                             </select>
                         </div>
 
-                        <!-- Взаимосвързан списък: Ниво 3 (Подгрупа) -->
-                        <div class="col-md-4">
-                            <label asp-for="SelectedSubGroupId" class="form-label small fw-bold text-muted">Подгрупа (Ниво 3)</label>
-                            <select asp-for="SelectedSubGroupId" asp-items="Model.SubGroupOptions" id="subGroupSelect" class="form-select form-select-sm rounded-2" required>
-                                <option value="">-- Първо изберете група --</option>
-                            </select>
-                        </div>
+                    <!-- Взаимосвързан списък: Ниво 3 (Подгрупа) -->
+                    <div class="col-md-6">
+                        <label asp-for="SelectedSubGroupId" class="form-label small fw-bold text-muted">Подгрупа (Ниво 3)</label>
+                        <select asp-for="SelectedSubGroupId" asp-items="Model.SubGroupOptions" id="subGroupSelect" class="form-select form-select-sm rounded-2" required>
+                            <option value="">-- Първо изберете група --</option>
+                        </select>
+                        <div class="invalid-feedback small">Моля, изберете подгрупа.</div>
+                    </div>
+
+                    <!-- НОВОТО ТРЕТО КАСКАДНО МЕНЮ: Порода / Модел (Спецификация) -->
+                    <div class="col-md-6">
+                        <label asp-for="SelectedSpecificationId" class="form-label small fw-bold text-muted">Спецификация (Порода / Модел)</label>
+                        <select asp-for="SelectedSpecificationId" asp-items="Model.SpecificationOptions" id="specificationSelect" class="form-select form-select-sm rounded-2" required>
+                            <option value="">-- Първо изберете подгрупа --</option>
+                        </select>
+                        <div class="invalid-feedback small">Моля, изберете конкретна порода или модел.</div>
+                    </div>
+
                     </div>
                 </div>
 
@@ -121,11 +132,14 @@
 
 <!-- JAVASCRIPT ЗА АВТОМАТИЧНО СВЪРЗВАНЕ НА СПИСЪЦИТЕ (КАСКАДЕН ФИЛТЪР) -->
 <script>
+    // 1. Когато се промени Групата -> Зареждаме Подгрупите
     document.getElementById("groupSelect").addEventListener("change", async function () {
         var groupId = this.value;
         var subGroupSelect = document.getElementById("subGroupSelect");
+        var specificationSelect = document.getElementById("specificationSelect");
 
         subGroupSelect.innerHTML = '<option value="">-- Зареждане... --</option>';
+        specificationSelect.innerHTML = '<option value="">-- Първо изберете подгрупа --</option>';
 
         if (!groupId) {
             subGroupSelect.innerHTML = '<option value="">-- Първо изберете група --</option>';
@@ -133,7 +147,6 @@
         }
 
         try {
-            // Фетчваме подгрупите динамично според избраната група
             var response = await fetch('/Setup/GetSubGroupsByGroup?groupId=' + groupId);
             var subGroups = await response.json();
 
@@ -148,4 +161,49 @@
             subGroupSelect.innerHTML = '<option value="">-- Грешка при зареждане --</option>';
         }
     });
+
+    // 2. ТВОЯТА НОВА ВЕРИГА: Когато се промени Подгрупата -> Зареждаме Породите / Моделите
+    document.getElementById("subGroupSelect").addEventListener("change", async function () {
+        var subGroupId = this.value;
+        var specificationSelect = document.getElementById("specificationSelect");
+
+        specificationSelect.innerHTML = '<option value="">-- Зареждане на породи/модели... --</option>';
+
+        if (!subGroupId) {
+            specificationSelect.innerHTML = '<option value="">-- Първо изберете подгрупа --</option>';
+            return;
+        }
+
+        try {
+            var response = await fetch('/Setup/GetSpecificationsBySubGroup?subGroupId=' + subGroupId);
+            var specs = await response.json();
+
+            specificationSelect.innerHTML = '<option value="">-- Изберете порода / модел --</option>';
+            specs.forEach(function (item) {
+                var option = document.createElement("option");
+                option.value = item.id;
+                option.text = item.name;
+                specificationSelect.appendChild(option);
+            });
+        } catch (error) {
+            specificationSelect.innerHTML = '<option value="">-- Грешка при зареждане --</option>';
+        }
+    });
+
+    // 3. Стандартна Bootstrap валидация
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
 </script>
+

@@ -105,6 +105,29 @@ namespace EnterpriseReportSystem.Migrations
                     b.ToTable("AssetGroups");
                 });
 
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetSpecification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AssetSubGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssetSubGroupId");
+
+                    b.ToTable("AssetSpecifications");
+                });
+
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetSubGroup", b =>
                 {
                     b.Property<int>("Id")
@@ -478,6 +501,17 @@ namespace EnterpriseReportSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("MainType");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetSpecification", b =>
+                {
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetSubGroup", "AssetSubGroup")
+                        .WithMany()
+                        .HasForeignKey("AssetSubGroupId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AssetSubGroup");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetSubGroup", b =>

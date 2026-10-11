@@ -34,4 +34,8 @@ public class AssetManualEntryViewModel
     public List<SelectListItem> GroupOptions { get; set; } = new();
     public List<SelectListItem> SubGroupOptions { get; set; } = new();
     public List<SelectListItem> CurrencyOptions { get; set; } = new();
+
+    public int SelectedSpecificationId { get; set; } // Избраната Порода / Модел (Числов ключ)
+    public List<SelectListItem> SpecificationOptions { get; set; } = new(); // Опции за екрана
+
 }

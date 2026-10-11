@@ -114,4 +114,23 @@ public class SetupController : Controller
         return Json(subGroups);
     }
 
+    // =========================================================================
+    // КАСКАДЕН АПИ ФИЛТЪР 2: Връща Породите/Моделите според избраната Подгрупа
+    // =========================================================================
+    [HttpGet]
+    public async Task<IActionResult> GetSpecificationsBySubGroup(int subGroupId)
+    {
+        var specifications = await _context.AssetSpecifications
+            .Where(s => s.AssetSubGroupId == subGroupId)
+            .OrderBy(s => s.Name)
+            .Select(s => new
+            {
+                id = s.Id,
+                name = s.Name
+            })
+            .ToListAsync();
+
+        return Json(specifications);
+    }
+
 }
