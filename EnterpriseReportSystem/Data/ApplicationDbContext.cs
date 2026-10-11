@@ -51,5 +51,8 @@ public class ApplicationDbContext : DbContext
 
         // Глобален филтър за скриване на изтритите трансакции през Soft Delete
         modelBuilder.Entity<AssetTransaction>().HasQueryFilter(t => !t.IsDeleted);
+
+        // ТВОЯТА НОВА СЧЕТОВОДНА ЗАЩИТА: Автоматично скриване на детайлите, ако главната трансакция е Soft Deleted
+        modelBuilder.Entity<AssetAttributeValue>().HasQueryFilter(av => !av.Transaction.IsDeleted);
     }
 }
