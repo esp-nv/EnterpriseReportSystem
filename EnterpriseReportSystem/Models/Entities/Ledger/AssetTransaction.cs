@@ -35,4 +35,6 @@ public class AssetTransaction : ISoftDeletable
     // ИМПЛЕМЕНТАЦИЯ НА SOFT DELETE (Поправката на грешката)
     public bool IsDeleted { get; set; } = false;
     public DateTime? DeletedOn { get; set; }
+
+    public string Notes { get; set; } = string.Empty;  // НОВОТО СВОЙСТВО ЗА СЧЕТОВОДНИ БЕЛЕЖКИ ПО ТРАНСАКЦИЯТА
 }

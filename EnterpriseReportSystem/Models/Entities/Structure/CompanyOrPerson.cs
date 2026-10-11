@@ -9,6 +9,9 @@ public class CompanyOrPerson
     public string Name { get; set; } = string.Empty; // Име на фирмата или човека
     public string TaxIdentifier { get; set; } = string.Empty; // ЕГН или Булстат за одит
 
+   
+    public string Address { get; set; } = string.Empty; // НОВОТО СВОЙСТВО ЗА ФИЗИЧЕСКИ АДРЕС
+
     // Административно седалище по Търговски регистър / Лична карта
     public int RegisteredTownId { get; set; }
     public TownOrVillage RegisteredTown { get; set; } = null!;

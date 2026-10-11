@@ -8,6 +8,9 @@ public class Facility
     public string Name { get; set; } = string.Empty; // напр. Кравеферма Северен сектор
     public string PostalCode { get; set; } = string.Empty; // Пощенски код на терена
 
+    
+    public string Address { get; set; } = string.Empty; // НОВОТО СВОЙСТВО ЗА ТОЧЕН АДРЕС / МЕСТНОСТ
+
     // Жизнен цикъл и свободен текст за одит
     public bool IsActive { get; set; } = true; // Чекбокс за активност
     public string Notes { get; set; } = string.Empty; // Свободни бележки
