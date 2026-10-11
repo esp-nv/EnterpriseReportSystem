@@ -221,28 +221,37 @@ public class SetupController : Controller
     // 5. УПРАВЛЕНИЕ НА ФИРМИ И ФИЗИЧЕСКИ ЛИЦА
     // ==========================================
 
-    // GET: Зарежда новия Холдингов Dashboard със 100% строга типизация без ViewBag
+    // GET: Зарежда Холдинговия Dashboard
     [HttpGet]
     public async Task<IActionResult> ManageHolding()
     {
-        var towns = await _context.TownsOrVillages.ToListAsync();
-        var companies = await _context.CompaniesOrPersons
+        // Извличаме населените места чисто
+        var townsList = await _context.TownsOrVillages.ToListAsync();
+
+        var townOptions = townsList
+            .Select(t => new SelectListItem
+            {
+                Value = t.Id.ToString(),
+                Text = t.Name
+            })
+            .ToList();
+
+        // Извличаме компаниите / лицата
+        var companiesList = await _context.CompaniesOrPersons
             .Include(c => c.RegisteredTown)
             .ToListAsync();
 
-        var viewModel = new ManageHoldingViewModel
-        {
-            TownOptions = towns.Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name }).ToList(),
-            ExistingCompanies = companies
-        };
+        // Заменяме ViewBag с ViewData за 100% защита против CS8619
+        ViewData["Towns"] = townOptions;
+        ViewData["Companies"] = companiesList ?? new List<CompanyOrPerson>();
 
-        return View(viewModel);
+        return View(new CompanyOrPerson());
     }
 
-    // POST: Записва нов субект (Фирма или Лице) през новия типизиран модел
+    // POST: Записва нов субект (Фирма или Физическо лице) директно през Ентити модела
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateCompany(ManageHoldingViewModel model)
+    public async Task<IActionResult> CreateCompany(CompanyOrPerson model)
     {
         if (model != null && !string.IsNullOrEmpty(model.ClientCode))
         {
@@ -256,10 +265,12 @@ public class SetupController : Controller
 
             _context.CompaniesOrPersons.Add(newEntity);
             await _context.SaveChangesAsync();
-            TempData["HoldingSuccess"] = $"🎉 Субектът '{model.Name}' беше записан успешно в регистъра!";
+            TempData["HoldingSuccess"] = $"🎉 Субектът '{model.Name}' беше записан успешно!";
         }
         return RedirectToAction("ManageHolding");
     }
+
+
 
 
     // ==========================================

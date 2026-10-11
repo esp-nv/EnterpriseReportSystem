@@ -1,4 +1,4 @@
-﻿namespace EnterpriseReportSystem.Models.Entities;
+﻿namespace EnterpriseReportSystem.Models.Entities.Location; // Само един чист и точен namespace път
 
 public class TownOrVillage
 {

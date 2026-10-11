@@ -1,11 +1,9 @@
 ﻿using EnterpriseReportSystem.Models.Entities;
 using EnterpriseReportSystem.Models.Entities.Hierarchy;
 using EnterpriseReportSystem.Models.Entities.Ledger;
+using EnterpriseReportSystem.Models.Entities.Location;
 using EnterpriseReportSystem.Models.Entities.Structure;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EnterpriseReportSystem.Data;
 
@@ -16,10 +14,22 @@ public class ApplicationDbContext : DbContext
     {
     }
 
-    // 1. ДЕФИНИРАНЕ НА ВСИЧКИ РЕЛАЦИОННИ ТАБЛИЦИ В SQL SERVER
+    // 1. РЕЛАЦИОННА ЙЕРАРХИЯ НА АКТИВИТЕ (НИВА 1, 2, 3)
     public DbSet<MainType> MainTypes { get; set; } = null!;
     public DbSet<AssetGroup> AssetGroups { get; set; } = null!;
     public DbSet<AssetSubGroup> AssetSubGroups { get; set; } = null!;
+
+    // 2. ТРИСТЕМЕННА ГЕОГРАФСКА ЛОКАЦИЯ (ОБЛАСТ -> ОБЩИНА -> СЕЛО/ГРАД)
+    public DbSet<Region> Regions { get; set; } = null!;
+    public DbSet<Municipality> Municipalities { get; set; } = null!;
+    public DbSet<TownOrVillage> TownsOrVillages { get; set; } = null!; // ОФИЦИАЛНО С "S" НА TOWNS
+
+    // 3. МУЛТИ-ФИРМЕНА СТРУКТУРА НА ХОЛДИНГА И ОДИТЕН ДНЕВНИК
+    public DbSet<CompanyOrPerson> CompaniesOrPersons { get; set; } = null!;
+    public DbSet<Facility> Facilities { get; set; } = null!;
+    public DbSet<FacilityLog> FacilityLogs { get; set; } = null!;
+
+    // 4. СЧЕТОВОДЕН ЖУРНАЛ НА ОПЕРАЦИИТЕ
     public DbSet<OperationType> OperationTypes { get; set; } = null!;
     public DbSet<AssetTransaction> AssetTransactions { get; set; } = null!;
 
@@ -27,41 +37,20 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // 1. ПОСТАВЯНЕ НА ЧИСЛОВИТЕ ПЪРВИЧНИ КЛЮЧОВЕ (PRIMARY KEYS)
-        modelBuilder.Entity<MainType>().HasKey(m => m.Id);
-        modelBuilder.Entity<AssetGroup>().HasKey(g => g.Id);
-        modelBuilder.Entity<AssetSubGroup>().HasKey(s => s.Id);
-        modelBuilder.Entity<OperationType>().HasKey(o => o.Code);
-
-        // 2. КОНФИГУРИРАНЕ НА ГЕОГРАФСКИТЕ ВРЪЗКИ (ОБЛАСТ -> ОБЩИНА -> СЕЛО)
+        // КОНФИГУРИРАНЕ НА ГЕОГРАФСКИТЕ ВРЪЗКИ (ОБЛАСТ -> ОБЩИНА -> СЕЛО)
         modelBuilder.Entity<Municipality>()
             .HasOne(m => m.Region)
             .WithMany(r => r.Municipalities)
             .HasForeignKey(m => m.RegionId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Update exactly this block around Line 43-47 to match the corrected collection property:
         modelBuilder.Entity<TownOrVillage>()
             .HasOne(t => t.Municipality)
-            .WithMany(m => m.TownsOrVillages) // ADDED THE 's' HERE to match the Municipality entity collection
+            .WithMany(m => m.TownsOrVillages) // СИНХРОНИЗИРАНО С "S"
             .HasForeignKey(t => t.MunicipalityId)
             .OnDelete(DeleteBehavior.Restrict);
 
-
-        // 3. КОНФИГУРИРАНЕ НА ЙЕРАРХИЧНИТЕ ВРЪЗКИ ЧРЕЗ ЧИСЛОВИ ИДЕНТИФИКАТОРИ (Id КЛЮЧОВЕ)
-        modelBuilder.Entity<AssetGroup>()
-            .HasOne(g => g.MainType)
-            .WithMany(m => m.AssetGroups)
-            .HasForeignKey(g => g.MainTypeId) // ПРАВИЛНИЯТ ЧИСЛОВ КЛЮЧ
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<AssetSubGroup>()
-            .HasOne(s => s.AssetGroup)
-            .WithMany(g => g.AssetSubGroups)
-            .HasForeignKey(s => s.AssetGroupId) // ПРАВИЛНИЯТ ЧИСЛОВ КЛЮЧ
-            .OnDelete(DeleteBehavior.Restrict);
-
-        // 4. КОНФИГУРИРАНЕ НА МУЛТИ-ФИРМЕНИТЕ ОБЕКТИ И АДМИНИСТРАЦИЯТА
+        // КОНФИГУРИРАНЕ НА МУЛТИ-ФИРМЕНИТЕ ОБЕКТИ И АДМИНИСТРАЦИЯТА
         modelBuilder.Entity<CompanyOrPerson>()
             .HasOne(c => c.RegisteredTown)
             .WithMany()
@@ -96,8 +85,6 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<AssetTransaction>().HasQueryFilter(t => !t.IsDeleted);
     }
 
-
-    // 6. ТВОЯТА МАГИЯ ЗА АВТОМАТИЧЕН SOFT DELETE
     public override int SaveChanges()
     {
         UpdateSoftDeleteStatuses();
@@ -116,8 +103,8 @@ public class ApplicationDbContext : DbContext
         {
             if (entry.State == EntityState.Deleted)
             {
-                entry.State = EntityState.Modified; // Превръщаме триенето в обновяване
-                entry.Entity.IsDeleted = true;      // Маркираме като изтрит
+                entry.State = EntityState.Modified;
+                entry.Entity.IsDeleted = true;
                 entry.Entity.DeletedOn = System.DateTime.Now;
             }
         }

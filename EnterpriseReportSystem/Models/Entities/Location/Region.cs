@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-
-namespace EnterpriseReportSystem.Models.Entities;
+﻿
+namespace EnterpriseReportSystem.Models.Entities.Location;
 
 public class Region
 {
