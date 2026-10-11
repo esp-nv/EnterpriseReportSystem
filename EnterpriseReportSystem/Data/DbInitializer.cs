@@ -10,20 +10,22 @@ namespace EnterpriseReportSystem.Data;
 
 public static class DbInitializer
 {
-    public static void Seed(ApplicationDbContext context)
+    // Променяме метода да връща string при проблем, за да го логнем в уеб сървъра
+    public static string Seed(ApplicationDbContext context)
     {
         context.Database.EnsureCreated();
 
-        // Намираме физическия път до JSON файла в папка InputFiles
         string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "InputFiles", "system_base_data.json");
 
-        // Защита: Ако проектът се стартира в тестов режим, проверяваме и алтернативния корен на паката
         if (!File.Exists(filePath))
         {
             filePath = Path.Combine(Directory.GetCurrentDirectory(), "InputFiles", "system_base_data.json");
         }
 
-        if (!File.Exists(filePath)) return; // Ако файлът липсва, спираме без срив
+        if (!File.Exists(filePath))
+        {
+            return "⚠️ [Внимание]: Базовият конфигурационен файл 'system_base_data.json' липсва в папка InputFiles. Системата стартира без начални данни.";
+        }
 
         try
         {
@@ -31,7 +33,6 @@ public static class DbInitializer
             using var doc = JsonDocument.Parse(jsonContent);
             var root = doc.RootElement;
 
-            // 1. ДИНАМИЧНО ЧЕТЕНЕ НА ВАЛУТИТЕ
             if (!context.Currencies.Any() && root.TryGetProperty("Currencies", out var currenciesElement))
             {
                 var currencies = JsonSerializer.Deserialize<List<Currency>>(currenciesElement.GetRawText());
@@ -39,7 +40,6 @@ public static class DbInitializer
                 context.SaveChanges();
             }
 
-            // 2. ДИНАМИЧНО ЧЕТЕНЕ НА ОПЕРАЦИИТЕ
             if (!context.OperationTypes.Any() && root.TryGetProperty("OperationTypes", out var operationsElement))
             {
                 var operations = JsonSerializer.Deserialize<List<OperationType>>(operationsElement.GetRawText());
@@ -47,17 +47,24 @@ public static class DbInitializer
                 context.SaveChanges();
             }
 
-            // 3. ДИНАМИЧНО ЧЕТЕНЕ НА ХАРАКТЕРИСТИКИТЕ
             if (!context.AssetAttributes.Any() && root.TryGetProperty("AssetAttributes", out var attributesElement))
             {
                 var attributes = JsonSerializer.Deserialize<List<AssetAttribute>>(attributesElement.GetRawText());
                 if (attributes != null) context.AssetAttributes.AddRange(attributes);
                 context.SaveChanges();
             }
+
+            return "SUCCESS"; // Всичко е заредено перфектно
         }
-        catch (Exception)
+        catch (JsonException jsonEx)
         {
-            // Сигурна счетоводна защита срещу повредени JSON файлове
+            // ДРУЖЕЛЮБНО УЕБ СЪОБЩЕНИЕ ПРИ ГРЕШКА В JSON СИНТАКСИСА
+            return $"⚠️ [Проблем с конфигурацията]: Открита е синтактична грешка в базовия файл 'system_base_data.json'. Моля, проверете за забравени запетаи или кавички. Подробности: {jsonEx.Message}";
+        }
+        catch (Exception ex)
+        {
+            // ОБЩА УЕБ ЗАЩИТА ПРИ БЛОКИРАН ДОСТЪП ДО ФАЙЛА
+            return $"❌ [Системна грешка]: Базовият инициализатор не успя да прочете файла в InputFiles. Причина: {ex.Message}";
         }
     }
 }
