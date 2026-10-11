@@ -33,6 +33,11 @@ public class ApplicationDbContext : DbContext
     public DbSet<OperationType> OperationTypes { get; set; } = null!;
     public DbSet<AssetTransaction> AssetTransactions { get; set; } = null!;
 
+    // 5. ВАЛУТНА СЧЕТОВОДНА АРХИТЕКТУРА
+    public DbSet<Currency> Currencies { get; set; } = null!;
+    public DbSet<ExchangeRateHistory> ExchangeRateHistories { get; set; } = null!; // ТАЗИ ЛИПСВАШЕ
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -74,6 +79,20 @@ public class ApplicationDbContext : DbContext
             .WithMany(f => f.FacilityLogs)
             .HasForeignKey(fl => fl.FacilityId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // КОНФИГУРИРАНЕ НА ХРОНОЛОГИЯТА НА ВАЛУТНИТЕ КУРСОВЕ
+        modelBuilder.Entity<ExchangeRateHistory>()
+            .HasOne(e => e.FromCurrency)
+            .WithMany()
+            .HasForeignKey(e => e.FromCurrencyId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ExchangeRateHistory>()
+            .HasOne(e => e.ToCurrency)
+            .WithMany()
+            .HasForeignKey(e => e.ToCurrencyId)
+            .OnDelete(DeleteBehavior.Restrict);
+
 
         // ТВОЯТА ЗЛАТНА ЗАЩИТА: Предотвратяване на каскадно триене за абсолютно ВСИЧКИ връзки
         foreach (var foreignKey in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))

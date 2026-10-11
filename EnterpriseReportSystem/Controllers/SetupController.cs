@@ -349,8 +349,9 @@ public class SetupController : Controller
                 IsFixed = isFixed
             };
 
-            _context.ExchangeRateHistory.Add(exchangeRate);
+            _context.ExchangeRateHistories.Add(exchangeRate); // Сега вече съвпада на 100% с DbContext!
             await _context.SaveChangesAsync();
+
 
             TempData["RateSuccess"] = "🎉 Валутният курс е заведен успешно в хронологичния регистър на SQL Server!";
         }
