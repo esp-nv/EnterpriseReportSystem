@@ -6,7 +6,8 @@ namespace EnterpriseReportSystem.Models.Entities.Ledger;
 public class AssetTransaction : ISoftDeletable
 {
     // Уникален идентификатор на самата трансакция
-    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public int Id { get; set; }
+
 
     // Към кое конкретно животно (ушна марка) или продукт се отнася тази трансакция
     public string AssetId { get; set; } = string.Empty;
