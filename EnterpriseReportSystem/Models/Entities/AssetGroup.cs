@@ -4,13 +4,14 @@ namespace EnterpriseReportSystem.Models.Entities;
 
 public class AssetGroup
 {
-    public string Code { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
+    public int Id { get; set; } // ЧИСЛОВ ПЪРВИЧЕН КЛЮЧ (Identity)
+    public string Code { get; set; } = string.Empty; // напр. "DPJ"
+    public string Name { get; set; } = string.Empty; // напр. "Дребни преживни"
 
-    // Премахваме старото булево свойство IsAnimal и го заменяме с релация към Главния Тип
-    public string MainTypeCode { get; set; } = string.Empty;
+    // ВЪНШЕН КЛЮЧ КЪМ НИВО 1 (Свързва се с числовия Id)
+    public int MainTypeId { get; set; }
     public MainType MainType { get; set; } = null!;
 
-    // Релация: Една група съдържа много подгрупи
+    // Релация: Една група има много подгрупи
     public ICollection<AssetSubGroup> AssetSubGroups { get; set; } = new List<AssetSubGroup>();
 }
