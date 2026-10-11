@@ -231,4 +231,113 @@ public class SetupController : Controller
         return RedirectToAction("Hierarchy");
     }
 
+    // ==========================================
+    // РЕДАКЦИЯ И ИЗТРИВАНЕ НА ГРУПИ (НИВО 2)
+    // ==========================================
+
+    [HttpGet]
+    public async Task<IActionResult> EditGroup(string id)
+    {
+        var group = await _context.AssetGroups.FirstOrDefaultAsync(g => g.Code == id);
+        if (group == null) return NotFound();
+
+        var mainTypes = await _context.MainTypes.ToListAsync();
+        ViewBag.MainTypes = mainTypes.Select(m => new SelectListItem { Value = m.Code, Text = m.Name }).ToList();
+
+        var model = new HierarchyCreateViewModel
+        {
+            GroupCode = group.Code,
+            GroupName = group.Name,
+            SelectedMainTypeCode = group.MainTypeCode
+        };
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditGroup(HierarchyCreateViewModel model)
+    {
+        var group = await _context.AssetGroups.FirstOrDefaultAsync(g => g.Code == model.GroupCode);
+        if (group != null)
+        {
+            group.Name = model.GroupName.Trim();
+            group.MainTypeCode = model.SelectedMainTypeCode;
+            await _context.SaveChangesAsync();
+            TempData["Success"] = $"✏️ Групата '{model.GroupName}' беше редактирана успешно!";
+        }
+        return RedirectToAction("Hierarchy");
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteGroup(string id)
+    {
+        var group = await _context.AssetGroups.Include(g => g.AssetSubGroups).FirstOrDefaultAsync(g => g.Code == id);
+        if (group == null) return NotFound();
+
+        if (group.AssetSubGroups.Any())
+        {
+            TempData["Error"] = $"❌ Не можете да изтриете тази Група, защото към нея има свързани Подгрупи активи!";
+            return RedirectToAction("Hierarchy");
+        }
+
+        _context.AssetGroups.Remove(group);
+        await _context.SaveChangesAsync();
+        TempData["Success"] = "🗑️ Счетоводната група беше изтрита успешно от SQL Server!";
+        return RedirectToAction("Hierarchy");
+    }
+
+    // ==========================================
+    // РЕДАКЦИЯ И ИЗТРИВАНЕ НА ПОДГРУПИ (НИВО 3)
+    // ==========================================
+
+    [HttpGet]
+    public async Task<IActionResult> EditSubGroup(string id)
+    {
+        var subGroup = await _context.AssetSubGroups.FirstOrDefaultAsync(s => s.Code == id);
+        if (subGroup == null) return NotFound();
+
+        var groups = await _context.AssetGroups.ToListAsync();
+        ViewBag.Groups = groups.Select(g => new SelectListItem { Value = g.Code, Text = g.Name }).ToList();
+
+        var model = new HierarchyCreateViewModel
+        {
+            SubGroupCode = subGroup.Code,
+            SubGroupName = subGroup.Name,
+            SelectedGroupCode = subGroup.AssetGroupCode
+        };
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditSubGroup(HierarchyCreateViewModel model)
+    {
+        var subGroup = await _context.AssetSubGroups.FirstOrDefaultAsync(s => s.Code == model.SubGroupCode);
+        if (subGroup != null)
+        {
+            subGroup.Name = model.SubGroupName.Trim();
+            subGroup.AssetGroupCode = model.SelectedGroupCode;
+            await _context.SaveChangesAsync();
+            TempData["Success"] = $"✏️ Подгрупата '{model.SubGroupName}' беше редактирана успешно!";
+        }
+        return RedirectToAction("Hierarchy");
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteSubGroup(string id)
+    {
+        var subGroup = await _context.AssetSubGroups.FirstOrDefaultAsync(s => s.Code == id);
+        if (subGroup == null) return NotFound();
+
+        // Забележка: Тук при реално въведени активи Entity Framework автоматично 
+        // ще хвърли изключение поради Restrict, но ние пречистваме контрола
+        _context.AssetSubGroups.Remove(subGroup);
+        await _context.SaveChangesAsync();
+        TempData["Success"] = "🗑️ Оперативната подгрупа беше изтрита успешно!";
+        return RedirectToAction("Hierarchy");
+    }
+
+
 }

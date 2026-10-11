@@ -1,118 +1,178 @@
 ﻿@model EnterpriseReportSystem.ViewModels.HierarchyCreateViewModel
 
-<div class="container mt-4" style="max-width: 850px;">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-dark fw-bold">⚙️ Конфигурация на Номенклатурна Йерархия</h2>
-        <span class="badge bg-secondary p-2">SQL Server Релации</span>
+<div class="container-fluid mt-4 px-4">
+    <!-- ГЛАВНО СЧЕТОВОДНО ТАБЛО -->
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <div>
+            <h2 class="text-dark fw-bold mb-1">⚙️ Панел за Управление на Номенклатурна Йерархия</h2>
+            <p class="text-muted mb-0">Дефиниране и одит на тристепенната структура от активи в реално време.</p>
+        </div>
+        <span class="badge bg-dark p-2 shadow-sm fs-6">База данни: SQL Server</span>
     </div>
 
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success text-center fw-bold shadow-sm alert-dismissible fade show" role="alert">
+        <div class="alert alert-success text-center fw-bold shadow-sm border-2 alert-dismissible fade show mb-4" role="alert">
             @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger text-center fw-bold shadow-sm border-2 alert-dismissible fade show mb-4" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
 
-    <!-- ПАНЕЛ 1: ГЛАВЕН ТИП -->
-    <div class="card p-4 mb-4 shadow-sm border-start border-primary border-4 rounded-3">
-        <h5 class="text-primary fw-bold mb-3">Ниво 1: Главен Тип на Актива (За какво се отнася)</h5>
-        <form asp-action="Hierarchy" asp-controller="Setup" method="post" class="row g-3 align-items-end">
-            @Html.AntiForgeryToken()
-            <div class="col-md-4">
-                <label class="form-label fw-bold">Системен Код</label>
-                <input asp-for="MainTypeCode" class="form-control border-2" placeholder="напр. ANIMAL, MACHINE, GRAIN" required />
-            </div>
-            <div class="col-md-5">
-                <label class="form-label fw-bold">Наименование на категорията</label>
-                <input asp-for="MainTypeName" class="form-control border-2" placeholder="напр. Живи Животни, Техника" required />
-            </div>
-            <div class="col-md-3">
-                <button type="submit" name="submitButton" value="MainType" class="btn btn-primary w-100 fw-bold shadow-sm">💾 Добави Тип</button>
-            </div>
-        </form>
-    </div>
-
-    <!-- ПАНЕЛ 2: ОСНОВНА ГРУПА -->
-    <div class="card p-4 mb-4 shadow-sm border-start border-success border-4 rounded-3">
-        <h5 class="text-success fw-bold mb-3">Ниво 2: Box за Основна Счетоводна Група</h5>
-        <form asp-action="Hierarchy" asp-controller="Setup" method="post" class="row g-3 align-items-end">
-            @Html.AntiForgeryToken()
-            <div class="col-md-3">
-                <label class="form-label fw-bold">Към Главен Тип</label>
-                <select asp-for="SelectedMainTypeCode" asp-items="ViewBag.MainTypes" class="form-select border-2" required>
-                    <option value="">-- Изберете --</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label fw-bold">Код на Групата</label>
-                <input asp-for="GroupCode" class="form-control border-2" placeholder="напр. DPJ, TRACTORS" required />
-            </div>
-            <div class="col-md-4">
-                <label class="form-label fw-bold">Име на Групата</label>
-                <input asp-for="GroupName" class="form-control border-2" placeholder="напр. Едри Преживни, Трактори" required />
-            </div>
-            <div class="col-md-2">
-                <button type="submit" name="submitButton" value="Group" class="btn btn-success w-100 fw-bold shadow-sm">💾 Запиши</button>
-            </div>
-        </form>
-    </div>
-
-    <!-- ПАНЕЛ 3: СПЕЦИФИЧНА ПОДГРУПА -->
-    <div class="card p-4 mb-4 shadow-sm border-start border-dark border-4 rounded-3">
-        <h5 class="text-dark fw-bold mb-3">Ниво 3: Оперативна Подгрупа активи (Възраст / Спецификация)</h5>
-        <form asp-action="Hierarchy" asp-controller="Setup" method="post" class="row g-3 align-items-end">
-            @Html.AntiForgeryToken()
-            <div class="col-md-3">
-                <label class="form-label fw-bold">Към Основна Група</label>
-                <select asp-for="SelectedGroupCode" asp-items="ViewBag.Groups" class="form-select border-2" required>
-                    <option value="">-- Изберете --</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label fw-bold">Код на Подгрупата</label>
-                <input asp-for="SubGroupCode" class="form-control border-2" placeholder="напр. TELETAS_UNDER_6M" required />
-            </div>
-            <div class="col-md-4">
-                <label class="form-label fw-bold">Име на Подгрупата</label>
-                <input asp-for="SubGroupName" class="form-control border-2" placeholder="напр. Телета до 6 месеца, Юници" required />
-            </div>
-            <div class="col-md-2">
-                <button type="submit" name="submitButton" value="SubGroup" class="btn btn-dark w-100 fw-bold shadow-sm">💾 Запиши</button>
-            </div>
-        </form>
-    </div>
-</div>
-<!-- НОВ ВИЗУАЛЕН РЕГИСТЪР ЗА УПРАВЛЕНИЕ -->
-<div class="card p-4 mb-4 shadow-sm rounded-3 bg-white mt-5">
-    <h5 class="text-dark fw-bold mb-3">📋 Налични Главни Категории в базата данни</h5>
-
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger text-center fw-bold shadow-sm">@TempData["Error"]</div>
-    }
-
-    <div class="list-group">
-        @if (ViewBag.MainTypes != null)
-        {
-            @foreach (var type in (List<SelectListItem>)ViewBag.MainTypes)
-            {
-                <div class="list-group-item d-flex justify-content-between align-items-center rounded-3 mb-2 shadow-sm border-1">
-                    <div>
-                        <span class="badge bg-dark me-2">@type.Value</span>
-                        <strong class="text-dark">@type.Text</strong>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <!-- Бутон за редакция -->
-                        <a asp-action="EditMainType" asp-route-id="@type.Value" class="btn btn-sm btn-outline-primary fw-bold">✏️ Коригирай</a>
-
-                        <!-- Форма за безопасно изтриване -->
-                        <form asp-action="DeleteMainType" asp-route-id="@type.Value" method="post" onsubmit="return confirm('Сигурни ли сте, че искате да изтриете тази категория?');">
+    <!-- БУТСТРАП РЕШЕТКА: ФОРМИ (ЛЯВО) + ТАБЛИЦА (ДЯСНО) -->
+    <div class="row g-4">
+        
+        <!-- ЛЯВ СЕКТОР (35%): ОПЕРАТИВНИ ФОРМИ ЗА ВЪВЕЖДАНЕ -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="sticky-top" style="top: 20px; z-index: 1020;">
+                
+                <!-- КАРТА 1: ГЛАВЕН ТИП -->
+                <div class="card shadow-sm border-0 mb-4 rounded-3 border-start border-primary border-4 bg-white">
+                    <div class="card-body p-4">
+                        <h6 class="text-primary fw-bold text-uppercase mb-3">Ниво 1: Главен Тип на Актива</h6>
+                        <form asp-action="Hierarchy" asp-controller="Setup" method="post">
                             @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-sm btn-outline-danger fw-bold">🗑️ Изтрий</button>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Системен Код</label>
+                                <input asp-for="MainTypeCode" class="form-control border-2" placeholder="напр. ANIMAL, MACHINE, STOCK" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Наименование на Категорията</label>
+                                <input asp-for="MainTypeName" class="form-control border-2" placeholder="напр. Живи Животни, Складов Продукт" required />
+                            </div>
+                            <button type="submit" name="submitButton" value="MainType" class="btn btn-primary w-100 fw-bold shadow-sm">
+                                ➕ Добави Главен Тип
+                            </button>
                         </form>
                     </div>
                 </div>
-            }
-        }
+
+                <!-- КАРТА 2: ОСНОВНА ГРУПА -->
+                <div class="card shadow-sm border-0 mb-4 rounded-3 border-start border-success border-4 bg-white">
+                    <div class="card-body p-4">
+                        <h6 class="text-success fw-bold text-uppercase mb-3">Ниво 2: Счетоводна Група</h6>
+                        <form asp-action="Hierarchy" asp-controller="Setup" method="post">
+                            @Html.AntiForgeryToken()
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Обвържи с Главен Тип</label>
+                                <select asp-for="SelectedMainTypeCode" asp-items="ViewBag.MainTypes" class="form-select border-2" required>
+                                    <option value="">-- Изберете категория --</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Код на Групата</label>
+                                <input asp-for="GroupCode" class="form-control border-2" placeholder="напр. DPJ, TRACTORS" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Име на Групата</label>
+                                <input asp-for="GroupName" class="form-control border-2" placeholder="напр. Едри Преживни, Трактори" required />
+                            </div>
+                            <button type="submit" name="submitButton" value="Group" class="btn btn-success w-100 fw-bold shadow-sm">
+                                ➕ Добави Група
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- КАРТА 3: СПЕЦИФИЧНА ПОДГРУПА -->
+                <div class="card shadow-sm border-0 mb-4 rounded-3 border-start border-dark border-4 bg-white">
+                    <div class="card-body p-4">
+                        <h6 class="text-dark fw-bold text-uppercase mb-3">Ниво 3: Оперативна Подгрупа</h6>
+                        <form asp-action="Hierarchy" asp-controller="Setup" method="post">
+                            @Html.AntiForgeryToken()
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Обвържи с Основна Група</label>
+                                <select asp-for="SelectedGroupCode" asp-items="ViewBag.Groups" class="form-select border-2" required>
+                                    <option value="">-- Изберете група --</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Код на Подгрупата</label>
+                                <input asp-for="SubGroupCode" class="form-control border-2" placeholder="напр. TELETAS_6M, JUNITAS" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Име на Подгрупата</label>
+                                <input asp-for="SubGroupName" class="form-control border-2" placeholder="напр. Телета до 6 месеца" required />
+                            </div>
+                            <button type="submit" name="submitButton" value="SubGroup" class="btn btn-dark w-100 fw-bold shadow-sm">
+                                ➕ Добави Подгрупа
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ДЕСЕН СЕКТОР (65%): ДИНАМИЧНО ИНВЕНТАРНО ТАБЛО -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow-sm border-0 rounded-3 bg-white">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-dark fw-bold">📋 Хронологичен Списък на Заведените Категории</h5>
+                    <span class="text-muted small">Вдъхновен от StudentManagement дизайн</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle mb-0 bg-white">
+                            <thead class="table-dark text-center">
+                                <tr>
+                                    <th class="py-3">Код</th>
+                                    <th class="py-3 text-start">Наименование на номенклатурата</th>
+                                    <th class="py-3">Оперативен Контрол</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewBag.MainTypes != null && ((List<SelectListItem>)ViewBag.MainTypes).Any())
+                                {
+                                    @foreach (var type in (List<SelectListItem>)ViewBag.MainTypes)
+                                    {
+                                        <tr>
+                                            <td class="text-center fw-bold text-primary" style="width: 150px;">
+                                                <span class="badge bg-light text-primary border border-primary px-3 py-2 fs-6">@type.Value</span>
+                                            </td>
+                                            <td class="text-start py-3">
+                                                <div class="fw-bold text-dark fs-5">@type.Text</div>
+                                                <small class="text-muted">📂 Релационно разпределение: Главна категория (Ниво 1)</small>
+                                            </td>
+                                            <td class="text-center" style="width: 240px;">
+                                                <div class="d-flex justify-content-center gap-2">
+                                                    <!-- БУТОН РЕДАКЦИЯ -->
+                                                    <a asp-action="EditMainType" asp-controller="Setup" asp-route-id="@type.Value" class="btn btn-sm btn-outline-primary fw-bold px-3 shadow-sm">
+                                                        ✏️ Коригирай
+                                                    </a>
+                                                    
+                                                    <!-- БУТОН ИЗТРИВАНЕ С МОДАЛНО ПОТВЪРЖДЕНИЕ -->
+                                                       <!-- БУТОН ИЗТРИВАНЕ С МОДАЛНО ПОТВЪРЖДЕНИЕ -->
+                                                        <form asp-action="DeleteMainType" asp-controller="Setup" asp-route-id="@type.Value" method="post" onsubmit="return confirm('Сигурни ли сте, че искате да изтриете тази категория? Системата ще провери за свързани обекти.');" class="d-inline">
+                                                            @Html.AntiForgeryToken()
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger fw-bold px-3 shadow-sm">🗑️ Изтрий</button>
+                                                        </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted p-4 fw-bold">
+                                            📭 Няма намерени заведени категории в SQL Server. Използвайте левия панел, за да добавите първите данни!
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
