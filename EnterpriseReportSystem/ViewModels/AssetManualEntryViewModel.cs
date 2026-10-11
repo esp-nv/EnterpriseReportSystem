@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace EnterpriseReportSystem.ViewModels; // Коренната папка ViewModels
+namespace EnterpriseReportSystem.ViewModels;
 
 public class AssetManualEntryViewModel
 {
-    public string Id { get; set; } = string.Empty;
+    // КОРИГИРАНО: Сменяме на int, за да съвпадне с числовото ядро на базата данни
+    public int Id { get; set; }
+
     public string Name { get; set; } = string.Empty;
     public string SelectedSubGroupCode { get; set; } = string.Empty;
 

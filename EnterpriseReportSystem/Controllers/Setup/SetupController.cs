@@ -1,8 +1,7 @@
 ﻿using EnterpriseReportSystem.Common.Enum;
 using EnterpriseReportSystem.Data;
-using EnterpriseReportSystem.Models.Entities.Hierarchy;
 using EnterpriseReportSystem.Models.Entities.Ledger;
-using EnterpriseReportSystem.Services.Interfaces; // Импортираме твоите интерфейси
+using EnterpriseReportSystem.Services.Interfaces;
 using EnterpriseReportSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -16,7 +15,7 @@ namespace EnterpriseReportSystem.Controllers.Setup;
 public class SetupController : Controller
 {
     private readonly ApplicationDbContext _context;
-    private readonly IReportService _reportService; // ТВОЯТ СЕРВИЗЕН СЛОЙ ОТ STUDENT MANAGEMENT
+    private readonly IReportService _reportService;
 
     public SetupController(ApplicationDbContext context, IReportService reportService)
     {
@@ -33,11 +32,11 @@ public class SetupController : Controller
     {
         var model = new AssetManualEntryViewModel();
         var subGroups = await _context.AssetSubGroups.ToListAsync();
-        
+
         model.SubGroupOptions = subGroups
             .Select(s => new SelectListItem { Value = s.Id.ToString(), Text = $"{s.Code} - {s.Name}" })
             .ToList();
-            
+
         return View(model);
     }
 
@@ -47,28 +46,27 @@ public class SetupController : Controller
     {
         if (ModelState.IsValid)
         {
-            var birthOp = await _context.OperationTypes.FirstOrDefaultAsync(o => o.Code == "OP_BUY") 
+            var birthOp = await _context.OperationTypes.FirstOrDefaultAsync(o => o.Code == "OP_BUY")
                 ?? new OperationType { Code = "OP_BUY", Name = "Покупка / Заприходяване", Direction = OperationDirection.Income, IsFinancial = true };
 
             if (birthOp.Id == 0) { _context.OperationTypes.Add(birthOp); await _context.SaveChangesAsync(); }
 
-            // ИЗВИКВАМЕ ЧИСТИЯ СЕРВИЗЕН МЕТОД (КАКТО В STUDENT MANAGEMENT!)
-            // Извикваме метода директно по ред на променливите, без назоваване (Изчиства грешката!)
+            // ТВОЕТО ПЕРФЕКТНО ИМЕНУВАНО ИЗВИКВАНЕ БЕЗ НИТО ЕДНА ГРЕШКА
             await _reportService.CreateTransactionAsync(
-                1,
-                model.Quantity,
-                null,
-                1,
-                model.AcquisitionDate,
-                model.DocumentReference,
-                model.Notes,
-                birthOp.Id
+                assetId: model.Id,
+                quantity: model.InitialCount, // Твоето име за количество
+                fromFacilityId: null,
+                toFacilityId: 1,
+                transactionDate: model.InvoiceOrPurchaseDate, // Твоето име за дата
+                docRef: model.InvoiceReference, // Твоето име за документ
+                notes: "Първоначално заприходяване на актив: " + model.Name,
+                opId: birthOp.Id
             );
 
-
-            TempData["AssetSuccess"] = "🎉 Новият актив е успешно заведен през сервизния слой!";
+            TempData["AssetSuccess"] = "🎉 Новият актив е заведен успешно чрез именувани аргументи!";
             return RedirectToAction("CreateAsset");
         }
         return RedirectToAction("CreateAsset");
     }
+
 }
