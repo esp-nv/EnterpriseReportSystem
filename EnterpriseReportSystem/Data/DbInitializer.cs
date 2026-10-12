@@ -27,7 +27,8 @@ public static class DbInitializer
         }
 
         // 2. ВСЕКИ ЕДИН ДОМЕЙН Е В ПЪЛНА ХОМОГЕННОСТ (МАСИВ ОТ ПАПКИ ЕДНО КЪМ ЕДНО С ENTITIES)
-        string domainFolders = { "Location", "Hierarchy", "Ledger", "Structure" };
+        // КОРЕКЦИЯ CS0622: Изрично дефинираме масива с 'new string[]'
+        string[] domainFolders = new string[] { "Location", "Hierarchy", "Ledger", "Structure" };
 
         try
         {
@@ -60,6 +61,8 @@ public static class DbInitializer
 
                     // Проверяваме дали в съответната SQL таблица вече има заведени данни
                     IQueryable queryableTable = (IQueryable)dbSetProperty.GetValue(context);
+                    if (queryableTable == null) continue;
+
                     bool hasData = false;
                     foreach (var _ in queryableTable) { hasData = true; break; }
 
@@ -73,8 +76,12 @@ public static class DbInitializer
                     if (deserializedList == null) continue;
 
                     object dbSetInstance = dbSetProperty.GetValue(context);
-                    MethodInfo addRangeMethod = dbSetInstance.GetType().GetMethod("AddRange", new[] { typeof(IEnumerable<>).MakeGenericType(entityType) })
-                                              ?? dbSetInstance.GetType().GetMethod("AddRange", new[] { typeof(object) });
+                    if (dbSetInstance == null) continue;
+
+                    MethodInfo addRangeMethod = dbSetInstance.GetType().GetMethod("AddRange", new Type[] { typeof(IEnumerable<>).MakeGenericType(entityType) })
+                                              ?? dbSetInstance.GetType().GetMethod("AddRange", new Type[] { typeof(object) });
+
+                    if (addRangeMethod == null) continue;
 
                     // АВТОМАТИЧНА СИСТЕМНА ЗАЩИТА: Отваряме Identity Insert само за таблиците с твърди Id релации
                     bool requiresIdentityInsert = tableName == "SystemMenus" ||
@@ -89,7 +96,8 @@ public static class DbInitializer
                         context.Database.ExecuteSqlRaw($"SET IDENTITY_INSERT {tableName} ON");
                     }
 
-                    addRangeMethod.Invoke(dbSetInstance, new[] { deserializedList });
+                    // КОРЕКЦИЯ CS1503: Подаваме правилно конструиран обектен масив 'new object[]' към Invoke метода
+                    addRangeMethod.Invoke(dbSetInstance, new object[] { deserializedList });
                     context.SaveChanges();
 
                     if (requiresIdentityInsert)
