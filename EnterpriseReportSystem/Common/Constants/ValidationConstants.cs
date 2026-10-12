@@ -62,5 +62,8 @@ public static class ValidationConstants
     public const int MenuCssClassMaxLength = 150;
     public const int MenuShortcutMaxLength = 30;
 
+    // Валутна децимална точност (Премахване на магически числа)
+    public const int ExchangeRatePrecision = 18; // Общ брой цифри в базата
+    public const int ExchangeRateScale = 5;      // Брой цифри след десетичната запетая
 
 }
