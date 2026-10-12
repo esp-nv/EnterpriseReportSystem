@@ -1,0 +1,22 @@
+[
+  {
+    "Id": 1,
+    "FacilityCode": "FAC_01",
+    "Name": "Основна Кравеферма - Сектор А",
+    "Address": "Стопански Двор Изток",
+    "PostalCode": "4199",
+    "Notes": "Главен холдингов обект за животни",
+    "CompanyOrPersonId": 1,
+    "TownOrVillageId": 1
+  },
+  {
+    "Id": 2,
+    "FacilityCode": "FAC_02",
+    "Name": "Машинен Двор и Сервизна База",
+    "Address": "Промишлена Зона",
+    "PostalCode": "4199",
+    "Notes": "База за трактори и комбайни",
+    "CompanyOrPersonId": 1,
+    "TownOrVillageId": 1
+  }
+]

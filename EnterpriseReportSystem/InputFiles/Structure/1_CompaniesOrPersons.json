@@ -1,0 +1,10 @@
+[
+  {
+    "Id": 1,
+    "ClientCode": "HOLD_01",
+    "Name": "Централен Агро Холдинг ЕООД",
+    "TaxIdentifier": "BG123456789",
+    "Address =": "Главен Стопански Двор",
+    "RegisteredTownId": 1
+  }
+]
