@@ -1,10 +1,11 @@
-﻿using System;
+﻿using EnterpriseReportSystem.Models.Entities;
+using EnterpriseReportSystem.Models.Entities.Ledger;
+using EnterpriseReportSystem.Models.Entities.Structure;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using System.Collections.Generic;
-using EnterpriseReportSystem.Models.Entities;
-using EnterpriseReportSystem.Models.Entities.Ledger;
 
 namespace EnterpriseReportSystem.Data;
 
@@ -52,6 +53,55 @@ public static class DbInitializer
                 var attributes = JsonSerializer.Deserialize<List<AssetAttribute>>(attributesElement.GetRawText());
                 if (attributes != null) context.AssetAttributes.AddRange(attributes);
                 context.SaveChanges();
+
+                // 4. ДИНАМИЧНО ЗАРЕЖДАНЕ НА СИСТЕМНИТЕ МЕНЮТА ОТ JSON
+                if (!context.SystemMenus.Any())
+                {
+                    string menuPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "InputFiles", "system_menu.json");
+                    if (!File.Exists(menuPath)) menuPath = Path.Combine(Directory.GetCurrentDirectory(), "InputFiles", "system_menu.json");
+
+                    if (File.Exists(menuPath))
+                    {
+                        string menuJson = File.ReadAllText(menuPath);
+                        var menus = JsonSerializer.Deserialize<List<SystemMenu>>(menuJson);
+                        if (menus != null)
+                        {
+                            context.SystemMenus.AddRange(menus);
+                            context.SaveChanges();
+                        }
+                    }
+                }
+
+                // 5. ДИНАМИЧНО ЗАРЕЖДАНЕ НА СИСТЕМНИТЕ ПОТРЕБИТЕЛИ
+                if (!context.SystemUsers.Any())
+                {
+                    string usersPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "InputFiles", "system_users.json");
+                    if (!File.Exists(usersPath)) usersPath = Path.Combine(Directory.GetCurrentDirectory(), "InputFiles", "system_users.json");
+
+                    if (File.Exists(usersPath))
+                    {
+                        string usersJson = File.ReadAllText(usersPath);
+                        var users = JsonSerializer.Deserialize<List<SystemUser>>(usersJson);
+                        if (users != null)
+                        {
+                            // Тъй като базата в момента е празна от към фирми, подсигуряваме тестов запис на фирма, за да не гръмне релацията
+                            if (!context.CompaniesOrPersons.Any())
+                            {
+                                var defaultCompany = new CompanyOrPerson { ClientCode = "HOLD_01", Name = "Централен Агро Холдинг ЕООД", TaxIdentifier = "BG123456789", Address = "Главен Стопански Двор", RegisteredTownId = 1 };
+                                context.CompaniesOrPersons.Add(defaultCompany);
+                                context.SaveChanges();
+                            }
+
+                            // Напасваме потребителите към заведената фирма
+                            var firstCompany = context.CompaniesOrPersons.First();
+                            foreach (var u in users) { u.CompanyId = firstCompany.Id; }
+
+                            context.SystemUsers.AddRange(users);
+                            context.SaveChanges();
+                        }
+                    }
+                }
+
             }
 
             return "SUCCESS"; // Всичко е заредено перфектно

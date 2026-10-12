@@ -35,6 +35,11 @@ public class ApplicationDbContext : DbContext
     // РЕЛАЦИОННИ DB SET ТАБЛИЦИ (ДОБАВЯНЕ НА СПЕЦИФИКАЦИИТЕ)
     public DbSet<AssetSpecification> AssetSpecifications { get; set; } = null!;
 
+    // РЕЛАЦИОННИ DB SET ТАБЛИЦИ (СТРУКТУРНИ)
+    public DbSet<SystemUser> SystemUsers { get; set; } = null!;
+    public DbSet<SystemMenu> SystemMenus { get; set; } = null!;
+
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

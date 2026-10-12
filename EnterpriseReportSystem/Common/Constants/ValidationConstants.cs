@@ -52,4 +52,8 @@ public static class ValidationConstants
     public const int AttributeNameMaxLength = 60;   // напр. "Пол", "Номер на двигател"
     public const int AttributeValueMaxLength = 250;  // напр. "Женско", "ДВГ-987654"
 
+    // Системни потребители и менюта
+    public const int UsernameMaxLength = 50;
+    public const int MenuNameMaxLength = 100;
+
 }

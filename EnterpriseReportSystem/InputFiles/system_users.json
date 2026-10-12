@@ -1,0 +1,20 @@
+[
+  {
+    "Id": 1,
+    "Username": "ivan_petyr",
+    "CompanyId": 1,
+    "Password": "password123"
+  },
+  {
+    "Id": 2,
+    "Username": "maria_holding",
+    "CompanyId": 2,
+    "Password": "admin_pass_2026"
+  },
+  {
+    "Id": 3,
+    "Username": "stefan_agro",
+    "CompanyId": 1,
+    "Password": "agro_pass_99"
+  }
+]
