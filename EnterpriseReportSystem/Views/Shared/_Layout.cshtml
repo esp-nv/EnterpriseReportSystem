@@ -1,86 +1,113 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@inject EnterpriseReportSystem.Data.ApplicationDbContext _context
+@using Microsoft.EntityFrameworkCore
+
+@{
+    // 1. СМУЧЕМ НАСТРОЙКИТЕ НА ТЕКУЩИЯ ПОТРЕБИТЕЛ ОД SQL (Временно взимаме Иван с Id=1 за проба)
+    var currentUser = _context.SystemUsers.FirstOrDefault(u => u.Id == 1)
+        ?? new EnterpriseReportSystem.Models.Entities.Structure.SystemUser { Username = "Гост", ThemeType = "LIGHT", LayoutType = "WORD", IsMenuExpanded = true };
+
+    // Превръщаме името на темата в малки букви, за да съвпадне с името на CSS файла (light, dark, photoshop)
+    string themeFile = currentUser.ThemeType.ToLower();
+
+    // 2. ИЗВЛИЧАМЕ ЙЕРАРХИЧНОТО МЕНЮ ОТ БАЗАТА ДАННИ ПРЕЗ LINQ
+    var allMenus = _context.SystemMenus.Include(m => m.ChildMenus).ToList();
+    var rootMenus = allMenus.Where(m => m.ParentMenuId == null).ToList();
+    var translations = _context.SystemMenuTranslations.Where(t => t.LanguageId == 1).ToList(); // 1 = Български
+}
+
+<!DOCTYPE html>
+<html lang="bg">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - EnterpriseReportSystem</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/EnterpriseReportSystem.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://jsdelivr.net"> <!--светнат всички икони на екрана -->
 
+    <!-- Базови Bootstrap 5 Стилизации -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://jsdelivr.net">
+
+    <!-- ГЛОБАЛЕН СИСТЕМЕН СТИЛ -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <!-- МАГИЯТА НА ТЕМИТЕ: Динамично зареждане на личния CSS файл на потребителя от папка themes -->
+    <link rel="stylesheet" href="~/css/themes/@(themeFile).css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">EnterpriseReportSystem</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <ul class="navbar-nav flex-grow-1">
-                            <!-- 1. СЧЕТОВОДНИ СПРАВКИ -->
-                            <li class="nav-item">
-                                <a class="nav-link text-dark fw-bold" asp-controller="Report" asp-action="Index">📊 Оборотна Ведомост</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark fw-bold" asp-controller="Audit" asp-action="SmartImport">🧩 Excel Импорт & Одит</a>
-                            </li>
 
-                            <!-- 2. НОМЕНКЛАТУРИ И КОНФИГУРАЦИЯ -->
-                            <li class="nav-item">
-                                <a class="nav-link text-primary fw-bold" asp-controller="Setup" asp-action="Hierarchy">⚙️ Настройка Йерархия</a>
-                            </li>
+    <!-- ГЛАВЕН РЕСПОНСИВ КОНТЕЙНЕР (Зависи от LayoutType: WORD или DASHBOARD) -->
+    @if (currentUser.LayoutType == "WORD")
+    {
+        <!-- ТВОЯТА КЛАСИЧЕСКА WORD ХОРИЗОНТАЛНА ЛЕНТА С ИНСТРУМЕНТИ -->
+        <header class="border-bottom border-light-subtle bg-body-tertiary">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3 shadow-sm py-2">
+                <div class="container-fluid">
+                    <a class="navbar-brand fw-bold text-uppercase fs-6 tracking-wider text-warning" asp-area="" asp-controller="Report" asp-action="Index">
+                        <i class="bi bi-building-fill me-2"></i> Холдинг ERP
+                    </a>
+                    <button class="navbar-dark navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#wordRibbon" aria-controls="wordRibbon" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
 
-                            <!-- 3. ОПЕРАТИВНО ВЪВЕЖДАНЕ НА ДАННИ -->
-                            <li class="nav-item">
-                                <a class="nav-link text-success fw-bold" asp-controller="Setup" asp-action="CreateAsset">➕ Нов Актив</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-success fw-bold" asp-controller="Setup" asp-action="LogOperation">📝 Приход / Разход</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-warning fw-bold text-dark" asp-controller="Setup" asp-action="TransferAsset">🔄 Логистичен Трансфер</a>
-                            </li>
+                    <div class="collapse navbar-collapse" id="wordRibbon">
+                        <!-- ГЕНЕРИРАНЕ НА ГЛАВНИТЕ МЕНЮТА КАТО ТАБОВЕ В ЛЕНТАТА -->
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0 fs-7">
+                            @foreach (var root in rootMenus)
+                            {
+                                var rootTrans = translations.FirstOrDefault(t => t.SystemMenuId == root.Id);
+                                string rootName = rootTrans != null ? rootTrans.TranslatedName : "Меню";
+                                string rootTooltip = rootTrans != null ? rootTrans.TranslatedNotes : "";
+
+                                <li class="nav-item dropdown px-1">
+                                    <a class="nav-link dropdown-toggle text-white fw-bold px-3 rounded-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="@rootTooltip">
+                                        <i class="@root.CustomCssClass me-1"></i> @rootName
+                                    </a>
+                                    <!-- ПРИ КЛИК СЕ РАЗГЪРТАТ ПОДЧИНЕНИТЕ НИВА 2 (Подменюта) -->
+                                    <ul class="dropdown-menu dropdown-menu-dark border-secondary shadow-sm rounded-2 mt-2">
+                                        @foreach (var child in root.ChildMenus)
+                                        {
+                                            var childTrans = translations.FirstOrDefault(t => t.SystemMenuId == child.Id);
+                                            string childName = childTrans != null ? childTrans.TranslatedName : "Подменю";
+
+                                            <li>
+                                                <!-- Линковете автоматично се връзват към домейните в контролерите ни -->
+                                                <a class="dropdown-menu-item dropdown-item py-2 px-3 small d-flex align-items-center justify-content-between"
+                                                   href="/Setup/CreateAsset" title="@(child.CustomShortcut.ToUpper())">
+                                                    <span><i class="@child.CustomCssClass me-2 text-secondary"></i> @childName</span>
+                                                    @if (!string.IsNullOrEmpty(child.CustomShortcut))
+                                                    {
+                                                        <span class="badge bg-secondary ms-4 px-2 py-1 fs-9 rounded-1 text-uppercase text-muted">@child.CustomShortcut</span>
+                                                    }
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </li>
+                            }
                         </ul>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark fw-bold" asp-area="" asp-controller="Report" asp-action="Index">
-                                📊 Оборотна Ведомост
+                        <!-- ПОТРЕБИТЕЛСКИ ПРОФИЛ И ОГРАНИЧЕНИЕ НА ФИРМАТА (ДЯСНА ЧАСТ) -->
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-2 fw-bold">
+                                <i class="bi bi-person-badge me-1"></i> @currentUser.Username
+                            </span>
+                            <a href="/User/Settings" class="btn btn-sm btn-outline-light rounded-2 fw-bold" title="Потребителски настройки и теми">
+                                <i class="bi bi-gear-fill"></i>
                             </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark fw-bold" asp-area="" asp-controller="Audit" asp-action="Compare">
-                                ⚖️ Контрол и Одит
-                            </a>
-                        </li>
-
-
-                    </ul>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+            </nav>
+        </header>
+    }
+
+    <!-- ГЛАВЕН ТЯЛО КОНТЕНТ (ЗАРЕЖДА СЕ АВТОМАТИЧНО) -->
+    <div class="container-fluid p-0">
+        <main role="main" class="pb-5">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - EnterpriseReportSystem - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
+    <!-- ФИНАЛНИ СИСТЕМНИ СКРИПТОВЕ -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
