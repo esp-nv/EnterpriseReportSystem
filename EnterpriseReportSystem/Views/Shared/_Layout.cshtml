@@ -2,18 +2,36 @@
 @using Microsoft.EntityFrameworkCore
 
 @{
-    // 1. СМУЧЕМ НАСТРОЙКИТЕ НА ТЕКУЩИЯ ПОТРЕБИТЕЛ ОД SQL (Временно взимаме Иван с Id=1 за проба)
-    // Намираме супер админа, който вече е заведен успешно
+    // 1. СИГУРНО ИЗВЛИЧАНЕ НА ПОТРЕБИТЕЛЯСКИЯ ПРОФИЛ
     var currentUser = _context.SystemUsers.FirstOrDefault(u => u.Id == 1)
-        ?? new EnterpriseReportSystem.Models.Entities.Structure.SystemUser { Username = "Гост", ThemeType = "light", LayoutType = "WORD", IsMenuExpanded = true };
-    
-    // Превръщаме името на темата в малки букви, за да съвпадне с името на CSS файла (light, dark, photoshop)
-    string themeFile = currentUser.ThemeType.Trim().ToLower(); // Сигурен малък регистър
- 
-    // 2. ИЗВЛИЧАМЕ ЙЕРАРХИЧНОТО МЕНЮ ОТ БАЗАТА ДАННИ ПРЕЗ LINQ
-    var allMenus = _context.SystemMenus.Include(m => m.ChildMenus).ToList();
+        ?? new EnterpriseReportSystem.Models.Entities.Structure.SystemUser
+        {
+            Username = "admin_holding",
+            ThemeType = "photoshop",
+            LayoutType = "WORD",
+            IsMenuExpanded = true
+        };
+
+    // Подсигуряваме чист малък регистър за името на CSS файла
+    string themeFile = (!string.IsNullOrEmpty(currentUser.ThemeType))
+        ? currentUser.ThemeType.Trim().ToLower()
+        : "light";
+
+    // Подсигуряваме голям регистър за типа на навигацията
+    string layoutStyle = (!string.IsNullOrEmpty(currentUser.LayoutType))
+        ? currentUser.LayoutType.Trim().ToUpper()
+        : "WORD";
+
+    // 2. ИЗВЛИЧАНЕ НА МЕНЮТАТА КАТО ЧИСТ ЛИНЕЕН МАСИВ (БЕЗ РЕКУРСИВЕН INCLUDE)
+    var allMenus = _context.SystemMenus.AsNoTracking().ToList()
+        ?? new List<EnterpriseReportSystem.Models.Entities.Structure.SystemMenu>();
+
+    // Отделяме главните менюта (Ниво 1)
     var rootMenus = allMenus.Where(m => m.ParentMenuId == null).ToList();
-    var translations = _context.SystemMenuTranslations.Where(t => t.LanguageId == 1).ToList(); // 1 = Български
+
+    // Извличаме преводите за Български (LanguageId = 1)
+    var translations = _context.SystemMenuTranslations.AsNoTracking().Where(t => t.LanguageId == 1).ToList()
+        ?? new List<EnterpriseReportSystem.Models.Entities.Structure.SystemMenuTranslation>();
 }
 
 <!DOCTYPE html>
@@ -30,27 +48,25 @@
     <!-- ГЛОБАЛЕН СИСТЕМЕН СТИЛ -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
-    <!-- МАГИЯТА НА ТЕМИТЕ: Динамично зареждане на личния CSS файл на потребителя от папка themes -->
+    <!-- ДИНАМИЧНО ЗАРЕЖДАНЕ НА ЛИЧНИЯ CSS ФАЙЛ НА ПОТРЕБИТЕЛЯ -->
     <link rel="stylesheet" href="~/css/themes/@(themeFile).css" asp-append-version="true" />
 </head>
 <body>
 
-    <!-- ГЛАВЕН РЕСПОНСИВ КОНТЕЙНЕР (Зависи от LayoutType: WORD или DASHBOARD) -->
-    @if (currentUser.LayoutType == "WORD")
+    <!-- ГЛАВЕН КОНТЕНТ (УПРАВЛЯВА СЕ ОТ LAYOUT STYLE) -->
+    @if (layoutStyle == "WORD")
     {
-        <!-- ТВОЯТА КЛАСИЧЕСКА WORD ХОРИЗОНТАЛНА ЛЕНТА С ИНСТРУМЕНТИ -->
         <header class="border-bottom border-light-subtle bg-body-tertiary">
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3 shadow-sm py-2 fixed-top">
                 <div class="container-fluid">
-                    <a class="navbar-brand fw-bold text-uppercase fs-6 tracking-wider text-warning" asp-area="" asp-controller="Report" asp-action="Index">
+                    <a class="navbar-brand fw-bold text-uppercase fs-6 tracking-wider text-warning" href="/Report/Index">
                         <i class="bi bi-building-fill me-2"></i> Холдинг ERP
                     </a>
-                    <button class="navbar-dark navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#wordRibbon" aria-controls="wordRibbon" aria-expanded="false" aria-label="Toggle navigation">
+                    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#wordRibbon">
                         <span class="navbar-toggler-icon"></span>
                     </button>
 
                     <div class="collapse navbar-collapse" id="wordRibbon">
-                        <!-- ГЕНЕРИРАНЕ НА ГЛАВНИТЕ МЕНЮТА КАТО ТАБОВЕ В ЛЕНТАТА -->
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0 fs-7">
                             @foreach (var root in rootMenus)
                             {
@@ -58,25 +74,26 @@
                                 string rootName = rootTrans != null ? rootTrans.TranslatedName : "Меню";
                                 string rootTooltip = rootTrans != null ? rootTrans.TranslatedNotes : "";
 
+                                // ФИЛТРИРАМЕ ПОДМЕНЮТАТА ЧИСТО И ЛИНЕЙНО ПО РОДИТЕЛСКО ID (ЗАЩИТА ОТ БЕЗКРАЕН ЦИКЪЛ)
+                                var childMenus = allMenus.Where(m => m.ParentMenuId == root.Id).ToList();
+
                                 <li class="nav-item dropdown px-1">
-                                    <a class="nav-link dropdown-toggle text-white fw-bold px-3 rounded-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="@rootTooltip">
-                                        <i class="@root.CustomCssClass me-1"></i> @rootName
+                                    <a class="nav-link dropdown-toggle text-white fw-bold px-3 rounded-2" href="#" role="button" data-bs-toggle="dropdown" title="@rootTooltip">
+                                        <i class="@(root.CustomCssClass) me-1"></i> @rootName
                                     </a>
-                                    <!-- ПРИ КЛИК СЕ РАЗГЪРТАТ ПОДЧИНЕНИТЕ НИВА 2 (Подменюта) -->
                                     <ul class="dropdown-menu dropdown-menu-dark border-secondary shadow-sm rounded-2 mt-2">
-                                        @foreach (var child in root.ChildMenus)
+                                        @foreach (var child in childMenus)
                                         {
                                             var childTrans = translations.FirstOrDefault(t => t.SystemMenuId == child.Id);
                                             string childName = childTrans != null ? childTrans.TranslatedName : "Подменю";
+                                            string childShortcut = child.CustomShortcut ?? string.Empty;
 
                                             <li>
-                                                <!-- Линковете автоматично се връзват към домейните в контролерите ни -->
-                                                <a class="dropdown-menu-item dropdown-item py-2 px-3 small d-flex align-items-center justify-content-between"
-                                                   href="/Setup/CreateAsset" title="@(child.CustomShortcut.ToUpper())">
-                                                    <span><i class="@child.CustomCssClass me-2 text-secondary"></i> @childName</span>
-                                                    @if (!string.IsNullOrEmpty(child.CustomShortcut))
+                                                <a class="dropdown-item py-2 px-3 small d-flex align-items-center justify-content-between" href="/Setup/CreateAsset">
+                                                    <span><i class="@(child.CustomCssClass) me-2 text-secondary"></i> @childName</span>
+                                                    @if (!string.IsNullOrEmpty(childShortcut))
                                                     {
-                                                        <span class="badge bg-secondary ms-4 px-2 py-1 fs-9 rounded-1 text-uppercase text-muted">@child.CustomShortcut</span>
+                                                        <span class="badge bg-secondary ms-4 px-2 py-1 text-uppercase text-muted" style="font-size: 0.65rem;">@childShortcut</span>
                                                     }
                                                 </a>
                                             </li>
@@ -86,12 +103,11 @@
                             }
                         </ul>
 
-                        <!-- ПОТРЕБИТЕЛСКИ ПРОФИЛ И ОГРАНИЧЕНИЕ НА ФИРМАТА (ДЯСНА ЧАСТ) -->
                         <div class="d-flex align-items-center gap-3">
                             <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-2 fw-bold">
                                 <i class="bi bi-person-badge me-1"></i> @currentUser.Username
                             </span>
-                            <a href="/User/Settings" class="btn btn-sm btn-outline-light rounded-2 fw-bold" title="Потребителски настройки и теми">
+                            <a href="/User/Settings" class="btn btn-sm btn-outline-light rounded-2 fw-bold">
                                 <i class="bi bi-gear-fill"></i>
                             </a>
                         </div>
@@ -101,20 +117,13 @@
         </header>
     }
 
-    <!-- ГЛАВЕН ТЯЛО КОНТЕНТ (ЗАРЕЖДА СЕ АВТОМАТИЧНО) 
-    <div class="container-fluid p-0">
-        <main role="main" class="pb-5">
-            @RenderBody()
-        </main>
-    </div>-->
-    <!-- ГЛАВЕН ТЯЛО КОНТЕНТ (С ГОРНО РАЗСТОЯНИЕ ЗА ФИКСИРАНОТО МЕНЮ) -->
+    <!-- ГЛАВНО СЪДЪРЖАНИЕ С ГОРНО РАЗСТОЯНИЕ ЗА ФИКСИРАНАТА ЛЕНТА -->
     <div class="container-fluid p-0" style="padding-top: 70px;">
         <main role="main" class="pb-5">
             @RenderBody()
         </main>
     </div>
 
-    <!-- ФИНАЛНИ СИСТЕМНИ СКРИПТОВЕ -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
