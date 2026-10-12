@@ -21,6 +21,9 @@ public class SystemUser
     [Required]
     public string ThemeType { get; set; } = "LIGHT"; // LIGHT, DARK, PHOTOSHOP
 
+    // НОВИЯТ АДМИНИСТРАТОРСКИ ФЛАГ: Дава глобален достъп над целия холдинг
+    public bool IsGlobalAdmin { get; set; } = false;
+
     public int CompanyId { get; set; }
     public CompanyOrPerson Company { get; set; } = null!;
 }

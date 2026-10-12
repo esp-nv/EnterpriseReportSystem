@@ -523,6 +523,80 @@ namespace EnterpriseReportSystem.Migrations
                     b.ToTable("FacilityLogs");
                 });
 
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemMenu", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CustomCssClass")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("ParentMenuId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentMenuId");
+
+                    b.ToTable("SystemMenus");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsMenuExpanded")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LayoutType")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ThemeType")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("SystemUsers");
+                });
+
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.ExchangeRateHistory", b =>
                 {
                     b.HasOne("EnterpriseReportSystem.Models.Entities.Currency", "FromCurrency")
@@ -696,6 +770,27 @@ namespace EnterpriseReportSystem.Migrations
                     b.Navigation("Facility");
                 });
 
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemMenu", b =>
+                {
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Structure.SystemMenu", "ParentMenu")
+                        .WithMany("ChildMenus")
+                        .HasForeignKey("ParentMenuId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ParentMenu");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemUser", b =>
+                {
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Structure.CompanyOrPerson", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetGroup", b =>
                 {
                     b.Navigation("AssetSubGroups");
@@ -724,6 +819,11 @@ namespace EnterpriseReportSystem.Migrations
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.Facility", b =>
                 {
                     b.Navigation("FacilityLogs");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemMenu", b =>
+                {
+                    b.Navigation("ChildMenus");
                 });
 #pragma warning restore 612, 618
         }
