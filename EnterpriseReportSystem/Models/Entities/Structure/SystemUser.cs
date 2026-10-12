@@ -24,6 +24,9 @@ public class SystemUser
     // НОВИЯТ АДМИНИСТРАТОРСКИ ФЛАГ: Дава глобален достъп над целия холдинг
     public bool IsGlobalAdmin { get; set; } = false;
 
+    // НОВО: Списък с любими менюта / бърз достъп (пази запетаи с Id-та напр. "2,8")
+    public string WishListMenuIds { get; set; } = string.Empty;
+
     public int CompanyId { get; set; }
     public CompanyOrPerson Company { get; set; } = null!;
 }

@@ -92,9 +92,20 @@ public static class DbInitializer
                                 context.SaveChanges();
                             }
 
-                            // Напасваме потребителите към заведената фирма
+                            // Напасваме потребителите към заведената фирма и пренасяме правата им
                             var firstCompany = context.CompaniesOrPersons.First();
-                            foreach (var u in users) { u.CompanyId = firstCompany.Id; }
+                            foreach (var u in users)
+                            {
+                                if (!u.IsGlobalAdmin)
+                                {
+                                    u.CompanyId = firstCompany.Id; // Обикновените потребители се заключват към фирма 1
+                                }
+                                else
+                                {
+                                    u.CompanyId = firstCompany.Id; // Администраторът също има базова фирма, но глобални права
+                                }
+                            }
+
 
                             context.SystemUsers.AddRange(users);
                             context.SaveChanges();

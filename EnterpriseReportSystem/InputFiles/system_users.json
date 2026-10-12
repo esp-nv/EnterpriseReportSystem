@@ -4,39 +4,32 @@
     "Username": "admin_holding",
     "CompanyId": 1,
     "Password": "super_secret_admin",
-    "LayoutType": "DASHBOARD",
+    "LayoutType": "WORD",
     "IsMenuExpanded": true,
     "ThemeType": "PHOTOSHOP",
-    "IsGlobalAdmin": true
+    "IsGlobalAdmin": true,
+    "WishListMenuIds": "2,8"
   },
   {
     "Id": 2,
     "Username": "ivan_petyr",
     "CompanyId": 1,
     "Password": "password123",
-    "LayoutType": "DASHBOARD",
+    "LayoutType": "WORD",
     "IsMenuExpanded": true,
     "ThemeType": "LIGHT",
-    "IsGlobalAdmin": false
+    "IsGlobalAdmin": false,
+    "WishListMenuIds": "2"
   },
   {
     "Id": 3,
     "Username": "maria_holding",
     "CompanyId": 2,
     "Password": "admin_pass_2026",
-    "LayoutType": "EXCEL",
-    "IsMenuExpanded": false,
-    "ThemeType": "LIGHT",
-    "IsGlobalAdmin": false
-  },
-  {
-    "Id": 4,
-    "Username": "stefan_agro",
-    "CompanyId": 1,
-    "Password": "agro_pass_99",
     "LayoutType": "WORD",
-    "IsMenuExpanded": true,
+    "IsMenuExpanded": false,
     "ThemeType": "DARK",
-    "IsGlobalAdmin": false
+    "IsGlobalAdmin": false,
+    "WishListMenuIds": "8,9"
   }
 ]

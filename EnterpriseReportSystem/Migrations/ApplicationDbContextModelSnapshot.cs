@@ -567,6 +567,9 @@ namespace EnterpriseReportSystem.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsGlobalAdmin")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsMenuExpanded")
                         .HasColumnType("bit");
 
