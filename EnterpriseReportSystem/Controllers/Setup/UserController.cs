@@ -21,7 +21,6 @@ public class UserController : Controller
     [HttpGet]
     public async Task<IActionResult> Settings()
     {
-        // Ако базата е празна, наливане веднага
         if (!await _context.SystemUsers.AnyAsync())
         {
             DbInitializer.Seed(_context);
@@ -34,32 +33,32 @@ public class UserController : Controller
             return NotFound("Потребителят не е намерен.");
         }
 
-        return View(user); // EF автоматично ще намери папка Views/User/Settings.cshtml
+        return View(user);
     }
 
-
-    // 2. ЗАПИСВАНЕ НА НАСТРОЙКИТЕ ОТ ЕКРАНА (POST)
+    // 2. ЗАПИСВАНЕ НА НАСТРОЙКИТЕ (POST) - С КОРЕКЦИЯ НА ОБВЪРЗВАНЕТО И ПРЕНАСОЧВАНЕТО
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SaveSettings(int id, string layoutType, string themeType, bool isMenuExpanded)
+    public async Task<IActionResult> SaveSettings(int Id, string LayoutType, string ThemeType, bool IsMenuExpanded)
     {
-        var user = await _context.SystemUsers.FirstOrDefaultAsync(u => u.Id == id);
+        var user = await _context.SystemUsers.FirstOrDefaultAsync(u => u.Id == Id);
 
         if (user == null)
         {
             return NotFound();
         }
 
-        user.LayoutType = layoutType;
-        user.ThemeType = themeType.Trim().ToLower(); // Пазим в чист малък регистър за CSS
-        user.IsMenuExpanded = isMenuExpanded;
+        // Записваме точно зададените от екрана стойности
+        user.LayoutType = LayoutType;
+        user.ThemeType = ThemeType.Trim().ToLower(); // Пазим в малки букви за CSS файловете
+        user.IsMenuExpanded = IsMenuExpanded;
 
         _context.SystemUsers.Update(user);
         await _context.SaveChangesAsync();
 
         TempData["SettingsSuccess"] = "🎉 Визуалната тема и стил на менюто бяха обновени в SQL Server на секундата!";
 
-        // Пренасочваме към Централния панел с отчети (затваряме настройките)
-        return RedirectToAction("Index", "Report");
+        // КОРЕКЦИЯ: Пренасочваме строго към празната Home страница (Home/Index)
+        return RedirectToAction("Index", "Home");
     }
 }

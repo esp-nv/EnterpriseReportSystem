@@ -24,32 +24,35 @@
 
     <link class="theme-link" rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/EnterpriseReportSystem.styles.css" asp-append-version="true" />
+
+    <!-- МАГИЯТА НА ТЕМИТЕ: Браузърът автоматично зарежда съответния файл (light, dark или photoshop) -->
+    <link rel="stylesheet" href="~/css/themes/@(displayTheme.Trim().ToLower()).css" asp-append-version="true" />
 </head>
+
+
+
 <body>
 
-    <!-- ОФИЦИАЛЕН ТЪМЕН БУТСТРАП ХЕДЪР -->
-    <header class="p-3 bg-dark text-white border-bottom border-secondary shadow-sm">
+    <!-- ОФИЦИАЛЕН ТЪМЕН БУТСТРАП ХЕДЪР (ВЕЧЕ НАПЪЛНО ДИНАМИЧЕН И СВЪРЗАН С ТЕМИТЕ) -->
+    <header class="p-3 shadow-sm" style="background-color: var(--sidebar-bg) !important; color: var(--text-main) !important; border-bottom: 1px solid var(--border-color) !important;">
         <div class="container-fluid px-4">
             <div class="d-flex align-items-center justify-content-between">
 
                 <!-- ЛЯВА ЧАСТ: ЛОГО И ИНТЕРАКТИВНИ ВРЪЗКИ -->
                 <div class="d-flex align-items-center gap-4">
-                    <!-- Връзката на логото сочи строго към началната празна Home страница (/) -->
-                    <a href="/" class="logo-link d-flex align-items-center text-white text-decoration-none fw-bold fs-5 tracking-wider text-warning">
+                    <a href="/" class="logo-link d-flex align-items-center text-decoration-none fw-bold fs-5 tracking-wider text-warning">
                         <i class="bi bi-building-fill me-2"></i> ХОЛДИНГ ERP
                     </a>
 
-                    <!-- Линейна навигация без пречупвания за перфектен респонсив дизайн -->
                     <ul class="nav d-flex align-items-center gap-2 mb-0 fs-7">
                         <li>
-                            <!-- Интелигентна проверка на уеб пътя за Оперативен Панел -->
-                            <a href="/Report/Index" class="nav-link px-3 fw-bold text-uppercase @(Context.Request.Path.Value == "/Report/Index" || Context.Request.Path.Value == "/Report" ? "active-page" : "text-white")">
+                            <!-- КЛАСЪТ text-white СЪЩО Е ЗАМЕНЕН, ЗА ДА СЛЕДВА ТЕМАТА -->
+                            <a href="/Report/Index" class="nav-link px-3 fw-bold text-uppercase @(Context.Request.Path.Value == "/Report/Index" || Context.Request.Path.Value == "/Report" ? "active-page" : "")" style="color: var(--text-main) !important;">
                                 Оперативен Панел
                             </a>
                         </li>
                         <li>
-                            <!-- Интелигентна проверка на уеб пътя за Нов Актив -->
-                            <a href="/Setup/CreateAsset" class="nav-link px-3 fw-bold text-uppercase @(Context.Request.Path.Value == "/Setup/CreateAsset" ? "active-page" : "text-white")">
+                            <a href="/Setup/CreateAsset" class="nav-link px-3 fw-bold text-uppercase @(Context.Request.Path.Value == "/Setup/CreateAsset" ? "active-page" : "")" style="color: var(--text-main) !important;">
                                 Нов Актив
                             </a>
                         </li>
@@ -58,64 +61,48 @@
 
                 <!-- ДЯСНА ЧАСТ: КРЪГЪЛ АВАТАР И ПАДАЩО МЕНЮ НА НАШИЯ USER -->
                 <div class="dropdown text-end">
-                    <a href="#" class="d-flex align-items-center link-light text-decoration-none dropdown-toggle px-3 py-1 rounded-2 border border-secondary bg-secondary-subtle shadow-sm"
-                       id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <!-- Кръгла икона за потребител спрямо примера на Bootstrap -->
+                    <!-- ПРОМЕНЯМЕ И БЕКГРАУНДА НА БУТОНА ЗА USER-A ДА СЛЕДВА ТЕМАТА -->
+                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle px-3 py-1 rounded-2 border shadow-sm"
+                       id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                       style="background-color: var(--bg-card) !important; color: var(--text-main) !important; border-color: var(--border-color) !important;">
+
                         <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center fw-bold me-2 shadow-sm" style="width: 32px; height: 32px; font-size: 0.85rem;">
                             @(displayUsername.Substring(0, Math.Min(2, displayUsername.Length)).ToUpper())
                         </div>
-                        <span class="fw-bold small text-white">@displayUsername</span>
+                        <span class="fw-bold small">@displayUsername</span>
                     </a>
 
-                    <!-- ТВОИТЕ СТРОГО ПОДРЕДЕНИ 8 СЕКЦИИ НА МЕНЮТО -->
                     <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow border-secondary mt-2 fs-7" aria-labelledby="userDropdown" style="min-width: 240px;">
-
-                        <!-- 1. Превключи на друг потребител -->
                         <li>
                             <a class="dropdown-item py-2 d-flex align-items-center" href="#">
                                 <i class="bi bi-people me-2 text-secondary"></i> Превключи на друг user
                             </a>
                         </li>
-
-                        <!-- 2. Разделител -->
                         <li><hr class="dropdown-divider border-secondary"></li>
-
-                        <!-- 3. Вид меню -->
                         <li class="dropdown-header text-uppercase fw-bold pb-1 text-muted" style="font-size: 0.65rem;">
                             <i class="bi bi-grid-1x2 me-1"></i> Вид меню
                         </li>
                         <li class="px-3 pb-2">
                             <span class="badge bg-secondary text-white w-100 py-1 text-uppercase border border-secondary">@displayLayout</span>
                         </li>
-
-                        <!-- 4. Тема -->
                         <li class="dropdown-header text-uppercase fw-bold pb-1 text-muted" style="font-size: 0.65rem;">
                             <i class="bi bi-palette me-1"></i> Тема
                         </li>
                         <li class="px-3 pb-2">
                             <span class="badge bg-warning text-dark w-100 py-1 text-uppercase fw-bold">@displayTheme</span>
                         </li>
-
-                        <!-- 5. Разделител -->
                         <li><hr class="dropdown-divider border-secondary"></li>
-
-                        <!-- 6. Настройки -->
                         <li>
                             <a class="dropdown-item py-2 d-flex align-items-center fw-bold text-warning" href="/User/Settings">
                                 <i class="bi bi-gear-fill me-2"></i> Настройки
                             </a>
                         </li>
-
-                        <!-- 7. Разделител -->
                         <li><hr class="dropdown-divider border-secondary"></li>
-
-                        <!-- 8. Изход без линкове -->
                         <li>
                             <span class="dropdown-item py-2 d-flex align-items-center text-danger fw-bold text-opacity-50" style="cursor: not-allowed; opacity: 0.5;">
                                 <i class="bi bi-box-arrow-right me-2"></i> Изход
                             </span>
                         </li>
-
                     </ul>
                 </div>
 
