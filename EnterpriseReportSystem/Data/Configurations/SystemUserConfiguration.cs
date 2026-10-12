@@ -11,9 +11,10 @@ public class SystemUserConfiguration : IEntityTypeConfiguration<SystemUser>
     {
         builder.Property(x => x.Username).IsRequired().HasMaxLength(ValidationConstants.UsernameMaxLength);
         builder.Property(x => x.Password).IsRequired().HasMaxLength(ValidationConstants.UsernameMaxLength);
-
-        // Защитаваме потребителския избор за интерфейс
         builder.Property(x => x.LayoutType).IsRequired().HasMaxLength(30);
+
+        // Защитаваме текстовото поле за тема
+        builder.Property(x => x.ThemeType).IsRequired().HasMaxLength(30); // напр. "PHOTOSHOP"
 
         builder.HasOne(x => x.Company)
             .WithMany()

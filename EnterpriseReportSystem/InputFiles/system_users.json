@@ -1,67 +1,29 @@
 [
   {
     "Id": 1,
-    "Name": "Заприходяване",
-    "Notes": "Операции по първоначално завеждане",
-    "CustomCssClass": "text-warning",
-    "ParentMenuId": null
+    "Username": "ivan_petyr",
+    "CompanyId": 1,
+    "Password": "password123",
+    "LayoutType": "DASHBOARD",
+    "IsMenuExpanded": true,
+    "ThemeType": "LIGHT"
   },
   {
     "Id": 2,
-    "Name": "Нов Актив",
-    "Notes": "Екран за ушни марки и машини",
-    "CustomCssClass": "bi bi-box-seam",
-    "ParentMenuId": 1
+    "Username": "maria_holding",
+    "CompanyId": 2,
+    "Password": "admin_pass_2026",
+    "LayoutType": "EXCEL",
+    "IsMenuExpanded": false,
+    "ThemeType": "PHOTOSHOP"
   },
   {
     "Id": 3,
-    "Name": "Нова Номенклатура",
-    "Notes": "Екран за дефиниране на нива",
-    "CustomCssClass": "bi bi-tags",
-    "ParentMenuId": 1
-  },
-
-  {
-    "Id": 4,
-    "Name": "Холдингова Структура",
-    "Notes": "Управление на юридически лица и бази",
-    "CustomCssClass": "text-info",
-    "ParentMenuId": null
-  },
-  {
-    "Id": 5,
-    "Name": "Фирми и Лица",
-    "Notes": "Регистър на контрагенти",
-    "CustomCssClass": "bi bi-building",
-    "ParentMenuId": 4
-  },
-  {
-    "Id": 6,
-    "Name": "Стопански Обекти",
-    "Notes": "Складове и кравеферми",
-    "CustomCssClass": "bi bi-geo-alt",
-    "ParentMenuId": 4
-  },
-
-  {
-    "Id": 7,
-    "Name": "Отчети и Анализи",
-    "Notes": "Централен мениджърски панел",
-    "CustomCssClass": "text-success",
-    "ParentMenuId": null
-  },
-  {
-    "Id": 8,
-    "Name": "Динамичен Конфигуратор",
-    "Notes": "Многоформатен одит и филтри",
-    "CustomCssClass": "bi bi-sliders",
-    "ParentMenuId": 7
-  },
-  {
-    "Id": 9,
-    "Name": "Валутен Дневник",
-    "Notes": "Хронологични валутни курсове",
-    "CustomCssClass": "bi bi-currency-exchange",
-    "ParentMenuId": 7
+    "Username": "stefan_agro",
+    "CompanyId": 1,
+    "Password": "agro_pass_99",
+    "LayoutType": "WORD",
+    "IsMenuExpanded": true,
+    "ThemeType": "DARK"
   }
 ]

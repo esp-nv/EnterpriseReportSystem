@@ -12,11 +12,14 @@ public class SystemUser
     [Required]
     public string Password { get; set; } = string.Empty;
 
-    // НОВИ ПОТРЕБИТЕЛСКИ НАСТРОЙКИ: Системата ще помни избора на всеки човек
     [Required]
-    public string LayoutType { get; set; } = "DASHBOARD"; // Падащо меню в UI: DASHBOARD, WORD, EXCEL
+    public string LayoutType { get; set; } = "DASHBOARD"; // DASHBOARD, WORD, EXCEL
 
-    public bool IsMenuExpanded { get; set; } = true; // Чекбокс в UI: true = Разгънато, false = Свито
+    public bool IsMenuExpanded { get; set; } = true; // true = Разгънато, false = Свито
+
+    // ФИНАЛНИЯТ ЩРИХ: Системата ще помни и визуалната тема на потребителя
+    [Required]
+    public string ThemeType { get; set; } = "LIGHT"; // LIGHT, DARK, PHOTOSHOP
 
     public int CompanyId { get; set; }
     public CompanyOrPerson Company { get; set; } = null!;
