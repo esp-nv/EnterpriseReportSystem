@@ -22,6 +22,15 @@
     <Content Update="InputFiles\Hierarchy\1_MainTypes.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Update="InputFiles\Ledger\1_Currencies.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="InputFiles\Ledger\2_OperationTypes.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="InputFiles\Ledger\3_AssetAttributes.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="InputFiles\Location\1_Regions.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -37,16 +46,10 @@
     <Content Update="InputFiles\Structure\2_Facilities.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="InputFiles\system_base_data.json">
+    <Content Update="InputFiles\Structure\3_SystemMenus.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="InputFiles\system_menu.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="InputFiles\system_menu_translations.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="InputFiles\system_users.json">
+    <Content Update="InputFiles\Structure\4_SystemMenuTranslations.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

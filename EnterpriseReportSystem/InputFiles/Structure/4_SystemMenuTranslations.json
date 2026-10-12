@@ -1,40 +1,41 @@
-{
-
-}
 [
   {
+    "Id": 1,
     "SystemMenuId": 1,
     "LanguageId": 1,
     "TranslatedName": "Заприходяване",
     "TranslatedNotes": "Операции по първоначално завеждане на активи"
   },
   {
+    "Id": 2,
     "SystemMenuId": 1,
     "LanguageId": 2,
     "TranslatedName": "Invoicing & Asset Entry",
     "TranslatedNotes": "Operations for initial asset ledger entry"
   },
-
   {
+    "Id": 3,
     "SystemMenuId": 2,
     "LanguageId": 1,
     "TranslatedName": "Нов Актив",
-    "TranslatedNotes": "Екран за въвеждане на ушни марки и инвентар (Shortcut: Alt+N)"
+    "TranslatedNotes": "Въвеждане на ушни марки и инвентар (Shortcut: Alt+N)"
   },
   {
+    "Id": 4,
     "SystemMenuId": 2,
     "LanguageId": 2,
     "TranslatedName": "New Asset Registry",
     "TranslatedNotes": "Screen for entering ear tags and machinery (Shortcut: Alt+N)"
   },
-
   {
+    "Id": 5,
     "SystemMenuId": 8,
     "LanguageId": 1,
     "TranslatedName": "Динамичен Конфигуратор",
-    "TranslatedNotes": "Многоформатен одит и персонализирани колони (Shortcut: Alt+R)"
+    "TranslatedNotes": "Многоформатен одит и филтрирани колони (Shortcut: Alt+R)"
   },
   {
+    "Id": 6,
     "SystemMenuId": 8,
     "LanguageId": 2,
     "TranslatedName": "Dynamic Report Builder",

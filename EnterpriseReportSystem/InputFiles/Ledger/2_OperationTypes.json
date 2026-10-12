@@ -1,0 +1,44 @@
+[
+  {
+    "Id": 1,
+    "Code": "OP_BUY",
+    "Name": "Покупка / Доставка от доставчик",
+    "Direction": 1,
+    "IsFinancial": true
+  },
+  {
+    "Id": 2,
+    "Code": "OP_BIRTH",
+    "Name": "Раждане / Приплод на терен",
+    "Direction": 1,
+    "IsFinancial": false
+  },
+  {
+    "Id": 3,
+    "Code": "OP_SALE",
+    "Name": "Продажба / Реализация на пазара",
+    "Direction": 2,
+    "IsFinancial": true
+  },
+  {
+    "Id": 4,
+    "Code": "OP_WRITE_OFF",
+    "Name": "Брак / Смърт / Отписване",
+    "Direction": 2,
+    "IsFinancial": false
+  },
+  {
+    "Id": 5,
+    "Code": "OP_LOGISTIC_TRANSFER",
+    "Name": "Логистично вътрешно преместване",
+    "Direction": 3,
+    "IsFinancial": false
+  },
+  {
+    "Id": 6,
+    "Code": "OP_INTER_COMPANY_SALE",
+    "Name": "Междуфирмена продажба в холдинга",
+    "Direction": 3,
+    "IsFinancial": true
+  }
+]

@@ -6,7 +6,7 @@
     "Password": "super_secret_admin",
     "LayoutType": "WORD",
     "IsMenuExpanded": true,
-    "ThemeType": "PHOTOSHOP",
+    "ThemeType": "photoshop",
     "IsGlobalAdmin": true,
     "WishListMenuIds": "2,8"
   },
@@ -17,18 +17,18 @@
     "Password": "password123",
     "LayoutType": "WORD",
     "IsMenuExpanded": true,
-    "ThemeType": "LIGHT",
+    "ThemeType": "light",
     "IsGlobalAdmin": false,
     "WishListMenuIds": "2"
   },
   {
     "Id": 3,
     "Username": "maria_holding",
-    "CompanyId": 2,
+    "CompanyId": 1,
     "Password": "admin_pass_2026",
     "LayoutType": "WORD",
     "IsMenuExpanded": false,
-    "ThemeType": "DARK",
+    "ThemeType": "dark",
     "IsGlobalAdmin": false,
     "WishListMenuIds": "8,9"
   }

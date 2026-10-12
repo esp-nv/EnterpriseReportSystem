@@ -1,0 +1,32 @@
+[
+  {
+    "Id": 1,
+    "Name": "Пол (Мъжко/Женско)",
+    "ContextType": 1,
+    "TargetId": 1
+  },
+  {
+    "Id": 2,
+    "Name": "Номер на двигател (ДВГ)",
+    "ContextType": 1,
+    "TargetId": 2
+  },
+  {
+    "Id": 3,
+    "Name": "Номер на шаси (Рама)",
+    "ContextType": 1,
+    "TargetId": 2
+  },
+  {
+    "Id": 4,
+    "Name": "Пътен лист №",
+    "ContextType": 2,
+    "TargetId": 5
+  },
+  {
+    "Id": 5,
+    "Name": "Ветеринарен медицински протокол",
+    "ContextType": 2,
+    "TargetId": 4
+  }
+]
