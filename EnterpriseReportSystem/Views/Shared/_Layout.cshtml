@@ -27,27 +27,38 @@
 </head>
 <body>
 
-    <!-- ОФИЦИАЛЕН ТЪМЕН БУТСТРАП ХЕДЪР -->
-    <header class="p-3 bg-dark text-white border-bottom border-secondary">
+    <!-- ОФИЦИАЛЕН ТЪМЕН БУТСТРАП ХЕДЪР (КОРИГИРАН UI МОДЕЛ БЕЗ ДЕФЕКТИ) -->
+    <header class="p-3 bg-dark text-white border-bottom border-secondary shadow-sm">
         <div class="container-fluid px-4">
-            <div class="d-flex flex-wrap align-items-center justify-content-between">
+            <div class="d-flex align-items-center justify-content-between">
 
-                <!-- ЛЯВА ЧАСТ: ЛОГО И ГЛАВНИ ВРЪЗКИ -->
+                <!-- ЛЯВА ЧАСТ: ЛОГО И ИНТЕРАКТИВНИ ВРЪЗКИ -->
                 <div class="d-flex align-items-center gap-4">
-                    <!-- КОРЕКЦИЯ: Логото вече пренасочва строго към празната Home страница (/) -->
-                    <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none fw-bold fs-5 tracking-wider text-warning">
+                    <!-- Връзката на логото сочи строго към началната празна Home страница (/) -->
+                    <a href="/" class="logo-link d-flex align-items-center text-white text-decoration-none fw-bold fs-5 tracking-wider text-warning">
                         <i class="bi bi-building-fill me-2"></i> ХОЛДИНГ ERP
                     </a>
 
-                    <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 fs-7">
-                        <li><a href="/Report/Index" class="nav-link px-3 text-secondary fw-bold text-uppercase">Оперативен Панел</a></li>
-                        <li><a href="/Setup/CreateAsset" class="nav-link px-3 text-white fw-bold text-uppercase">Нов Актив</a></li>
+                    <!-- Линейна навигация без конфликтни col-12 класове за перфектен респонсив дизайн -->
+                    <ul class="nav d-flex align-items-center gap-2 mb-0 fs-7">
+                        <li>
+                            <!-- Интелигентна проверка на уеб пътя за Оперативен Панел -->
+                            <a href="/Report/Index" class="nav-link px-3 fw-bold text-uppercase @(Context.Request.Path.Value == "/Report/Index" || Context.Request.Path.Value == "/Report" ? "active-page" : "text-white")">
+                                Оперативен Панел
+                            </a>
+                        </li>
+                        <li>
+                            <!-- Интелигентна проверка на уеб пътя за Нов Актив -->
+                            <a href="/Setup/CreateAsset" class="nav-link px-3 fw-bold text-uppercase @(Context.Request.Path.Value == "/Setup/CreateAsset" ? "active-page" : "text-white")">
+                                Нов Актив
+                            </a>
+                        </li>
                     </ul>
                 </div>
 
                 <!-- ДЯСНА ЧАСТ: КРЪГЪЛ АВАТАР И ПАДАЩО МЕНЮ НА НАШИЯ USER -->
                 <div class="dropdown text-end">
-                    <a href="#" class="d-flex align-items-center link-light text-decoration-none dropdown-toggle px-2 py-1 rounded-2 border border-secondary bg-secondary-subtle"
+                    <a href="#" class="d-flex align-items-center link-light text-decoration-none dropdown-toggle px-3 py-1 rounded-2 border border-secondary bg-secondary-subtle shadow-sm"
                        id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <!-- Кръгла икона за потребител спрямо примера на Bootstrap -->
                         <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center fw-bold me-2 shadow-sm" style="width: 32px; height: 32px; font-size: 0.85rem;">
