@@ -11,12 +11,8 @@ public class SystemMenuConfiguration : IEntityTypeConfiguration<SystemMenu>
     {
         builder.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.MenuNameMaxLength);
         builder.Property(x => x.Notes).HasMaxLength(ValidationConstants.NotesMaxLength);
+        builder.Property(x => x.CustomCssClass).HasMaxLength(150);
 
-        // Защитаваме новите CSS и UI индикатори
-        builder.Property(x => x.LayoutType).IsRequired().HasMaxLength(30); // напр. "DASHBOARD"
-        builder.Property(x => x.CustomCssClass).HasMaxLength(150); // Множество CSS класове
-
-        // КАСКАДНА САМООБВЪРЗВАЩА СЕ ВРЪЗКА (Self-Referencing Relationship)
         builder.HasOne(x => x.ParentMenu)
             .WithMany(x => x.ChildMenus)
             .HasForeignKey(x => x.ParentMenuId)

@@ -10,9 +10,14 @@ public class SystemUser
     public string Username { get; set; } = string.Empty;
 
     [Required]
-    public string Password { get; set; } = string.Empty; // Пазим я свободно за тестови цели
+    public string Password { get; set; } = string.Empty;
 
-    // Връзка към фирмата, в която работи потребителят
+    // НОВИ ПОТРЕБИТЕЛСКИ НАСТРОЙКИ: Системата ще помни избора на всеки човек
+    [Required]
+    public string LayoutType { get; set; } = "DASHBOARD"; // Падащо меню в UI: DASHBOARD, WORD, EXCEL
+
+    public bool IsMenuExpanded { get; set; } = true; // Чекбокс в UI: true = Разгънато, false = Свито
+
     public int CompanyId { get; set; }
     public CompanyOrPerson Company { get; set; } = null!;
 }
