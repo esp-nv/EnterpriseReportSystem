@@ -56,4 +56,11 @@ public static class ValidationConstants
     public const int UsernameMaxLength = 50;
     public const int MenuNameMaxLength = 100;
 
+    public const int LanguageCodeMaxLength = 10;
+
+    // Навигационни и интерфейсни константи (Премахване на магически числа)
+    public const int MenuCssClassMaxLength = 150;
+    public const int MenuShortcutMaxLength = 30;
+
+
 }

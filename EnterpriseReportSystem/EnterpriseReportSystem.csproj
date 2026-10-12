@@ -25,6 +25,9 @@
     <Content Update="InputFiles\system_menu.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Update="InputFiles\system_menu_translations.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="InputFiles\system_users.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

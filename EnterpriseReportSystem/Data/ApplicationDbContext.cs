@@ -39,6 +39,10 @@ public class ApplicationDbContext : DbContext
     public DbSet<SystemUser> SystemUsers { get; set; } = null!;
     public DbSet<SystemMenu> SystemMenus { get; set; } = null!;
 
+    public DbSet<Language> Languages { get; set; } = null!;
+    public DbSet<SystemMenuTranslation> SystemMenuTranslations { get; set; } = null!;
+
+
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

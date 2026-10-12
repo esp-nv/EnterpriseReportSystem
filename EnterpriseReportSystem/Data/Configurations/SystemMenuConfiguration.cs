@@ -9,10 +9,14 @@ public class SystemMenuConfiguration : IEntityTypeConfiguration<SystemMenu>
 {
     public void Configure(EntityTypeBuilder<SystemMenu> builder)
     {
-        builder.Property(x => x.Name).IsRequired().HasMaxLength(ValidationConstants.MenuNameMaxLength);
-        builder.Property(x => x.Notes).HasMaxLength(ValidationConstants.NotesMaxLength);
-        builder.Property(x => x.CustomCssClass).HasMaxLength(150);
+        // КОРЕКЦИЯ: Нула магически числа! Използваме централизираните константи
+        builder.Property(x => x.CustomCssClass)
+            .HasMaxLength(ValidationConstants.MenuCssClassMaxLength); // 150
 
+        builder.Property(x => x.CustomShortcut)
+            .HasMaxLength(ValidationConstants.MenuShortcutMaxLength); // 30
+
+        // КАСКАДНА САМООБВЪРЗВАЩА СЕ ВРЪЗКА (Self-Referencing Relationship)
         builder.HasOne(x => x.ParentMenu)
             .WithMany(x => x.ChildMenus)
             .HasForeignKey(x => x.ParentMenuId)

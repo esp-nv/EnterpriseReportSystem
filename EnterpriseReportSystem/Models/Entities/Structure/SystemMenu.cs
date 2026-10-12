@@ -7,10 +7,10 @@ public class SystemMenu
 {
     public int Id { get; set; }
 
-    [Required]
-    public string Name { get; set; } = string.Empty;
+    // Имената и бележките са премахнати оттук — отиват в SystemMenuTranslations за многоезичност!
 
-    public string Notes { get; set; } = string.Empty;
+    // НОВО: Динамичен бърз клавиш (напр. "alt+n", "ctrl+s"), конфигуриран от потребителя
+    public string CustomShortcut { get; set; } = string.Empty;
 
     // Пазим само иконата/класа (напр. "bi bi-box-seam"), за да има визуална красота
     public string CustomCssClass { get; set; } = string.Empty;

@@ -113,6 +113,35 @@ public static class DbInitializer
                     }
                 }
 
+                // 6. ДИНАМИЧНО ЗАРЕЖДАНЕ НА ЕЗИЦИТЕ
+                if (!context.Languages.Any())
+                {
+                    context.Languages.AddRange(
+                        new Language { Id = 1, Code = "bg", Name = "Български" },
+                        new Language { Id = 2, Code = "en", Name = "English" }
+                    );
+                    context.SaveChanges();
+                }
+
+                // 7. ДИНАМИЧНО ЗАРЕЖДАНЕ НА МНОГОЕЗИЧНИТЕ ПРЕВОДИ ЗА МЕНЮТАТА
+                if (!context.SystemMenuTranslations.Any())
+                {
+                    string transPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "InputFiles", "system_menu_translations.json");
+                    if (!File.Exists(transPath)) transPath = Path.Combine(Directory.GetCurrentDirectory(), "InputFiles", "system_menu_translations.json");
+
+                    if (File.Exists(transPath))
+                    {
+                        string transJson = File.ReadAllText(transPath);
+                        var translations = JsonSerializer.Deserialize<List<SystemMenuTranslation>>(transJson);
+                        if (translations != null)
+                        {
+                            context.SystemMenuTranslations.AddRange(translations);
+                            context.SaveChanges();
+                        }
+                    }
+                }
+
+
             }
 
             return "SUCCESS"; // Всичко е заредено перфектно

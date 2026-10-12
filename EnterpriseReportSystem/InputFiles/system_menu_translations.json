@@ -1,0 +1,43 @@
+{
+
+}
+[
+  {
+    "SystemMenuId": 1,
+    "LanguageId": 1,
+    "TranslatedName": "Заприходяване",
+    "TranslatedNotes": "Операции по първоначално завеждане на активи"
+  },
+  {
+    "SystemMenuId": 1,
+    "LanguageId": 2,
+    "TranslatedName": "Invoicing & Asset Entry",
+    "TranslatedNotes": "Operations for initial asset ledger entry"
+  },
+
+  {
+    "SystemMenuId": 2,
+    "LanguageId": 1,
+    "TranslatedName": "Нов Актив",
+    "TranslatedNotes": "Екран за въвеждане на ушни марки и инвентар (Shortcut: Alt+N)"
+  },
+  {
+    "SystemMenuId": 2,
+    "LanguageId": 2,
+    "TranslatedName": "New Asset Registry",
+    "TranslatedNotes": "Screen for entering ear tags and machinery (Shortcut: Alt+N)"
+  },
+
+  {
+    "SystemMenuId": 8,
+    "LanguageId": 1,
+    "TranslatedName": "Динамичен Конфигуратор",
+    "TranslatedNotes": "Многоформатен одит и персонализирани колони (Shortcut: Alt+R)"
+  },
+  {
+    "SystemMenuId": 8,
+    "LanguageId": 2,
+    "TranslatedName": "Dynamic Report Builder",
+    "TranslatedNotes": "Multi-format audit matrices and custom columns (Shortcut: Alt+R)"
+  }
+]
