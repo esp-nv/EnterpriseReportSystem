@@ -12,6 +12,13 @@ public class SystemMenu
 
     public string Notes { get; set; } = string.Empty;
 
+    // НОВО СВОЙСТВО: Определя стила на менюто (DASHBOARD, WORD, EXCEL)
+    [Required]
+    public string LayoutType { get; set; } = "DASHBOARD";
+
+    // НОВО СВОЙСТВО: Позволява вкарване на специфични Bootstrap или потребителски CSS класове
+    public string CustomCssClass { get; set; } = string.Empty;
+
     // Счетоводна йерархична релация: Сочи към главното родителско меню
     public int? ParentMenuId { get; set; }
     public SystemMenu? ParentMenu { get; set; }

@@ -3,18 +3,24 @@
     "Id": 1,
     "Name": "Заприходяване",
     "Notes": "Операции по първоначално завеждане",
+    "LayoutType": "DASHBOARD",
+    "CustomCssClass": "nav-item-primary text-warning",
     "ParentMenuId": null
   },
   {
     "Id": 2,
     "Name": "Нов Актив",
     "Notes": "Екран за ушни марки и машини",
+    "LayoutType": "DASHBOARD",
+    "CustomCssClass": "bi bi-box-seam",
     "ParentMenuId": 1
   },
   {
     "Id": 3,
     "Name": "Нова Номенклатура",
     "Notes": "Екран за дефиниране на нива",
+    "LayoutType": "DASHBOARD",
+    "CustomCssClass": "bi bi-tags",
     "ParentMenuId": 1
   },
 
@@ -22,18 +28,24 @@
     "Id": 4,
     "Name": "Холдингова Структура",
     "Notes": "Управление на юридически лица и бази",
+    "LayoutType": "WORD",
+    "CustomCssClass": "nav-toolbar-classic text-info",
     "ParentMenuId": null
   },
   {
     "Id": 5,
     "Name": "Фирми и Лица",
     "Notes": "Регистър на контрагенти",
+    "LayoutType": "WORD",
+    "CustomCssClass": "bi bi-building",
     "ParentMenuId": 4
   },
   {
     "Id": 6,
     "Name": "Стопански Обекти",
     "Notes": "Складове и кравеферми",
+    "LayoutType": "WORD",
+    "CustomCssClass": "bi bi-geo-alt",
     "ParentMenuId": 4
   },
 
@@ -41,18 +53,24 @@
     "Id": 7,
     "Name": "Отчети и Анализи",
     "Notes": "Централен мениджърски панел",
+    "LayoutType": "EXCEL",
+    "CustomCssClass": "nav-grid-matrix text-success",
     "ParentMenuId": null
   },
   {
     "Id": 8,
     "Name": "Динамичен Конфигуратор",
     "Notes": "Многоформатен одит и филтри",
+    "LayoutType": "EXCEL",
+    "CustomCssClass": "bi bi-sliders",
     "ParentMenuId": 7
   },
   {
     "Id": 9,
     "Name": "Валутен Дневник",
     "Notes": "Хронологични валутни курсове",
+    "LayoutType": "EXCEL",
+    "CustomCssClass": "bi bi-currency-exchange",
     "ParentMenuId": 7
   }
 ]
