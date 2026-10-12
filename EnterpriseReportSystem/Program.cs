@@ -1,16 +1,16 @@
-using EnterpriseReportSystem.Data;
+﻿using EnterpriseReportSystem.Data;
 using EnterpriseReportSystem.Services.Implementations;
 using EnterpriseReportSystem.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// �������� � ������������� Entity Framework Core � SQL Server
+// Добавяме и конфигурираме Entity Framework Core с SQL Server
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
-// ������������ ������ �������� �� ������������ ��������� � �������
+// Регистрираме бизнес услугата за количествени ведомости и анализи
 builder.Services.AddScoped<IReportService, ReportService>();
 
 // Add services to the container.
@@ -28,6 +28,28 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// АВТОМАТИЧНО НАПЪЛВАНЕ НА БАЗАТА ДАННИ ПРИ СТАРТИРАНЕ (УЕБ ВАРИАНТ)
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>(); // Извикваме уеб логера
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        string seedResult = DbInitializer.Seed(context);
+
+        // Ако има дружелюбно съобщение за грешка, уеб сървърът ще го изпише веднага
+        if (seedResult != "SUCCESS")
+        {
+            logger.LogWarning(seedResult);
+        }
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "❌ Фатална грешка при първоначално стартиране на базата данни.");
+    }
+}
 
 app.UseRouting();
 
