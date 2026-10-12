@@ -1,37 +1,13 @@
 ﻿@inject EnterpriseReportSystem.Data.ApplicationDbContext _context
-@using Microsoft.EntityFrameworkCore
 
 @{
-    // 1. СИГУРНО ИЗВЛИЧАНЕ НА ПОТРЕБИТЕЛЯСКИЯ ПРОФИЛ
-    var currentUser = _context.SystemUsers.FirstOrDefault(u => u.Id == 1)
-        ?? new EnterpriseReportSystem.Models.Entities.Structure.SystemUser
-        {
-            Username = "admin_holding",
-            ThemeType = "photoshop",
-            LayoutType = "WORD",
-            IsMenuExpanded = true
-        };
+    // Извличаме потребителя с Id = 1 директно от базата данни
+    var currentUser = _context.SystemUsers.FirstOrDefault(u => u.Id == 1);
 
-    // Подсигуряваме чист малък регистър за името на CSS файла
-    string themeFile = (!string.IsNullOrEmpty(currentUser.ThemeType))
-        ? currentUser.ThemeType.Trim().ToLower()
-        : "light";
-
-    // Подсигуряваме голям регистър за типа на навигацията
-    string layoutStyle = (!string.IsNullOrEmpty(currentUser.LayoutType))
-        ? currentUser.LayoutType.Trim().ToUpper()
-        : "WORD";
-
-    // 2. ИЗВЛИЧАНЕ НА МЕНЮТАТА КАТО ЧИСТ ЛИНЕЕН МАСИВ (БЕЗ РЕКУРСИВЕН INCLUDE)
-    var allMenus = _context.SystemMenus.AsNoTracking().ToList()
-        ?? new List<EnterpriseReportSystem.Models.Entities.Structure.SystemMenu>();
-
-    // Отделяме главните менюта (Ниво 1)
-    var rootMenus = allMenus.Where(m => m.ParentMenuId == null).ToList();
-
-    // Извличаме преводите за Български (LanguageId = 1)
-    var translations = _context.SystemMenuTranslations.AsNoTracking().Where(t => t.LanguageId == 1).ToList()
-        ?? new List<EnterpriseReportSystem.Models.Entities.Structure.SystemMenuTranslation>();
+    // Първични защити против null стойности
+    string displayUsername = currentUser != null ? currentUser.Username : "Гост";
+    string displayLayout = currentUser != null ? currentUser.LayoutType : "WORD";
+    string displayTheme = currentUser != null ? currentUser.ThemeType : "LIGHT";
 }
 
 <!DOCTYPE html>
@@ -43,83 +19,101 @@
 
     <!-- Базови Bootstrap 5 Стилизации -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Интегриране на Bootstrap Icons за иконите в менюто -->
     <link rel="stylesheet" href="https://jsdelivr.net">
 
-    <!-- ГЛОБАЛЕН СИСТЕМЕН СТИЛ -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-
-    <!-- ДИНАМИЧНО ЗАРЕЖДАНЕ НА ЛИЧНИЯ CSS ФАЙЛ НА ПОТРЕБИТЕЛЯ -->
-    <link rel="stylesheet" href="~/css/themes/@(themeFile).css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/EnterpriseReportSystem.styles.css" asp-append-version="true" />
 </head>
 <body>
 
-    <!-- ГЛАВЕН КОНТЕНТ (УПРАВЛЯВА СЕ ОТ LAYOUT STYLE) -->
-    @if (layoutStyle == "WORD")
-    {
-        <header class="border-bottom border-light-subtle bg-body-tertiary">
-            <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3 shadow-sm py-2 fixed-top">
-                <div class="container-fluid">
-                    <a class="navbar-brand fw-bold text-uppercase fs-6 tracking-wider text-warning" href="/Report/Index">
-                        <i class="bi bi-building-fill me-2"></i> Холдинг ERP
+    <!-- ОФИЦИАЛЕН ЧЕРЕН БУТСТРАП ХЕДЪР -->
+    <header class="p-3 bg-dark text-white border-bottom border-secondary">
+        <div class="container-fluid px-4">
+            <div class="d-flex flex-wrap align-items-center justify-content-between">
+
+                <!-- ЛЯВА ЧАСТ: ЛОГО И ГЛАВНИ ВРЪЗКИ -->
+                <div class="d-flex align-items-center gap-4">
+                    <a href="/Report/Index" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none fw-bold fs-5 tracking-wider text-warning">
+                        <i class="bi bi-building-fill me-2"></i> ХОЛДИНГ ERP
                     </a>
-                    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#wordRibbon">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
 
-                    <div class="collapse navbar-collapse" id="wordRibbon">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0 fs-7">
-                            @foreach (var root in rootMenus)
-                            {
-                                var rootTrans = translations.FirstOrDefault(t => t.SystemMenuId == root.Id);
-                                string rootName = rootTrans != null ? rootTrans.TranslatedName : "Меню";
-                                string rootTooltip = rootTrans != null ? rootTrans.TranslatedNotes : "";
-
-                                // ФИЛТРИРАМЕ ПОДМЕНЮТАТА ЧИСТО И ЛИНЕЙНО ПО РОДИТЕЛСКО ID (ЗАЩИТА ОТ БЕЗКРАЕН ЦИКЪЛ)
-                                var childMenus = allMenus.Where(m => m.ParentMenuId == root.Id).ToList();
-
-                                <li class="nav-item dropdown px-1">
-                                    <a class="nav-link dropdown-toggle text-white fw-bold px-3 rounded-2" href="#" role="button" data-bs-toggle="dropdown" title="@rootTooltip">
-                                        <i class="@(root.CustomCssClass) me-1"></i> @rootName
-                                    </a>
-                                    <ul class="dropdown-menu dropdown-menu-dark border-secondary shadow-sm rounded-2 mt-2">
-                                        @foreach (var child in childMenus)
-                                        {
-                                            var childTrans = translations.FirstOrDefault(t => t.SystemMenuId == child.Id);
-                                            string childName = childTrans != null ? childTrans.TranslatedName : "Подменю";
-                                            string childShortcut = child.CustomShortcut ?? string.Empty;
-
-                                            <li>
-                                                <a class="dropdown-item py-2 px-3 small d-flex align-items-center justify-content-between" href="/Setup/CreateAsset">
-                                                    <span><i class="@(child.CustomCssClass) me-2 text-secondary"></i> @childName</span>
-                                                    @if (!string.IsNullOrEmpty(childShortcut))
-                                                    {
-                                                        <span class="badge bg-secondary ms-4 px-2 py-1 text-uppercase text-muted" style="font-size: 0.65rem;">@childShortcut</span>
-                                                    }
-                                                </a>
-                                            </li>
-                                        }
-                                    </ul>
-                                </li>
-                            }
-                        </ul>
-
-                        <div class="d-flex align-items-center gap-3">
-                            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-2 fw-bold">
-                                <i class="bi bi-person-badge me-1"></i> @currentUser.Username
-                            </span>
-                            <a href="/User/Settings" class="btn btn-sm btn-outline-light rounded-2 fw-bold">
-                                <i class="bi bi-gear-fill"></i>
-                            </a>
-                        </div>
-                    </div>
+                    <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 fs-7">
+                        <li><a href="/Report/Index" class="nav-link px-3 text-secondary fw-bold text-uppercase">Оперативен Панел</a></li>
+                        <li><a href="/Setup/CreateAsset" class="nav-link px-3 text-white fw-bold text-uppercase">Нов Актив</a></li>
+                    </ul>
                 </div>
-            </nav>
-        </header>
-    }
 
-    <!-- ГЛАВНО СЪДЪРЖАНИЕ С ГОРНО РАЗСТОЯНИЕ ЗА ФИКСИРАНАТА ЛЕНТА -->
-    <div class="container-fluid p-0" style="padding-top: 70px;">
-        <main role="main" class="pb-5">
+                <!-- ДЯСНА ЧАСТ: КРЪГЪЛ АВАТАР И ПАДАЩО МЕНЮ НА НАШИЯ USER -->
+                <div class="dropdown text-end">
+                    <a href="#" class="d-flex align-items-center link-light text-decoration-none dropdown-toggle px-2 py-1 rounded-2 border border-secondary bg-secondary-subtle"
+                       id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <!-- Кръгла икона за потребител спрямо примера на Bootstrap -->
+                        <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center fw-bold me-2 shadow-sm" style="width: 32px; height: 32px; font-size: 0.85rem;">
+                            @(displayUsername.Substring(0, Math.Min(2, displayUsername.Length)).ToUpper())
+                        </div>
+                        <span class="fw-bold small text-white">@displayUsername</span>
+                    </a>
+
+                    <!-- ТВОИТЕ СТРОГО ПОДРЕДЕНИ 8 СЕКЦИИ НА МЕНЮТО -->
+                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow border-secondary mt-2 fs-7" aria-labelledby="userDropdown" style="min-width: 240px;">
+
+                        <!-- 1. Превключи на друг потребител -->
+                        <li>
+                            <a class="dropdown-item py-2 d-flex align-items-center" href="#">
+                                <i class="bi bi-people me-2 text-secondary"></i> Превключи на друг user
+                            </a>
+                        </li>
+
+                        <!-- 2. Разделител -->
+                        <li><hr class="dropdown-divider border-secondary"></li>
+
+                        <!-- 3. Вид меню -->
+                        <li class="dropdown-header text-uppercase fw-bold pb-1 text-muted" style="font-size: 0.65rem;">
+                            <i class="bi bi-grid-1x2 me-1"></i> Вид меню
+                        </li>
+                        <li class="px-3 pb-2">
+                            <span class="badge bg-secondary text-white w-100 py-1 text-uppercase border border-secondary">@displayLayout</span>
+                        </li>
+
+                        <!-- 4. Тема -->
+                        <li class="dropdown-header text-uppercase fw-bold pb-1 text-muted" style="font-size: 0.65rem;">
+                            <i class="bi bi-palette me-1"></i> Тема
+                        </li>
+                        <li class="px-3 pb-2">
+                            <span class="badge bg-warning text-dark w-100 py-1 text-uppercase fw-bold">@displayTheme</span>
+                        </li>
+
+                        <!-- 5. Разделител -->
+                        <li><hr class="dropdown-divider border-secondary"></li>
+
+                        <!-- 6. Настройки -->
+                        <li>
+                            <a class="dropdown-item py-2 d-flex align-items-center fw-bold text-warning" href="/User/Settings">
+                                <i class="bi bi-gear-fill me-2"></i> Настройки
+                            </a>
+                        </li>
+
+                        <!-- 7. Разделител -->
+                        <li><hr class="dropdown-divider border-secondary"></li>
+
+                        <!-- 8. Изход без линкове -->
+                        <li>
+                            <span class="dropdown-item py-2 d-flex align-items-center text-danger fw-bold text-opacity-50" style="cursor: not-allowed; opacity: 0.5;">
+                                <i class="bi bi-box-arrow-right me-2"></i> Изход
+                            </span>
+                        </li>
+
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- ОСНОВНО СЪДЪРЖАНИЕ НА СТРАНИЦИТЕ -->
+    <div class="container-fluid px-4 py-4">
+        <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
