@@ -17,24 +17,23 @@ public class UserController : Controller
         _context = context;
     }
 
-    // 1. ЗАРЕЖДАНЕ НА ЕКРАНА ЗА НАСТРОЙКИ (СЪС САМОВЪЗСТАНОВЯВАЩО СЕ НАЛИВАНЕ)
+    // 1. ЗАРЕЖДАНЕ НА ЕКРАНА ЗА НАСТРОЙКИ (GET)
     [HttpGet]
     public async Task<IActionResult> Settings()
     {
-        // ЖЕЛЯЗНА ХОЛДИНГОВА ЗАЩИТА: Ако базата е празна, наливаме JSON файловете веднага!
+        // Проверка: Ако таблицата е празна, наливане на мастър данните от JSON веднага
         if (!await _context.SystemUsers.AnyAsync())
         {
             DbInitializer.Seed(_context);
-            await _context.SaveChangesAsync(); // Запечатваме Иван и админа в SQL насила!
+            await _context.SaveChangesAsync();
         }
 
-        // Сега вече Супер Администраторът (admin_holding) с Id = 1 ще съществува на 100%!
+        // Сега вече Супер Администраторът с Id = 1 ще съществува на 100%
         var user = await _context.SystemUsers.FirstOrDefaultAsync(u => u.Id == 1);
 
         if (user == null)
         {
-            // Крайна защита, ако файловете в папка InputFiles изобщо не се копират
-            return NotFound("⚠️ [Критична системна грешка]: Базата данни е празна и инициализаторът не успя да намери JSON файловете в папка InputFiles. Моля, проверете свойствата им във Visual Studio и дали са настроени на 'Copy always'.");
+            return NotFound("⚠️ [Критична грешка]: Инициализаторът не успя да заведе потребители.");
         }
 
         return View(user);
@@ -61,10 +60,7 @@ public class UserController : Controller
 
         TempData["SettingsSuccess"] = "🎉 Визуалната тема и стил на менюто бяха обновени в SQL Server на секундата!";
 
-        // КОРЕКЦИЯ: Вместо да стоим на същото място, пренасочваме към Централния панел с отчети (затваряме настройките)
+        // Пренасочваме към Централния панел с отчети (затваряме настройките)
         return RedirectToAction("Index", "Report");
-    }
-}
-
     }
 }
