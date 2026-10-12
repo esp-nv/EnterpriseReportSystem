@@ -21,23 +21,22 @@ public class UserController : Controller
     [HttpGet]
     public async Task<IActionResult> Settings()
     {
-        // Проверка: Ако таблицата е празна, наливане на мастър данните от JSON веднага
+        // Ако базата е празна, наливане веднага
         if (!await _context.SystemUsers.AnyAsync())
         {
             DbInitializer.Seed(_context);
             await _context.SaveChangesAsync();
         }
 
-        // Сега вече Супер Администраторът с Id = 1 ще съществува на 100%
         var user = await _context.SystemUsers.FirstOrDefaultAsync(u => u.Id == 1);
-
         if (user == null)
         {
-            return NotFound("⚠️ [Критична грешка]: Инициализаторът не успя да заведе потребители.");
+            return NotFound("Потребителят не е намерен.");
         }
 
-        return View(user);
+        return View(user); // EF автоматично ще намери папка Views/User/Settings.cshtml
     }
+
 
     // 2. ЗАПИСВАНЕ НА НАСТРОЙКИТЕ ОТ ЕКРАНА (POST)
     [HttpPost]
