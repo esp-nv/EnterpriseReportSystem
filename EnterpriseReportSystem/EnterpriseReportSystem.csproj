@@ -19,6 +19,24 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="InputFiles\Hierarchy\1_MainTypes.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="InputFiles\Location\1_Regions.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="InputFiles\Location\2_Municipalities.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="InputFiles\Location\3_TownsOrVillages.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="InputFiles\Structure\1_CompaniesOrPersons.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="InputFiles\Structure\2_Facilities.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="InputFiles\system_base_data.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
