@@ -3,12 +3,13 @@
 
 @{
     // 1. СМУЧЕМ НАСТРОЙКИТЕ НА ТЕКУЩИЯ ПОТРЕБИТЕЛ ОД SQL (Временно взимаме Иван с Id=1 за проба)
+    // Намираме супер админа, който вече е заведен успешно
     var currentUser = _context.SystemUsers.FirstOrDefault(u => u.Id == 1)
-        ?? new EnterpriseReportSystem.Models.Entities.Structure.SystemUser { Username = "Гост", ThemeType = "LIGHT", LayoutType = "WORD", IsMenuExpanded = true };
-
+        ?? new EnterpriseReportSystem.Models.Entities.Structure.SystemUser { Username = "Гост", ThemeType = "light", LayoutType = "WORD", IsMenuExpanded = true };
+    
     // Превръщаме името на темата в малки букви, за да съвпадне с името на CSS файла (light, dark, photoshop)
-    string themeFile = currentUser.ThemeType.ToLower();
-
+    string themeFile = currentUser.ThemeType.Trim().ToLower(); // Сигурен малък регистър
+ 
     // 2. ИЗВЛИЧАМЕ ЙЕРАРХИЧНОТО МЕНЮ ОТ БАЗАТА ДАННИ ПРЕЗ LINQ
     var allMenus = _context.SystemMenus.Include(m => m.ChildMenus).ToList();
     var rootMenus = allMenus.Where(m => m.ParentMenuId == null).ToList();

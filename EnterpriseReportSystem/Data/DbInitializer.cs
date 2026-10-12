@@ -1,6 +1,7 @@
 ﻿using EnterpriseReportSystem.Models.Entities;
 using EnterpriseReportSystem.Models.Entities.Ledger;
 using EnterpriseReportSystem.Models.Entities.Structure;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -57,7 +58,7 @@ public static class DbInitializer
                 context.SaveChanges();
             }
 
-            // 4. ДИНАМИЧНО ЗАРЕЖДАНЕ НА СИСТЕМНИТЕ МЕНЮТА ОТ JSON (ИЗВЕСТЕН НА ВЪНШНО НИВО)
+            // 4. ДИНАМИЧНО ЗАРЕЖДАНЕ НА СИСТЕМНИТЕ МЕНЮТА ОТ JSON (С IDENTITY_INSERT ЗАЩИТА)
             if (!context.SystemMenus.Any())
             {
                 string menuPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "InputFiles", "system_menu.json");
@@ -69,11 +70,24 @@ public static class DbInitializer
                     var menus = JsonSerializer.Deserialize<List<SystemMenu>>(menuJson);
                     if (menus != null)
                     {
-                        context.SystemMenus.AddRange(menus);
-                        context.SaveChanges();
+                        // СЛУЖЕБНА МАГИЯ: Включваме IDENTITY_INSERT, за да ни пусне SQL Server с твърдите Id номера!
+                        context.Database.OpenConnection();
+                        try
+                        {
+                            context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT SystemMenus ON");
+                            context.SystemMenus.AddRange(menus);
+                            context.SaveChanges();
+                            context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT SystemMenus OFF");
+                        }
+                        finally
+                        {
+                            context.Database.CloseConnection();
+                        }
                     }
                 }
             }
+
+
 
             // 5. ДИНАМИЧНО ЗАРЕЖДАНЕ НА СИСТЕМНИТЕ ПОТРЕБИТЕЛИ (ИЗВЕСТЕН НА ВЪНШНО НИВО)
             if (!context.SystemUsers.Any())
@@ -98,7 +112,14 @@ public static class DbInitializer
                         foreach (var u in users)
                         {
                             u.CompanyId = firstCompany.Id;
+
+                            // ЖЕЛЯЗНА ЗАЩИТА: Превръщаме в малки букви, за да съвпаднат 100% с CSS файловете
+                            u.ThemeType = u.ThemeType.Trim().ToLower(); // "photoshop", "light", "dark"
+                            u.LayoutType = u.LayoutType.Trim().ToUpper(); // "WORD", "DASHBOARD"
                         }
+
+
+
 
                         context.SystemUsers.AddRange(users);
                         context.SaveChanges();

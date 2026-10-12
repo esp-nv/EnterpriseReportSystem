@@ -16,29 +16,31 @@ public class UserController : Controller
     {
         _context = context;
     }
-    // 1. ЗАРЕЖДАНЕ НА ЕКРАНА ЗА НАСТРОЙКИ (С АВТОМАТИЧНА ЗАЩИТА ЗА ПРАЗНА БАЗА)
+
+    // 1. ЗАРЕЖДАНЕ НА ЕКРАНА ЗА НАСТРОЙКИ (СЪС САМОВЪЗСТАНОВЯВАЩО СЕ НАЛИВАНЕ)
     [HttpGet]
     public async Task<IActionResult> Settings()
     {
-        // Проверка: Ако таблицата е празна, наливане на мастър данните от JSON веднага!
+        // ЖЕЛЯЗНА ХОЛДИНГОВА ЗАЩИТА: Ако базата е празна, наливаме JSON файловете веднага!
         if (!await _context.SystemUsers.AnyAsync())
         {
             DbInitializer.Seed(_context);
+            await _context.SaveChangesAsync(); // Запечатваме Иван и админа в SQL насила!
         }
 
-        // Сега вече Иван с Id=1 ще съществува на 100%!
+        // Сега вече Супер Администраторът (admin_holding) с Id = 1 ще съществува на 100%!
         var user = await _context.SystemUsers.FirstOrDefaultAsync(u => u.Id == 1);
 
         if (user == null)
         {
-            return NotFound("Потребителят не е намерен в базата данни. Моля, проверете дали JSON файлът съществува в InputFiles.");
+            // Крайна защита, ако файловете в папка InputFiles изобщо не се копират
+            return NotFound("⚠️ [Критична системна грешка]: Базата данни е празна и инициализаторът не успя да намери JSON файловете в папка InputFiles. Моля, проверете свойствата им във Visual Studio и дали са настроени на 'Copy always'.");
         }
 
         return View(user);
     }
 
-
-    // 2. ЗАПИСВАНЕ НА ПЕРСОНАЛНИТЕ ТЕМИ И ИНТЕРФЕЙСИ (POST)
+    // 2. ЗАПИСВАНЕ НА НАСТРОЙКИТЕ ОТ ЕКРАНА (POST)
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SaveSettings(int id, string layoutType, string themeType, bool isMenuExpanded)
@@ -50,15 +52,14 @@ public class UserController : Controller
             return NotFound();
         }
 
-        // Интелигентно обновяване на персоналния холдингов профил
         user.LayoutType = layoutType;
-        user.ThemeType = themeType;
+        user.ThemeType = themeType.Trim().ToLower(); // Пазим в чист малък регистър за CSS
         user.IsMenuExpanded = isMenuExpanded;
 
         _context.SystemUsers.Update(user);
         await _context.SaveChangesAsync();
 
-        TempData["SettingsSuccess"] = "🎉 Интерфейсът и визуалната тема бяха обновени в SQL Server на секундата!";
+        TempData["SettingsSuccess"] = "🎉 Визуалната тема и стил на менюто бяха обновени в SQL Server на секундата!";
 
         return RedirectToAction("Settings");
     }
