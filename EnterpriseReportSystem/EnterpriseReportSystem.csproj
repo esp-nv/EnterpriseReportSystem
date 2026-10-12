@@ -40,6 +40,9 @@
     <Content Update="InputFiles\Location\3_TownsOrVillages.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Update="InputFiles\Structure\0_Languages.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="InputFiles\Structure\1_CompaniesOrPersons.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -50,6 +53,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="InputFiles\Structure\4_SystemMenuTranslations.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="InputFiles\Structure\5_SystemUsers.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

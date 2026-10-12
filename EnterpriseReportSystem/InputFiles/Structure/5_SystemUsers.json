@@ -1,0 +1,35 @@
+[
+  {
+    "Id": 1,
+    "Username": "admin_holding",
+    "CompanyId": 1,
+    "Password": "super_secret_admin",
+    "LayoutType": "WORD",
+    "IsMenuExpanded": true,
+    "ThemeType": "photoshop",
+    "IsGlobalAdmin": true,
+    "WishListMenuIds": "2,8"
+  },
+  {
+    "Id": 2,
+    "Username": "ivan_petyr",
+    "CompanyId": 1,
+    "Password": "password123",
+    "LayoutType": "WORD",
+    "IsMenuExpanded": true,
+    "ThemeType": "light",
+    "IsGlobalAdmin": false,
+    "WishListMenuIds": "2"
+  },
+  {
+    "Id": 3,
+    "Username": "maria_holding",
+    "CompanyId": 1,
+    "Password": "admin_pass_2026",
+    "LayoutType": "WORD",
+    "IsMenuExpanded": false,
+    "ThemeType": "dark",
+    "IsGlobalAdmin": false,
+    "WishListMenuIds": "8,9"
+  }
+]
