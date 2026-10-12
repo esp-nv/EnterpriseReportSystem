@@ -16,21 +16,27 @@ public class UserController : Controller
     {
         _context = context;
     }
-
-    // 1. ЗАРЕЖДАНЕ НА ЕКРАНА ЗА НАСТРОЙКИ (GET)
+    // 1. ЗАРЕЖДАНЕ НА ЕКРАНА ЗА НАСТРОЙКИ (С АВТОМАТИЧНА ЗАЩИТА ЗА ПРАЗНА БАЗА)
     [HttpGet]
     public async Task<IActionResult> Settings()
     {
-        // Тъй като за пробата в _Layout заложихме Иван с Id=1, тук четем същия профил
+        // Проверка: Ако таблицата е празна, наливане на мастър данните от JSON веднага!
+        if (!await _context.SystemUsers.AnyAsync())
+        {
+            DbInitializer.Seed(_context);
+        }
+
+        // Сега вече Иван с Id=1 ще съществува на 100%!
         var user = await _context.SystemUsers.FirstOrDefaultAsync(u => u.Id == 1);
 
         if (user == null)
         {
-            return NotFound("Потребителят не е намерен в базата данни.");
+            return NotFound("Потребителят не е намерен в базата данни. Моля, проверете дали JSON файлът съществува в InputFiles.");
         }
 
         return View(user);
     }
+
 
     // 2. ЗАПИСВАНЕ НА ПЕРСОНАЛНИТЕ ТЕМИ И ИНТЕРФЕЙСИ (POST)
     [HttpPost]

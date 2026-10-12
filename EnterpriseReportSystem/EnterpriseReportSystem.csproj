@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <Content Update="InputFiles\system_base_data.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="InputFiles\system_menu.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
