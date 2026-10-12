@@ -4,7 +4,7 @@
     // Извличаме потребителя с Id = 1 директно от базата данни
     var currentUser = _context.SystemUsers.FirstOrDefault(u => u.Id == 1);
 
-    // Първични защити против null стойности
+    // Първични счетоводни защити против null стойности
     string displayUsername = currentUser != null ? currentUser.Username : "Гост";
     string displayLayout = currentUser != null ? currentUser.LayoutType : "WORD";
     string displayTheme = currentUser != null ? currentUser.ThemeType : "LIGHT";
@@ -22,12 +22,12 @@
     <!-- Интегриране на Bootstrap Icons за иконите в менюто -->
     <link rel="stylesheet" href="https://jsdelivr.net">
 
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link class="theme-link" rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/EnterpriseReportSystem.styles.css" asp-append-version="true" />
 </head>
 <body>
 
-    <!-- ОФИЦИАЛЕН ТЪМЕН БУТСТРАП ХЕДЪР (КОРИГИРАН UI МОДЕЛ БЕЗ ДЕФЕКТИ) -->
+    <!-- ОФИЦИАЛЕН ТЪМЕН БУТСТРАП ХЕДЪР -->
     <header class="p-3 bg-dark text-white border-bottom border-secondary shadow-sm">
         <div class="container-fluid px-4">
             <div class="d-flex align-items-center justify-content-between">
@@ -39,7 +39,7 @@
                         <i class="bi bi-building-fill me-2"></i> ХОЛДИНГ ERP
                     </a>
 
-                    <!-- Линейна навигация без конфликтни col-12 класове за перфектен респонсив дизайн -->
+                    <!-- Линейна навигация без пречупвания за перфектен респонсив дизайн -->
                     <ul class="nav d-flex align-items-center gap-2 mb-0 fs-7">
                         <li>
                             <!-- Интелигентна проверка на уеб пътя за Оперативен Панел -->

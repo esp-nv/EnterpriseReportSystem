@@ -68,3 +68,13 @@ body {
         background-color: #ff5500 !important; /* Оцветява бекграунда на редовете в менюто при движение */
         color: #ffffff !important;
     }
+
+/* Интерактивен Hover ефект за главното фирмено лого */
+.logo-link {
+    transition: transform 0.2s ease-in-out, color 0.2s ease-in-out !important;
+}
+
+    .logo-link:hover {
+        color: #ff5500 !important; /* Прелива в луксозен Photoshop оранжев цвят при посочване */
+        transform: scale(1.02); /* Леко, фино пулсиране за модерен UX облик */
+    }
