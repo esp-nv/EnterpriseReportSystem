@@ -1,42 +1,102 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    background-color: var(--bg-main) !important;
+    color: var(--text-main) !important;
+}
+
+/* =========================================================================
+   ГЛОБАЛНО АВТОМАТИЧНО ОЦВЕТЯВАНЕ НА BOOTSTRAP КАРТИТЕ СПРЯМО ТЕМИТЕ
+   ========================================================================= */
+.card {
+    background-color: var(--bg-card) !important;
+    color: var(--text-main) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.card-body {
+    background-color: var(--bg-card) !important;
+    color: var(--text-main) !important;
+}
+
+/* =========================================================================
+   ГЛОБАЛНА СТРУКТУРА ЗА СТРАНИЧЕН ВЕРТИКАЛЕН PANEL (DASHBOARD)
+   ========================================================================= */
+.wrapper {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.sidebar {
+    background-color: var(--sidebar-bg) !important;
+    color: var(--sidebar-text) !important;
+    border-right: 1px solid var(--border-color) !important;
+    transition: all 0.3s ease;
+}
+
+    .sidebar .sidebar-header {
+        padding: 20px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .sidebar ul.components {
+        padding: 20px 0;
+    }
+
+    .sidebar ul li a {
+        padding: 12px 20px;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        color: var(--sidebar-text) !important;
+        text-decoration: none;
+        transition: background 0.2s ease;
+    }
+
+        .sidebar ul li a:hover {
+            background-color: var(--bg-card) !important;
+            color: var(--accent-color) !important;
+        }
+
+.content-area {
+    width: 100%;
+    background-color: var(--bg-main) !important;
+    color: var(--text-main) !important;
+    transition: all 0.3s;
 }
 
 /* =========================================================================
    ИНТЕРФЕКТИВНИ ЕФЕКТИ ЗА КОРПОРАТИВНИЯ НАВИГАЦИОНЕН ХЕДЪР
    ========================================================================= */
-
-/* 1. Базов стил за уеб линковете в хедъра с плавен преход на цветовете */
 .nav-link {
     transition: color 0.25s ease-in-out, border-color 0.25s ease-in-out !important;
     position: relative;
 }
 
-    /* 2. HOVER ЕФЕКТ: Когато потребителят посочи линк с мишката */
     .nav-link:hover {
-        color: #ff5500 !important; /* Моментален ярък Photoshop оранжев цвят при посочване */
+        color: #ff5500 !important;
     }
 
-    /* ДИНАМИЧНА ПОДЧЕРТАВКА ПРИ ПОСОЧВАНЕ (Елегантна линия под линка) */
     .nav-link::after {
         content: '';
         position: absolute;
@@ -49,32 +109,29 @@ body {
     }
 
     .nav-link:hover::after {
-        width: calc(100% - 30px); /* Разпъва чертата перфектно под текста */
+        width: calc(100% - 30px);
     }
 
-    /* 3. ACTIVE ЕФЕКТ: Когато страницата е активно избрана в момента */
     .nav-link.active-page {
-        color: #ffc107 !important; /* Топъл златист цвят за избрания в момента екран */
+        color: #ffc107 !important;
         font-weight: 800 !important;
-        border-bottom: 2px solid #ffc107; /* Постоянна долна черта за активен статус */
+        border-bottom: 2px solid #ffc107;
     }
 
-/* 4. HOVER ИНТЕРФЕКТИВНОСТ ЗА ПАДАЩОТО ПОТРЕБИТЕЛСКО МЕНЮ */
 .dropdown-item {
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
     .dropdown-item:hover {
-        background-color: #ff5500 !important; /* Оцветява бекграунда на редовете в менюто при движение */
+        background-color: #ff5500 !important;
         color: #ffffff !important;
     }
 
-/* Интерактивен Hover ефект за главното фирмено лого */
 .logo-link {
     transition: transform 0.2s ease-in-out, color 0.2s ease-in-out !important;
 }
 
     .logo-link:hover {
-        color: #ff5500 !important; /* Прелива в луксозен Photoshop оранжев цвят при посочване */
-        transform: scale(1.02); /* Леко, фино пулсиране за модерен UX облик */
+        color: #ff5500 !important;
+        transform: scale(1.02);
     }
