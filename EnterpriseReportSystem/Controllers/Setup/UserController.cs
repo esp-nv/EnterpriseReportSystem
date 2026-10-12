@@ -61,6 +61,10 @@ public class UserController : Controller
 
         TempData["SettingsSuccess"] = "🎉 Визуалната тема и стил на менюто бяха обновени в SQL Server на секундата!";
 
-        return RedirectToAction("Settings");
+        // КОРЕКЦИЯ: Вместо да стоим на същото място, пренасочваме към Централния панел с отчети (затваряме настройките)
+        return RedirectToAction("Index", "Report");
+    }
+}
+
     }
 }

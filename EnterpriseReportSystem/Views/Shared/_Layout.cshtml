@@ -40,7 +40,7 @@
     {
         <!-- ТВОЯТА КЛАСИЧЕСКА WORD ХОРИЗОНТАЛНА ЛЕНТА С ИНСТРУМЕНТИ -->
         <header class="border-bottom border-light-subtle bg-body-tertiary">
-            <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3 shadow-sm py-2">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3 shadow-sm py-2 fixed-top">
                 <div class="container-fluid">
                     <a class="navbar-brand fw-bold text-uppercase fs-6 tracking-wider text-warning" asp-area="" asp-controller="Report" asp-action="Index">
                         <i class="bi bi-building-fill me-2"></i> Холдинг ERP
@@ -101,8 +101,14 @@
         </header>
     }
 
-    <!-- ГЛАВЕН ТЯЛО КОНТЕНТ (ЗАРЕЖДА СЕ АВТОМАТИЧНО) -->
+    <!-- ГЛАВЕН ТЯЛО КОНТЕНТ (ЗАРЕЖДА СЕ АВТОМАТИЧНО) 
     <div class="container-fluid p-0">
+        <main role="main" class="pb-5">
+            @RenderBody()
+        </main>
+    </div>-->
+    <!-- ГЛАВЕН ТЯЛО КОНТЕНТ (С ГОРНО РАЗСТОЯНИЕ ЗА ФИКСИРАНОТО МЕНЮ) -->
+    <div class="container-fluid p-0" style="padding-top: 70px;">
         <main role="main" class="pb-5">
             @RenderBody()
         </main>
