@@ -101,7 +101,11 @@ public static class DbInitializer
                     if (requiresIdentityInsert)
                     {
                         context.Database.OpenConnection();
+
+                        // Изключваме предупреждението за SQL инжекция само за този системен ред
+#pragma warning disable EF1002
                         context.Database.ExecuteSqlRaw($"SET IDENTITY_INSERT {tableName} ON");
+#pragma warning restore EF1002
                     }
 
                     // Подаваме правилно конструиран обектен масив към Invoke метода на Рефлекшъна
@@ -110,9 +114,13 @@ public static class DbInitializer
 
                     if (requiresIdentityInsert)
                     {
+#pragma warning disable EF1002
                         context.Database.ExecuteSqlRaw($"SET IDENTITY_INSERT {tableName} OFF");
+#pragma warning restore EF1002
+
                         context.Database.CloseConnection();
                     }
+
                 }
             }
 
