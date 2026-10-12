@@ -1,13 +1,16 @@
 ﻿@inject EnterpriseReportSystem.Data.ApplicationDbContext _context
 
 @{
-    // Извличаме потребителя с Id = 1 директно от базата данни
-    var currentUser = _context.SystemUsers.FirstOrDefault(u => u.Id == 1);
+    // Прочитаме глобалните теми, налети директно от _ViewStart
+    string themeFile = ViewData["GlobalTheme"]?.ToString() ?? "light";
+    string layoutStyle = ViewData["GlobalLayout"]?.ToString() ?? "WORD";
 
-    // Първични счетоводни защити против null стойности
-    string displayUsername = currentUser != null ? currentUser.Username : "Гост";
-    string displayLayout = currentUser != null ? currentUser.LayoutType : "WORD";
-    string displayTheme = currentUser != null ? currentUser.ThemeType : "LIGHT";
+    // ДОБАВЕНО: Захранваме долните редове 80 и 86, за да няма конфликт в контекста
+    string displayTheme = themeFile.ToUpper();
+    string displayLayout = layoutStyle;
+
+    // Извличаме името за аватара безопасно
+    string displayUsername = "admin_holding";
 }
 
 <!DOCTYPE html>
@@ -15,20 +18,15 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - EnterpriseReportSystem</title>
+    <title>@ViewData["Title"] - Холдинг ERP</title>
 
-    <!-- Базови Bootstrap 5 Стилизации -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <!-- Интегриране на Bootstrap Icons за иконите в менюто -->
     <link rel="stylesheet" href="https://jsdelivr.net">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
-    <link class="theme-link" rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/EnterpriseReportSystem.styles.css" asp-append-version="true" />
-
-    <!-- МАГИЯТА НА ТЕМИТЕ: Браузърът автоматично зарежда съответния файл (light, dark или photoshop) -->
-    <link rel="stylesheet" href="~/css/themes/@(displayTheme.Trim().ToLower()).css" asp-append-version="true" />
+    <!-- ГЛОБАЛЕН СТИЛ: Променя цветовете на абсолютно всички форми едновременно -->
+    <link rel="stylesheet" href="~/css/themes/@(themeFile).css" asp-append-version="true" />
 </head>
-
 
 
 <body>

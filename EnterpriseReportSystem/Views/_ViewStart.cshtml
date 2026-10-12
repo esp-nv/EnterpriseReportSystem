@@ -1,3 +1,13 @@
-﻿@{
+﻿@inject EnterpriseReportSystem.Data.ApplicationDbContext _context
+
+@{
+    // ГЛОБАЛНА СЕЙФ ЗАЩИТА: Извличаме настройките на текущия потребител най-първи
+    var currentUser = _context.SystemUsers.FirstOrDefault(u => u.Id == 1);
+
+    // Записваме темата в глобалния споделен контейнер ViewData
+    ViewData["GlobalTheme"] = currentUser != null ? currentUser.ThemeType.Trim().ToLower() : "light";
+    ViewData["GlobalLayout"] = currentUser != null ? currentUser.LayoutType.Trim().ToUpper() : "WORD";
+
+    // Указваме на системата да използва основния навигационен шаблон
     Layout = "_Layout";
 }
