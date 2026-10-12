@@ -16,7 +16,9 @@ public static class DbInitializer
         context.Database.EnsureCreated();
 
         // Откриваме правилния път до папка InputFiles в зависимост от работната среда
-        string rootPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "InputFiles");
+        string? baseDir = AppDomain.CurrentDomain.BaseDirectory;
+        string rootPath = Path.Combine(baseDir ?? string.Empty, "InputFiles");
+
         if (!Directory.Exists(rootPath))
         {
             rootPath = Path.Combine(Directory.GetCurrentDirectory(), "InputFiles");
@@ -30,8 +32,6 @@ public static class DbInitializer
         // =========================================================================
         // 2. ЖЕЛЯЗЕН СЧЕТОВОДЕН И РЕЛАЦИОНЕН РЕД НА ЗАРЕЖДАНЕ НА ДОМЕЙН ПАПКИТЕ
         // =========================================================================
-        // Първо Ledger (Езици, Валути) и Location (Области, Градове), за да съществуват
-        // мастър редовете, след това Hierarchy (Категории) и най-накрая Structure (Фирми, Менюта, Потребители).
         string[] domainFolders = new string[] { "Ledger", "Location", "Hierarchy", "Structure" };
 
         try
@@ -55,18 +55,20 @@ public static class DbInitializer
                     string tableName = fileName.Substring(underscoreIndex + 1);
 
                     // Чрез C# Reflection намираме съответния DbSet вътре в контекста на базата
-                    PropertyInfo dbSetProperty = context.GetType().GetProperties()
+                    PropertyInfo? dbSetProperty = context.GetType().GetProperties()
                         .FirstOrDefault(p => p.Name == tableName && p.PropertyType.IsGenericType &&
                                              (p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>) ||
                                               p.PropertyType.GetGenericTypeDefinition() == typeof(IQueryable<>)));
 
                     if (dbSetProperty == null) continue;
 
-                    // Извличаме типа на самата Entity класа
-                    Type entityType = dbSetProperty.PropertyType.GetGenericArguments()[0];
+                    // Извличаме типа на самата Entity класа безопасно
+                    var genericArgs = dbSetProperty.PropertyType.GetGenericArguments();
+                    if (genericArgs == null || genericArgs.Length == 0) continue;
+                    Type entityType = genericArgs[0];
 
                     // Проверяваме динамично дали в тази SQL таблица вече има записани данни
-                    IQueryable queryableTable = (IQueryable)dbSetProperty.GetValue(context);
+                    IQueryable? queryableTable = dbSetProperty.GetValue(context) as IQueryable;
                     if (queryableTable == null) continue;
 
                     bool hasData = false;
@@ -80,21 +82,20 @@ public static class DbInitializer
 
                     // Динамично конструираме десериализиращия списъчен тип List<EntityType>
                     Type listType = typeof(List<>).MakeGenericType(entityType);
-                    object deserializedList = JsonSerializer.Deserialize(jsonText, listType);
+                    object? deserializedList = JsonSerializer.Deserialize(jsonText, listType);
 
                     if (deserializedList == null) continue;
 
-                    object dbSetInstance = dbSetProperty.GetValue(context);
+                    object? dbSetInstance = dbSetProperty.GetValue(context);
                     if (dbSetInstance == null) continue;
 
                     // Откриваме AddRange метода на DbSet обекта
-                    MethodInfo addRangeMethod = dbSetInstance.GetType().GetMethod("AddRange", new Type[] { typeof(IEnumerable<>).MakeGenericType(entityType) })
+                    MethodInfo? addRangeMethod = dbSetInstance.GetType().GetMethod("AddRange", new Type[] { typeof(IEnumerable<>).MakeGenericType(entityType) })
                                               ?? dbSetInstance.GetType().GetMethod("AddRange", new Type[] { typeof(object) });
 
                     if (addRangeMethod == null) continue;
 
-                    // АВТОМАТИЧНА СИСТЕМНА ЗАЩИТА: Тъй като подаваме твърди Id номера във всички домейни
-                    // за сигурност на Foreign Key връзките, отваряме IDENTITY_INSERT за абсолютно всяка таблица!
+                    // АВТОМАТИЧНА СИСТЕМНА ЗАЩИТА
                     bool requiresIdentityInsert = true;
 
                     if (requiresIdentityInsert)
