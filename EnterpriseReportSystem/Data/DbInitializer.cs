@@ -1,9 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text.Json;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
 namespace EnterpriseReportSystem.Data;
@@ -84,11 +80,10 @@ public static class DbInitializer
                     if (addRangeMethod == null) continue;
 
                     // АВТОМАТИЧНА СИСТЕМНА ЗАЩИТА: Отваряме Identity Insert само за таблиците с твърди Id релации
-                    bool requiresIdentityInsert = tableName == "SystemMenus" ||
-                                                  tableName == "SystemMenuTranslations" ||
-                                                  tableName == "Currencies" ||
-                                                  tableName == "OperationTypes" ||
-                                                  tableName == "AssetAttributes";
+                   
+                    // АВТОМАТИЧНА СИСТЕМНА ЗАЩИТА: Тъй като подаваме твърди Id номера във всички домейни,
+                    // включваме IDENTITY_INSERT динамично за абсолютно всяка таблица от JSON файловете!
+                    bool requiresIdentityInsert = true;
 
                     if (requiresIdentityInsert)
                     {
@@ -96,7 +91,6 @@ public static class DbInitializer
                         context.Database.ExecuteSqlRaw($"SET IDENTITY_INSERT {tableName} ON");
                     }
 
-                    // КОРЕКЦИЯ CS1503: Подаваме правилно конструиран обектен масив 'new object[]' към Invoke метода
                     addRangeMethod.Invoke(dbSetInstance, new object[] { deserializedList });
                     context.SaveChanges();
 
@@ -105,6 +99,7 @@ public static class DbInitializer
                         context.Database.ExecuteSqlRaw($"SET IDENTITY_INSERT {tableName} OFF");
                         context.Database.CloseConnection();
                     }
+
                 }
             }
 
