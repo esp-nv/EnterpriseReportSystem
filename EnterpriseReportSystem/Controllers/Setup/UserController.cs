@@ -80,7 +80,7 @@ public class UserController : Controller
             await _context.SaveChangesAsync();
         }
 
-        TempData["SettingsSuccess"] = "🎉 Всички интерфейсни промени бяха запечатани успешно в SQL Server!";
+      //  TempData["SettingsSuccess"] = "🎉 Всички интерфейсни промени бяха запечатани успешно в SQL Server!";
 
         // Пренасочваме към чистата Home страница по твоя план
         return RedirectToAction("Index", "Home");
