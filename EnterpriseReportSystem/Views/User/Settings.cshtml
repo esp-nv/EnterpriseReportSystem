@@ -1,132 +1,311 @@
 ﻿@model EnterpriseReportSystem.Models.Entities.Structure.SystemUser
 
 @{
-    Layout = "_Layout"; // Свързваме формата с черния навигационен хедър
+    Layout = "_Layout";
     ViewData["Title"] = "Потребителски настройки и Визуални теми";
 }
-<div class="container my-5" style="max-width: 800px;">
-    <div class="card shadow-sm border border-light-subtle rounded-3">
 
-        <!-- Хедър на Панела за Настройки -->
-        <div class="card-header bg-dark text-white p-3 border-0 rounded-top-3 d-flex align-items-center justify-content-between">
-            <h5 class="mb-0 fw-bold fs-6 text-uppercase tracking-wider">
-                <i class="bi bi-palette-fill text-warning me-2"></i> Персонална конфигурация на интерфейса
-            </h5>
-            <span class="badge bg-secondary">Потребител: @Model.Username</span>
-        </div>
+<div class="container-fluid my-5 px-4">
+    <!-- ДВУПАНЕЛНА РЕШЕТКА ПО МОДЕЛА НА DRIBBBLE (50% ВЛЯВО ЗА ФОРМАТА, 50% ВДЯСНО ЗА PREVIEW) -->
+    <div class="row g-4">
 
-        <div class="card-body p-4 bg-light-subtle">
-
-            @if (TempData["SettingsSuccess"] != null)
-            {
-                <div class="alert alert-success border-0 shadow-sm alert-dismissible fade show fw-bold mb-4" role="alert">
-                    <i class="bi bi-check-circle-fill me-2"></i> @TempData["SettingsSuccess"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <!-- ========================================================================= -->
+        <!-- ЛЯВ ПАНЕЛ: ФОРМА ЗА НАСТРОЙКИ С COLOR COMBOBOX                          -->
+        <!-- ========================================================================= -->
+        <div class="col-lg-6">
+            <div class="card shadow-lg border border-light-subtle rounded-3 h-100">
+                <div class="card-header bg-dark text-white p-3 border-0 rounded-top-3 d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0 fw-bold fs-6 text-uppercase tracking-wider text-warning">
+                        <i class="bi bi-sliders me-2"></i> Конфигуратор на интерфейса
+                    </h5>
+                    <span class="badge bg-secondary">Потребител: @Model.Username</span>
                 </div>
-            }
 
-            <form asp-action="SaveSettings" asp-controller="User" method="post" class="needs-validation" novalidate>
-                @Html.AntiForgeryToken()
+                <div class="card-body p-4 bg-light-subtle">
+                    @if (TempData["SettingsSuccess"] != null)
+                    {
+                        <div class="alert alert-success border-0 shadow-sm alert-dismissible fade show fw-bold mb-4" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SettingsSuccess"]
+                            <button type="button" class="btn-close" data-bs-toggle="alert" aria-label="Close"></button>
+                        </div>
+                    }
 
-                <!-- Скрит идентификатор за сигурен запис -->
-                <input type="hidden" asp-for="Id" />
+                    <form asp-action="SaveSettings" asp-controller="User" method="post" class="needs-validation" novalidate>
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
 
-                <!-- СЕКЦИЯ 1: СТИЛ НА НАВИГАЦИЯТА (Layout Type) -->
-                <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white">
-                    <h6 class="fw-bold text-dark mb-3 border-bottom pb-2 text-uppercase fs-7 text-secondary">
-                        <i class="bi bi-grid-1x2 text-primary me-2"></i> 1. Архитектура на Главното Меню
-                    </h6>
-                    <div class="row g-3 align-items-center">
-                        <div class="col-md-7">
-                            <label asp-for="LayoutType" class="form-label small fw-bold text-muted">Избор на тип меню</label>
-                            <select asp-for="LayoutType" class="form-select form-select-sm rounded-2" required>
-                                <option value="WORD">Лента с инструменти тип Microsoft WORD (Хоризонтална)</option>
-                                <option value="DASHBOARD">Страничен контролен панел тип DASHBOARD (Вертикален)</option>
-                                <option value="EXCEL">Компактна решетъчна матрица тип EXCEL</option>
-                            </select>
+                        <!-- СЕКЦИЯ 1: АРХИТЕКТУРА НА МЕНЮТО -->
+                        <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white">
+                            <h6 class="fw-bold text-dark mb-3 border-bottom pb-2 text-uppercase fs-7 text-secondary">
+                                <i class="bi bi-grid-1x2 text-primary me-2"></i> 1. Макет на навигацията
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label asp-for="LayoutType" class="form-label small fw-bold text-muted">Избор на тип структура</label>
+                                    <select asp-for="LayoutType" id="layoutSelector" class="form-select form-select-sm rounded-2 font-monospace" required>
+                                        <option value="RIBBON">Хоризонтална лента тип RIBBON UI (Лента с инструменти)</option>
+                                        <option value="DASHBOARD">Вертикален страничен контролен панел тип DASHBOARD</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="col-md-5 pt-4 ps-4">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" asp-for="IsMenuExpanded" id="menuExpandCheck">
-                                <label class="form-check-label small fw-bold text-muted ms-2" for="menuExpandCheck">Разгънат режим по подразбиране</label>
+                        <!-- СЕКЦИЯ 2: ЧИСТИ ФАБРИЧНИ БУТСТРАП ТЕМИ -->
+                        <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white">
+                            <h6 class="fw-bold text-dark mb-3 border-bottom pb-2 text-uppercase fs-7 text-secondary">
+                                <i class="bi bi-brush text-success me-2"></i> 2. Базов контраст на средата
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label asp-for="ThemeType" class="form-label small fw-bold text-muted">Изберете фабричен режим на Bootstrap 5.3</label>
+                                    <select asp-for="ThemeType" id="themeSelector" class="form-select form-select-sm rounded-2 font-monospace" required>
+                                        <option value="light">Класическа Светла Офис Тема (Light Web)</option>
+                                        <option value="dark">Класическа Тъмна Офис Тема (Dark Web)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- СЕКЦИЯ 3: ГЛОБАЛЕН ПРЕВКЛЮЧВАТЕЛ И ПАЛИТРИ (СТЪЛБ 3 & 4) -->
+                        <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white">
+                            <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3">
+                                <h6 class="fw-bold text-dark mb-0 text-uppercase fs-7 text-secondary">
+                                    <i class="bi bi-palette text-danger me-2"></i> 3. Персонални цветови промени
+                                </h6>
+                                <div class="form-check form-switch mb-0">
+                                    <input class="form-check-input" type="checkbox" asp-for="IsCustomPaletteActive" id="customPaletteToggle">
+                                    <label class="form-check-label small fw-bold text-danger" for="customPaletteToggle">Активирай user.css</label>
+                                </div>
+                            </div>
+
+                            <p class="small text-muted mb-3">При включване на превключвателя, стандартният Bootstrap CSS се изключва и се наливат HEX кодовете от палитрите:</p>
+
+                            <div class="row text-center g-3">
+                                <div class="col-4">
+                                    <label class="form-label small fw-bold text-muted d-block">Цвят на фона</label>
+                                    <input type="color" class="form-control form-control-color mx-auto rounded-circle p-0 border-0 shadow-sm palette-picker" id="bgColorPicker" value="#141414" disabled style="width: 45px; height: 45px; cursor: not-allowed;">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label small fw-bold text-muted d-block">Акцент на икона</label>
+                                    <input type="color" class="form-control form-control-color mx-auto rounded-circle p-0 border-0 shadow-sm palette-picker" id="accentColorPicker" value="#ff5500" disabled style="width: 45px; height: 45px; cursor: not-allowed;">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label small fw-bold text-muted d-block">Цвят на текста</label>
+                                    <input type="color" class="form-control form-control-color mx-auto rounded-circle p-0 border-0 shadow-sm palette-picker" id="textColorPicker" value="#e0e0e0" disabled style="width: 45px; height: 45px; cursor: not-allowed;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-2 text-end">
+                            <button type="submit" class="btn btn-dark btn-md px-5 fw-bold rounded-2 shadow-sm w-100">
+                                <i class="bi bi-cloud-check-fill text-warning me-2"></i> Запази интерфейсните настройки
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- ДЕСЕН ПАНЕЛ: ЖИВОТО PREVIEW ОГЛЕДАЛО (CRYPTO WALLET СТИЛ ОТ DRIBBBLE)     -->
+        <!-- ========================================================================= -->
+        <div class="col-lg-6">
+            <div class="card shadow-lg border border-light-subtle rounded-3 h-100" id="previewMirrorFrame" style="background: #111; color: #fff; min-height: 550px;">
+                <div class="card-header bg-secondary bg-opacity-10 p-3 border-0 d-flex align-items-center justify-content-between border-bottom border-secondary border-opacity-20">
+                    <span class="small fw-bold text-uppercase text-muted font-monospace">
+                        <i class="bi bi-display me-1 text-info"></i> Интерактивен преглед на живо (Dribbble UI)
+                    </span>
+                    <div class="d-flex gap-1">
+                        <span class="bg-danger rounded-circle" style="width: 10px; height: 10px; display: inline-block;"></span>
+                        <span class="bg-warning rounded-circle" style="width: 10px; height: 10px; display: inline-block;"></span>
+                        <span class="bg-success rounded-circle" style="width: 10px; height: 10px; display: inline-block;"></span>
+                    </div>
+                </div>
+
+                <div class="card-body p-4 d-flex flex-column justify-content-start align-items-stretch font-monospace position-relative h-100 overflow-hidden" id="previewBodyContainer">
+
+                    <!-- ----------------------------------------------------------------- -->
+                    <!-- МАКЕТ А: ВЕРТИКАЛЕН DASHBOARD (СТРАНИЧЕН ПАНЕЛ)                    -->
+                    <!-- ----------------------------------------------------------------- -->
+                    <div id="mirrorDashboardLayout" class="w-100 rounded-3 overflow-hidden shadow border border-secondary border-opacity-20 mb-3" style="min-height: 400px; display: flex; align-items: stretch;">
+                        <div id="mirrorSidebar" class="p-3 border-end border-secondary border-opacity-20 bg-dark" style="width: 180px; min-height: 100%;">
+                            <div class="fw-bold text-warning mb-4 small"><i class="bi bi-building-fill me-1"></i> ХОЛДИНГ ERP</div>
+                            <ul class="list-unstyled small d-flex flex-column gap-3 text-muted p-0 m-0">
+                                <li class="text-secondary opacity-70"><i class="bi bi-speedometer2 me-2"></i> Операции</li>
+                                <li class="text-secondary opacity-70"><i class="bi bi-box-seam me-2"></i> Нов Актив</li>
+                                <li class="text-warning fw-bold"><i class="bi bi-gear-fill me-2" id="mirrorGearIcon"></i> Настройки</li>
+                            </ul>
+                        </div>
+
+                        <div id="mirrorDashboardContent" class="flex-grow-1 p-3 bg-opacity-10 d-flex flex-column gap-3" style="background: #141414;">
+                            <div class="d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-10 pb-2">
+                                <span class="text-muted small fw-bold text-uppercase">Контролен център</span>
+                                <span class="badge bg-success-subtle text-success small px-2 py-1"><i class="bi bi-person-badge"></i> ADMIN</span>
+                            </div>
+
+                            <!-- КАРТА С КРИПТО/ФИНАНСОВ СТИЛ ОТ DRIBBBLE -->
+                            <div id="mirrorCryptoCard" class="p-3 rounded-3 shadow-sm border border-secondary border-opacity-20" style="background: rgba(255,255,255,0.03);">
+                                <div class="text-muted small mb-1 text-uppercase tracking-wider">ОБЩО АКТИВИ В ХОЛДИНГА</div>
+                                <div class="fs-5 fw-bold text-warning" style="letter-spacing: 0.5px;">4,815,162.34 EUR</div>
+                                <div class="mt-3 text-end">
+                                    <span class="badge bg-warning text-dark px-2 py-1 small rounded-1 fw-bold" id="mirrorBadge">АКТИВЕН ОДИТ</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- СЕКЦИЯ 2: КОРПОРАТИВНИ СЧЕТОВОДНИ ТЕМИ -->
-                <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white">
-                    <h6 class="fw-bold text-dark mb-3 border-bottom pb-2 text-uppercase fs-7 text-secondary">
-                        <i class="bi bi-brush text-success me-2"></i> 2. Визуална екрана тема (Themes)
-                    </h6>
-                    <div class="row g-3">
-                        <div class="col-md-12">
-                            <label asp-for="ThemeType" class="form-label small fw-bold text-muted">Изберете софтуерна тема</label>
-                            <select asp-for="ThemeType" class="form-select form-select-sm rounded-2" required>
-                                <option value="LIGHT">Класическа Светла Офис Тема (Light Web)</option>
-                                <option value="DARK">Тъмна Тема тип Microsoft Visual Studio (Dark Studio)</option>
-                                <option value="PHOTOSHOP">Луксозна Тъмна Тема тип Adobe Photoshop (Оранжев Акцент)</option>
-                            </select>
+                    <!-- ----------------------------------------------------------------- -->
+                    <!-- МАКЕТ Б: ХОРИЗОНТАЛЕН RIBBON UI (ГОРНА ЛЕНТА)                       -->
+                    <!-- ----------------------------------------------------------------- -->
+                    <div id="mirrorRibbonLayout" class="w-100 rounded-3 overflow-hidden shadow border border-secondary border-opacity-20 mb-3" style="min-height: 400px; display: none;">
+                        <div id="mirrorRibbonHeader" class="p-3 border-bottom border-secondary border-opacity-20 bg-dark d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="fw-bold text-warning small"><i class="bi bi-building-fill me-1"></i> ХОЛДИНГ ERP</span>
+                                <span class="text-muted small opacity-70 px-2 border-start border-secondary">Оперативен Панел</span>
+                                <span class="text-muted small opacity-70">Нов Актив</span>
+                            </div>
+                            <span class="text-warning fw-bold small"><i class="bi bi-gear-fill" id="mirrorRibbonGear"></i></span>
+                        </div>
+
+                        <div id="mirrorRibbonContent" class="p-4 d-flex flex-column gap-3" style="background: #141414; min-height: 330px;">
+                            <div id="mirrorRibbonCryptoCard" class="p-3 rounded-3 shadow-sm border border-secondary border-opacity-20" style="background: rgba(255,255,255,0.03);">
+                                <div class="text-muted small mb-1 text-uppercase tracking-wider">ОБЩО АКТИВИ В ХОЛДИНГА</div>
+                                <div class="fs-5 fw-bold text-warning">4,815,162.34 EUR</div>
+                            </div>
                         </div>
                     </div>
+
                 </div>
-
-                <!-- СЕКЦИЯ 3: ИНТЕЛИГЕНТНИ ПАЛИТРИ ЗА ПОТРЕБИТЕЛСКИ ЦВЕТОВЕ (ДИНАМИЧЕН ИЗБОР) -->
-                <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white">
-                    <h6 class="fw-bold text-dark mb-3 border-bottom pb-2 text-uppercase fs-7 text-secondary">
-                        <i class="bi bi-sliders text-danger me-2"></i> 3. Динамична потребителска палитра (Color Pickers)
-                    </h6>
-                    <p class="small text-muted mb-3">Ако желаете да пренастроите цветовете извън темите по подразбиране, изберете лични кодове от палитрите по-долу:</p>
-
-                    <div class="row text-center g-3">
-                        <div class="col-4">
-                            <label class="form-label small fw-bold text-muted d-block">Цвят на фона</label>
-                            <input type="color" class="form-control form-control-color mx-auto rounded-circle p-0 border-0 shadow-sm" id="bgColorPicker" value="#141414" title="Изберете основен цвят за екрана" style="width: 45px; height: 45px;">
-                        </div>
-                        <div class="col-4">
-                            <label class="form-label small fw-bold text-muted d-block">Цвят на акцента</label>
-                            <input type="color" class="form-control form-control-color mx-auto rounded-circle p-0 border-0 shadow-sm" id="accentColorPicker" value="#ff5500" title="Изберете цвят за активните бутони" style="width: 45px; height: 45px;">
-                        </div>
-                        <div class="col-4">
-                            <label class="form-label small fw-bold text-muted d-block">Цвят на текста</label>
-                            <input type="color" class="form-control form-control-color mx-auto rounded-circle p-0 border-0 shadow-sm" id="textColorPicker" value="#e0e0e0" title="Изберете цвят на буквите" style="width: 45px; height: 45px;">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- БУТОН ЗА ЗАПИС -->
-                <div class="mt-4 pt-2 text-end">
-                    <button type="submit" class="btn btn-dark btn-md px-5 fw-bold rounded-2 shadow-sm">
-                        <i class="bi bi-cloud-check-fill text-warning me-2"></i> Запази интерфейсните настройки
-                    </button>
-                </div>
-            </form>
-
+            </div>
         </div>
-    </div>
-</div>
 
+    </div> <!-- Край на .row -->
+</div> <!-- Край на .container-fluid -->
+<!-- ========================================================================= -->
+<!-- ЖИВИЯТ JAVASCRIPT ДВИГАТЕЛ ЗА PREVIEW НА СЕКУНДАТА                        -->
+<!-- ========================================================================= -->
 <script>
-    // Автоматична респонсив Bootstrap 5 валидация на формата при изпращане
-    (function () {
-        'use strict'
-        var forms = document.querySelectorAll('.needs-validation')
-        Array.prototype.slice.call(forms)
-            .forEach(function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (!form.checkValidity()) {
-                        event.preventDefault()
-                        event.stopPropagation()
-                    }
-                    form.classList.add('was-validated')
-                }, false)
-            })
-    })()
+    document.addEventListener("DOMContentLoaded", function () {
+        // Елементи от конфигурационната форма (вляво)
+        const layoutSelector = document.getElementById("layoutSelector");
+        const themeSelector = document.getElementById("themeSelector");
+        const customPaletteToggle = document.getElementById("customPaletteToggle");
+        const bgColorPicker = document.getElementById("bgColorPicker");
+        const accentColorPicker = document.getElementById("accentColorPicker");
+        const textColorPicker = document.getElementById("textColorPicker");
+
+        // Елементи от интерактивното уеб огледало (вдясно)
+        const mirrorDashboardLayout = document.getElementById("mirrorDashboardLayout");
+        const mirrorRibbonLayout = document.getElementById("mirrorRibbonLayout");
+        const previewMirrorFrame = document.getElementById("previewMirrorFrame");
+        const mirrorSidebar = document.getElementById("mirrorSidebar");
+        const mirrorDashboardContent = document.getElementById("mirrorDashboardContent");
+        const mirrorRibbonHeader = document.getElementById("mirrorRibbonHeader");
+        const mirrorRibbonContent = document.getElementById("mirrorRibbonContent");
+        const mirrorGearIcon = document.getElementById("mirrorGearIcon");
+        const mirrorRibbonGear = document.getElementById("mirrorRibbonGear");
+        const mirrorBadge = document.getElementById("mirrorBadge");
+        const mirrorCryptoCard = document.getElementById("mirrorCryptoCard");
+        const mirrorRibbonCryptoCard = document.getElementById("mirrorRibbonCryptoCard");
+
+        // 1. ДИНАМИЧНО ПРЕВКЛЮЧВАНЕ НА МАКЕТА (RIBBON / DASHBOARD)
+        function updateLayoutMirror() {
+            if (layoutSelector.value === "RIBBON") {
+                mirrorDashboardLayout.style.setProperty("display", "none", "important");
+                mirrorRibbonLayout.style.setProperty("display", "block", "important");
+            } else {
+                mirrorDashboardLayout.style.setProperty("display", "flex", "important");
+                mirrorRibbonLayout.style.setProperty("display", "none", "important");
+            }
+        }
+
+        // 2. ЖИВО ПРЕБОЯДИСВАНЕ И СИНХРОНИЗАЦИЯ НА ЦВЕТОВЕТЕ
+        function updateThemeAndColorsMirror() {
+            const isCustom = customPaletteToggle.checked;
+     if (!isCustom) {
+         // СТЪЛБ 1 & 2: ЧИСТ БУТСТРАП РЕЖИМ (СВЕТЪЛ / ТЪМЕН)
+         if (themeSelector.value === "light") {
+             previewMirrorFrame.style.background = "#f8f9fa";
+             previewMirrorFrame.style.color = "#212529";
+             mirrorSidebar.style.background = "#e9ecef";
+             mirrorDashboardContent.style.background = "#ffffff";
+             mirrorRibbonHeader.style.background = "#e9ecef";
+             mirrorRibbonContent.style.background = "#ffffff";
+             mirrorGearIcon.style.color = "#0d6efd";
+             mirrorRibbonGear.style.color = "#0d6efd";
+             mirrorBadge.style.backgroundColor = "#212529";
+             mirrorBadge.style.color = "#ffffff";
+             mirrorCryptoCard.style.background = "#f1f3f5";
+             mirrorRibbonCryptoCard.style.background = "#f1f3f5";
+         } else {
+             previewMirrorFrame.style.background = "#141414";
+             previewMirrorFrame.style.color = "#e0e0e0";
+             mirrorSidebar.style.background = "#1c1c1c";
+             mirrorDashboardContent.style.background = "#222222";
+             mirrorRibbonHeader.style.background = "#1c1c1c";
+             mirrorRibbonContent.style.background = "#222222";
+             mirrorGearIcon.style.color = "#ff5500";
+             mirrorRibbonGear.style.color = "#ff5500";
+             mirrorBadge.style.backgroundColor = "#ff5500";
+             mirrorBadge.style.color = "#141414";
+             mirrorCryptoCard.style.background = "rgba(255,255,255,0.03)";
+             mirrorRibbonCryptoCard.style.background = "rgba(255,255,255,0.03)";
+         }
+     } else {
+         // СТЪЛБ 3 & 4: ДИНАМИЧНО НАЛИВАНЕ НА HEX КОДОВЕ НА ЖИВО С JS
+         const bgVal = bgColorPicker.value;
+         const accentVal = accentColorPicker.value;
+         const textVal = textColorPicker.value;
+
+         previewMirrorFrame.style.background = bgVal;
+         previewMirrorFrame.style.color = textVal;
+         mirrorSidebar.style.background = bgVal;
+         mirrorDashboardContent.style.background = bgVal;
+         mirrorRibbonHeader.style.background = bgVal;
+         mirrorRibbonContent.style.background = bgVal;
+
+         mirrorGearIcon.style.color = accentVal;
+         mirrorRibbonGear.style.color = accentVal;
+
+         mirrorBadge.style.backgroundColor = accentVal;
+         mirrorBadge.style.color = "#ffffff";
+
+         mirrorCryptoCard.style.background = "rgba(255,255,255,0.05)";
+         mirrorRibbonCryptoCard.style.background = "rgba(255,255,255,0.05)";
+     }
+ }
+
+ // Закачане на слушатели (Event Listeners) за незабавен UX отговор
+ layoutSelector.addEventListener("change", updateLayoutMirror);
+ themeSelector.addEventListener("change", updateThemeAndColorsMirror);
+ customPaletteToggle.addEventListener("change", updateThemeAndColorsMirror);
+ bgColorPicker.addEventListener("input", updateThemeAndColorsMirror);
+ accentColorPicker.addEventListener("input", updateThemeAndColorsMirror);
+ textColorPicker.addEventListener("input", updateThemeAndColorsMirror);
+
+ // Инициализиране на изгледа при първоначално стартиране
+ updateLayoutMirror();
+ updateThemeAndColorsMirror();
+});
+
+// Автоматична респонсив Bootstrap 5 валидация на формата при изпращане
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms)
+        .forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+})()
 </script>
 
 <style>
-    .fs-7 {
-        font-size: 0.85rem;
-    }
+    .fs-7 { font-size: 0.85rem; }
+    #previewMirrorFrame * { transition: all 0.25s ease-in-out; }
 </style>
