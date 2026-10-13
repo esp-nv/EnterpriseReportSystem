@@ -60,45 +60,34 @@
                             </div>
                         </div>
 
-                        <!-- СЕКЦИЯ 2: АТОМАРНИТЕ НАСТРОЙКИ ЗА ТАБЛИЦИ И ФОНОВЕ (ПРИ ТЪМНА/СВЕТЛА) -->
+                        <!-- СЕКЦИЯ 2: АВТОМАТИЧНО ИЗВЕЖДАНЕ НА ВСИЧКИ ЗОНИ И СВОЙСТВА -->
                         <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white">
                             <h6 class="fw-bold text-dark mb-3 border-bottom pb-2 text-uppercase fs-7 text-secondary">
-                                <i class="bi bi-layers text-success me-2"></i> 2. Конфигуриране на елементи и свойства
+                                <i class="bi bi-layers text-success me-2"></i> 2. Дизайнерски контроли по зони (WordPress стил)
                             </h6>
                             <div class="row g-3">
 
-                                <!-- Описание 1: Контрол на Счетоводните таблици -->
-                                <div class="col-md-12">
-                                    @{
-                                        var tableBg = userStyles.FirstOrDefault(x => x.ElementContext == "table_background");
-                                    }
-                                    <label class="form-label small fw-bold text-muted d-block mb-1">
-                                        <i class="bi bi-table text-info me-1"></i> @(tableBg?.Description ?? "Основен цвят на оперативните таблици")
-                                    </label>
-                                    <select name="TableBgClass" class="form-select form-select-sm rounded-2 font-monospace">
-                                        <option value="table-dark" selected>table-dark (Дълбок контраст за таблици)</option>
-                                        <option value="table-light">table-light (Чист светъл офис стил)</option>
-                                        <option value="table-primary">table-primary (Фирмено синьо за активи)</option>
-                                    </select>
-                                </div>
+                                @foreach (var themeStyle in userStyles)
+                                {
+                                    <div class="col-md-12 mb-2">
+                                        <!-- Извеждаме Официалното име на мастър котвата и описанието на свойството -->
+                                        <label class="form-label small fw-bold text-muted d-block mb-1">
+                                            <i class="bi bi-gear-wide-connected text-primary me-1"></i>
+                                            <span class="text-dark">@(themeStyle.SystemUIElement?.DisplayName ?? "Компонент")</span>
+                                            <span class="opacity-75">(@themeStyle.Description)</span>
+                                        </label>
 
-                                <!-- Описание 2: Контрол на Ефектите на Картите -->
-                                <div class="col-md-12 mt-3">
-                                    @{
-                                        var cardShadow = userStyles.FirstOrDefault(x => x.ElementContext == "card_shadow");
-                                    }
-                                    <label class="form-label small fw-bold text-muted d-block mb-1">
-                                        <i class="bi bi-square-fill text-warning me-1"></i> @(cardShadow?.Description ?? "Сенки на финансовите карти")
-                                    </label>
-                                    <select name="CardShadowClass" class="form-select form-select-sm rounded-2 font-monospace">
-                                        <option value="shadow" selected>shadow (Класическа средна сянка)</option>
-                                        <option value="shadow-lg">shadow-lg (Голяма дълбока луксозна сянка)</option>
-                                        <option value="shadow-none">shadow-none (Напълно плосък изчистен стил)</option>
-                                    </select>
-                                </div>
+                                        <!-- Показваме текущия заведен клас в базата данни в кодиран вид -->
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text bg-light font-monospace text-secondary" style="font-size: 0.7rem;">Текущ клас:</span>
+                                            <input type="text" class="form-control form-control-sm font-monospace bg-white" readonly value="@themeStyle.BootstrapClass" style="font-size: 0.75rem;">
+                                        </div>
+                                    </div>
+                                }
 
                             </div>
                         </div>
+
 
                         <!-- СЕКЦИЯ 3: ПРЕВКЛЮЧВАТЕЛ ЗА ПОТРЕБИТЕЛСКИ ПАЛИТРИ -->
                         <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white">

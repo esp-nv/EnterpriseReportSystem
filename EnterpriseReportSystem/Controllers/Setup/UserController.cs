@@ -25,17 +25,22 @@ public class UserController : Controller
         var user = await _context.SystemUsers.FirstOrDefaultAsync(u => u.Id == 1);
         if (user == null) return NotFound();
 
-        // 2. ИЗВЛИЧАМЕ ВСИЧКИ НЕГОВИ АТОМАРНИ СВОЙСТВА И ОПИСАНИЯ ОТ БАЗАТА ДАННИ
+        // 2. ИЗВЛИЧАМЕ ВСИЧКИ СВОЙСТВА, ЗАЕДНО С МАСTЪР ЗОНИТЕ ЧРЕЗ .INCLUDE()
         var userStyles = await _context.SystemUserThemes
             .Include(t => t.SystemUIElement)
             .Where(t => t.SystemUserId == user.Id)
             .ToListAsync();
 
-        // Подаваме свойствата към екрана чрез ViewBag
+        // 3. ИЗВЛИЧАМЕ И ЦЕЛИТЕ МАСTЪР КОТВИ ЗА ДИНАМИЧНИТЕ МЕНЮТА
+        var uiElements = await _context.SystemUIElements.AsNoTracking().ToListAsync();
+
+        // Подаваме данните към екрана
         ViewBag.UserStyles = userStyles;
+        ViewBag.UIElements = uiElements;
 
         return View(user);
     }
+
 
     // 2. ЗАПИСВАНЕ НА НАСТРОЙКИТЕ (POST) - С КОРЕКЦИЯ НА ОБВЪРЗВАНЕТО И ПРЕНАСОЧВАНЕТО
     [HttpPost]
