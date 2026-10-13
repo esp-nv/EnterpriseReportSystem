@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EnterpriseReportSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialSecureHoldingSchema : Migration
+    public partial class InitialEnterpriseReportSystemDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -38,6 +38,20 @@ namespace EnterpriseReportSystem.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Currencies", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Languages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Languages", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -89,8 +103,7 @@ namespace EnterpriseReportSystem.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    CustomShortcut = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     CustomCssClass = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     ParentMenuId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -103,6 +116,20 @@ namespace EnterpriseReportSystem.Migrations
                         principalTable: "SystemMenus",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SystemUIElements",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ElementKey = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    DisplayName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SystemUIElements", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -171,6 +198,34 @@ namespace EnterpriseReportSystem.Migrations
                         name: "FK_Municipalities_Regions_RegionId",
                         column: x => x.RegionId,
                         principalTable: "Regions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SystemMenuTranslations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SystemMenuId = table.Column<int>(type: "int", nullable: false),
+                    LanguageId = table.Column<int>(type: "int", nullable: false),
+                    TranslatedName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    TranslatedNotes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SystemMenuTranslations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SystemMenuTranslations_Languages_LanguageId",
+                        column: x => x.LanguageId,
+                        principalTable: "Languages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_SystemMenuTranslations_SystemMenus_SystemMenuId",
+                        column: x => x.SystemMenuId,
+                        principalTable: "SystemMenus",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -305,7 +360,10 @@ namespace EnterpriseReportSystem.Migrations
                     LayoutType = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     IsMenuExpanded = table.Column<bool>(type: "bit", nullable: false),
                     ThemeType = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    CompanyId = table.Column<int>(type: "int", nullable: false)
+                    IsGlobalAdmin = table.Column<bool>(type: "bit", nullable: false),
+                    WishListMenuIds = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    CompanyId = table.Column<int>(type: "int", nullable: false),
+                    IsCustomPaletteActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -391,6 +449,35 @@ namespace EnterpriseReportSystem.Migrations
                         name: "FK_FacilityLogs_Facilities_FacilityId",
                         column: x => x.FacilityId,
                         principalTable: "Facilities",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SystemUserThemes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SystemUserId = table.Column<int>(type: "int", nullable: false),
+                    SystemUIElementId = table.Column<int>(type: "int", nullable: false),
+                    ElementContext = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    BootstrapClass = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SystemUserThemes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SystemUserThemes_SystemUIElements_SystemUIElementId",
+                        column: x => x.SystemUIElementId,
+                        principalTable: "SystemUIElements",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_SystemUserThemes_SystemUsers_SystemUserId",
+                        column: x => x.SystemUserId,
+                        principalTable: "SystemUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -513,9 +600,35 @@ namespace EnterpriseReportSystem.Migrations
                 column: "ParentMenuId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SystemMenuTranslations_LanguageId",
+                table: "SystemMenuTranslations",
+                column: "LanguageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SystemMenuTranslations_SystemMenuId",
+                table: "SystemMenuTranslations",
+                column: "SystemMenuId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SystemUIElements_ElementKey",
+                table: "SystemUIElements",
+                column: "ElementKey",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SystemUsers_CompanyId",
                 table: "SystemUsers",
                 column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SystemUserThemes_SystemUIElementId",
+                table: "SystemUserThemes",
+                column: "SystemUIElementId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SystemUserThemes_SystemUserId",
+                table: "SystemUserThemes",
+                column: "SystemUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TownsOrVillages_MunicipalityId",
@@ -539,10 +652,10 @@ namespace EnterpriseReportSystem.Migrations
                 name: "FacilityLogs");
 
             migrationBuilder.DropTable(
-                name: "SystemMenus");
+                name: "SystemMenuTranslations");
 
             migrationBuilder.DropTable(
-                name: "SystemUsers");
+                name: "SystemUserThemes");
 
             migrationBuilder.DropTable(
                 name: "AssetAttributes");
@@ -555,6 +668,18 @@ namespace EnterpriseReportSystem.Migrations
 
             migrationBuilder.DropTable(
                 name: "Currencies");
+
+            migrationBuilder.DropTable(
+                name: "Languages");
+
+            migrationBuilder.DropTable(
+                name: "SystemMenus");
+
+            migrationBuilder.DropTable(
+                name: "SystemUIElements");
+
+            migrationBuilder.DropTable(
+                name: "SystemUsers");
 
             migrationBuilder.DropTable(
                 name: "Facilities");
