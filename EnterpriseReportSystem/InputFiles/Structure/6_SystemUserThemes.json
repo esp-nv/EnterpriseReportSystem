@@ -2,31 +2,37 @@
   {
     "Id": 1,
     "SystemUserId": 1,
-    "ElementContext": "navbar",
-    "BootstrapClass": "text-bg-dark"
+    "ElementContext": "navbar_bg",
+    "BootstrapClass": "bg-dark"
   },
   {
     "Id": 2,
     "SystemUserId": 1,
-    "ElementContext": "sidebar",
-    "BootstrapClass": "bg-dark"
+    "ElementContext": "navbar_text",
+    "BootstrapClass": "text-warning"
   },
   {
     "Id": 3,
     "SystemUserId": 1,
-    "ElementContext": "text",
-    "BootstrapClass": "text-white"
+    "ElementContext": "sidebar_bg",
+    "BootstrapClass": "bg-dark"
   },
   {
     "Id": 4,
     "SystemUserId": 1,
-    "ElementContext": "badge",
-    "BootstrapClass": "text-bg-warning"
+    "ElementContext": "active_link",
+    "BootstrapClass": "text-warning fw-bold border-bottom border-warning"
   },
   {
     "Id": 5,
     "SystemUserId": 1,
-    "ElementContext": "active_menu",
-    "BootstrapClass": "text-warning"
+    "ElementContext": "content_alignment",
+    "BootstrapClass": "d-flex justify-content-between align-items-center"
+  },
+  {
+    "Id": 6,
+    "SystemUserId": 1,
+    "ElementContext": "card_shadow",
+    "BootstrapClass": "shadow rounded-3 border border-light"
   }
 ]

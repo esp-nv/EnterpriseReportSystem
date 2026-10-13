@@ -1,0 +1,32 @@
+﻿@{
+    bool isCustomActive = Convert.ToBoolean(ViewData["IsCustomPaletteActive"]);
+    string sidebarClass = ViewData["SidebarClass"]?.ToString() ?? "bg-dark";
+    string textClass = ViewData["TextClass"]?.ToString() ?? "text-white";
+    string activeMenuClass = ViewData["ActiveMenuClass"]?.ToString() ?? "text-warning";
+}
+
+<nav class="sidebar @(isCustomActive ? "user-sidebar-custom" : sidebarClass)" style="min-width: 260px; max-width: 260px;">
+    <div class="sidebar-header">
+        <a href="/" class="logo-link text-decoration-none fw-bold fs-5 @activeMenuClass">
+            <i class="bi bi-building-fill me-2"></i> ХОЛДИНГ ERP
+        </a>
+    </div>
+
+    <ul class="list-unstyled components">
+        <li>
+            <a href="/Report/Index" class="@(Context.Request.Path.Value == "/Report/Index" || Context.Request.Path.Value == "/Report" ? "active-page " + activeMenuClass : textClass)">
+                <i class="bi bi-speedometer2 me-2 user-icon-accent"></i> Оперативен Панел
+            </a>
+        </li>
+        <li>
+            <a href="/Setup/CreateAsset" class="@(Context.Request.Path.Value == "/Setup/CreateAsset" ? "active-page " + activeMenuClass : textClass)">
+                <i class="bi bi-box-seam me-2 user-icon-accent"></i> Нов Актив
+            </a>
+        </li>
+        <li>
+            <a href="/User/Settings" class="@(Context.Request.Path.Value == "/User/Settings" ? "active-page " + activeMenuClass : textClass)">
+                <i class="bi bi-gear-fill me-2 user-icon-accent"></i> Настройки
+            </a>
+        </li>
+    </ul>
+</nav>

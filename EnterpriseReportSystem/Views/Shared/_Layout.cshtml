@@ -1,17 +1,8 @@
 ﻿@{
-    // Прочитаме глобалните параметри, налети директно от _ViewStart
+    // 1. Прочитаме глобалните параметри, налети директно от _ViewStart през LINQ
     string themeFile = ViewData["GlobalTheme"]?.ToString() ?? "dark";
     string layoutStyle = ViewData["GlobalLayout"]?.ToString() ?? "RIBBON";
     bool isCustomActive = Convert.ToBoolean(ViewData["IsCustomPaletteActive"]);
-
-    // Зареждаме класовете от релационната ни таблица
-    string navbarClass = ViewData["NavbarClass"]?.ToString() ?? "text-bg-dark";
-    string sidebarClass = ViewData["SidebarClass"]?.ToString() ?? "bg-dark";
-    string textClass = ViewData["TextClass"]?.ToString() ?? "text-white";
-    string badgeClass = ViewData["BadgeClass"]?.ToString() ?? "text-bg-warning";
-    string activeMenuClass = ViewData["ActiveMenuClass"]?.ToString() ?? "text-warning";
-
-    string displayUsername = "admin_holding";
 }
 
 <!DOCTYPE html>
@@ -21,66 +12,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Холдинг ERP</title>
 
-    <!-- ТВОЯТА ВЪЛШЕБНА АРХИТЕКТУРНА ПРОВЕРКА ЗА ИЗКЛЮЧВАНЕ НА BOOTSTRAP -->
+    <!-- ТВОЯТА АРХИТЕКТУРНА ПРОВЕРКА: Изключваме или включваме основния фреймуърк -->
     @if (!isCustomActive)
     {
-        <!-- СТЪЛБ 1 & 2: ЧИСТ БУТСТРАП (Зарежда основния рамков фреймуърк) -->
+        <!-- СТЪЛБ 1 & 2: ЧИСТ БУТСТРАП (Зарежда фабричните стилове на твоя Bootstrap v5.1.0) -->
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     }
     else
     {
-        <!-- СТЪЛБ 3 & 4: ПОТРЕБИТЕЛСКИ НАСТРОЙКИ (Твоите два матрични CSS модула) -->
+        <!-- СТЪЛБ 3 & 4: ПОТРЕБИТЕЛСКИ НАСТРОЙКИ (Твоите два разделени CSS модула) -->
         <link rel="stylesheet" href="~/css/themes/user_variables.css" asp-append-version="true" />
         <link rel="stylesheet" href="~/css/themes/user_themes.css" asp-append-version="true" />
     }
 
-    <!-- Фиксиран линк за иконите на Bootstrap и базовия стил на проекта -->
-    <!-- ПОПРАВКА: Вкарваме истинския работещ адрес за иконите на Bootstrap -->
+    <!-- Фиксиран и работещ линк за иконите на Bootstrap и базовия стил на проекта -->
     <link rel="stylesheet" href="https://jsdelivr.net">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 
-<!-- Вграждаме динамичния контрастен атрибут на Bootstrap 5.3 директно в тялото -->
-<body data-bs-theme="@themeFile">
+<body data-bs-theme="@themeFile" class="d-flex flex-column min-height-100vh">
 
     @if (layoutStyle == "DASHBOARD")
     {
         <!-- ========================================================================= -->
-        <!-- МАКЕТ А: ВЕРТИКАЛЕН СТРАНИЧЕН DASHBOARD ИНТЕРФЕЙС (CRYPTO WALLET СТИЛ)    -->
+        <!-- МАКЕТ А: ВЕРТИКАЛЕН СТРАНИЧЕН DASHBOARD ИНТЕРФЕЙС                        -->
         <!-- ========================================================================= -->
-        <div class="wrapper">
-            <nav class="sidebar @(isCustomActive ? "user-sidebar-custom" : sidebarClass)" style="min-width: 260px; max-width: 260px;">
-                <div class="sidebar-header">
-                    <a href="/" class="logo-link text-decoration-none fw-bold text-warning fs-5">
-                        <i class="bi bi-building-fill me-2"></i> ХОЛДИНГ ERP
-                    </a>
-                </div>
-                <ul class="list-unstyled components">
-                    <li>
-                        <a href="/Report/Index" class="@(Context.Request.Path.Value == "/Report/Index" || Context.Request.Path.Value == "/Report" ? "active-page " + activeMenuClass : "")">
-                            <i class="bi bi-speedometer2 me-2 user-icon-accent"></i> Оперативен Панел
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/Setup/CreateAsset" class="@(Context.Request.Path.Value == "/Setup/CreateAsset" ? "active-page " + activeMenuClass : "")">
-                            <i class="bi bi-box-seam me-2 user-icon-accent"></i> Нов Актив
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/User/Settings" class="@(Context.Request.Path.Value == "/User/Settings" ? "active-page " + activeMenuClass : "")">
-                            <i class="bi bi-gear-fill me-2 user-icon-accent"></i> Настройки
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+        <div class="wrapper flex-grow-1">
+            @Html.Partial("_Sidebar")
 
-            <div class="content-area">
-                <!-- Горна бърза контролна лента на Dashboard-а -->
+            <div class="content-area d-flex flex-column">
+                <!-- Горна бърза контролна лента за Dashboard-а -->
                 <div class="p-3 border-bottom d-flex align-items-center justify-content-between mx-3 mt-2 rounded-3 shadow-sm" style="background-color: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.05) !important;">
                     <span class="fw-bold text-muted small text-uppercase"><i class="bi bi-layers-half me-1"></i> Контролен център</span>
-                    @Html.Partial("_UserProfileDropdown", displayUsername)
+                    @Html.Partial("_UserProfileDropdown", "admin_holding")
                 </div>
-                <div class="p-4">
+
+                <div class="p-4 flex-grow-1">
                     @RenderBody()
                 </div>
             </div>
@@ -89,42 +56,19 @@
     else
     {
         <!-- ========================================================================= -->
-        <!-- МАКЕТ Б: ХОРИЗОНТАЛЕН КЛАСИЧЕСКИ RIBBON UI ИНТЕРФЕЙС (ГОРНА ЛЕНТА)         -->
+        <!-- МАКЕТ Б: ХОРИЗОНТАЛЕН КЛАСИЧЕСКИ RIBBON UI ИНТЕРФЕЙС                       -->
         <!-- ========================================================================= -->
-        <header class="p-3 shadow-sm @(isCustomActive ? "user-navbar-custom" : navbarClass) border-bottom" style="border-color: rgba(255,255,255,0.08) !important;">
-            <div class="container-fluid px-4">
-                <div class="d-flex align-items-center justify-content-between">
+        @Html.Partial("_Header")
 
-                    <div class="d-flex align-items-center gap-4">
-                        <a href="/" class="logo-link d-flex align-items-center text-decoration-none fw-bold fs-5 tracking-wider text-warning">
-                            <i class="bi bi-building-fill me-2"></i> ХОЛДИНГ ERP
-                        </a>
-                        <ul class="nav d-flex align-items-center gap-2 mb-0 fs-7">
-                            <li>
-                                <a href="/Report/Index" class="nav-link px-3 fw-bold text-uppercase @(Context.Request.Path.Value == "/Report/Index" || Context.Request.Path.Value == "/Report" ? "active-page" : "")" style="color: @(isCustomActive ? "var(--custom-navbar-text)" : "inherit") !important;">
-                                    Оперативен Панел
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/Setup/CreateAsset" class="nav-link px-3 fw-bold text-uppercase @(Context.Request.Path.Value == "/Setup/CreateAsset" ? "active-page" : "")" style="color: @(isCustomActive ? "var(--custom-navbar-text)" : "inherit") !important;">
-                                    Нов Актив
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    @Html.Partial("_UserProfileDropdown", displayUsername)
-
-                </div>
-            </div>
-        </header>
-
-        <div class="container-fluid px-4 py-4">
+        <div class="container-fluid px-4 py-4 flex-grow-1">
             <main role="main" class="pb-3">
                 @RenderBody()
             </main>
         </div>
     }
+
+    <!-- Споделен изолиран компонент за футера -->
+    @Html.Partial("_Footer")
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

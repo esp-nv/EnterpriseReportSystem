@@ -1,0 +1,36 @@
+﻿@{
+    bool isCustomActive = Convert.ToBoolean(ViewData["IsCustomPaletteActive"]);
+    string navbarClass = ViewData["NavbarClass"]?.ToString() ?? "bg-dark";
+    string textClass = ViewData["TextClass"]?.ToString() ?? "text-white";
+    string activeMenuClass = ViewData["ActiveMenuClass"]?.ToString() ?? "text-warning";
+}
+
+<header class="p-3 shadow-sm border-bottom @(isCustomActive ? "user-navbar-custom" : navbarClass)" style="border-color: rgba(255,255,255,0.08) !important;">
+    <div class="container-fluid px-4">
+        <div class="d-flex align-items-center justify-content-between">
+
+            <!-- ЛЯВА ЧАСТ: ЛОГО И ХОРИЗОНТАЛНИ ВРЪЗКИ -->
+            <div class="d-flex align-items-center gap-4">
+                <a href="/" class="logo-link d-flex align-items-center text-decoration-none fw-bold fs-5 tracking-wider @activeMenuClass">
+                    <i class="bi bi-building-fill me-2"></i> ХОЛДИНГ ERP
+                </a>
+                <ul class="nav d-flex align-items-center gap-2 mb-0 fs-7">
+                    <li>
+                        <a href="/Report/Index" class="nav-link px-3 fw-bold text-uppercase @(Context.Request.Path.Value == "/Report/Index" || Context.Request.Path.Value == "/Report" ? "active-page " + activeMenuClass : textClass)">
+                            Оперативен Панел
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/Setup/CreateAsset" class="nav-link px-3 fw-bold text-uppercase @(Context.Request.Path.Value == "/Setup/CreateAsset" ? "active-page " + activeMenuClass : textClass)">
+                            Нов Актив
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- ДЯСНА ЧАСТ: КРЪГЪЛ АВАТАР И ПАДАЩО МЕНЮ -->
+            @Html.Partial("_UserProfileDropdown", "admin_holding")
+
+        </div>
+    </div>
+</header>

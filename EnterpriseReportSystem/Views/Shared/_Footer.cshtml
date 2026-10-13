@@ -1,0 +1,20 @@
+﻿@{
+    bool isCustomActive = Convert.ToBoolean(ViewData["IsCustomPaletteActive"]);
+    string textClass = ViewData["TextClass"]?.ToString() ?? "text-muted";
+    string alignmentClass = ViewData["ContentAlignmentClass"]?.ToString() ?? "d-flex justify-content-between align-items-center";
+}
+
+<footer class="footer mt-auto py-3 border-top bg-opacity-10" style="background-color: rgba(0,0,0,0.02); border-color: rgba(255,255,255,0.05) !important;">
+    <div class="container-fluid px-4">
+        <div class="@alignmentClass @textClass small font-monospace">
+            <div>
+                <span>&copy; @DateTime.Now.Year - </span>
+                <span class="fw-bold text-uppercase text-warning">Холдинг ERP</span>
+                <span> | Всички права запазени.</span>
+            </div>
+            <div>
+                <span class="badge bg-secondary opacity-75">Версия 2026.10</span>
+            </div>
+        </div>
+    </div>
+</footer>
