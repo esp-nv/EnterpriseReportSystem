@@ -21,17 +21,18 @@ public class UserController : Controller
     [HttpGet]
     public async Task<IActionResult> Settings()
     {
-        if (!await _context.SystemUsers.AnyAsync())
-        {
-            DbInitializer.Seed(_context);
-            await _context.SaveChangesAsync();
-        }
-
+        // 1. Взимаме текущия потребител (Админ с Id = 1)
         var user = await _context.SystemUsers.FirstOrDefaultAsync(u => u.Id == 1);
-        if (user == null)
-        {
-            return NotFound("Потребителят не е намерен.");
-        }
+        if (user == null) return NotFound();
+
+        // 2. ИЗВЛИЧАМЕ ВСИЧКИ НЕГОВИ АТОМАРНИ СВОЙСТВА И ОПИСАНИЯ ОТ БАЗАТА ДАННИ
+        var userStyles = await _context.SystemUserThemes
+            .Include(t => t.SystemUIElement)
+            .Where(t => t.SystemUserId == user.Id)
+            .ToListAsync();
+
+        // Подаваме свойствата към екрана чрез ViewBag
+        ViewBag.UserStyles = userStyles;
 
         return View(user);
     }
