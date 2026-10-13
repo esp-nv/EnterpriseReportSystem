@@ -8,15 +8,18 @@
 }
 
 <div class="container-fluid my-4 font-sans-serif" style="background-color: #1e1e1e; color: #d4d4d4; min-height: 85vh; border: 1px solid #3c3c3c; rounded-3 shadow-lg;">
-    
+
     <!-- ГОРНА СИСТЕМНА ЛЕНТА С ИМЕТО НА ПРИЛОЖЕНИЕТО -->
     <div class="p-3 border-bottom d-flex align-items-center justify-content-between" style="border-color: #3c3c3c !important; background-color: #2d2d2d;">
         <div class="d-flex align-items-center gap-2">
             <i class="bi bi-window text-info fs-5"></i>
-            <span class="fw-bold text-white small font-monospace">EnterpriseReportSystem &gt; Settings.cshtml</span>
+            <!-- ТОЧКА 1: Променяме уеб заглавието на чист български език -->
+            <span class="fw-bold text-white small font-monospace">Потребителски настройки и Визуални теми</span>
         </div>
-        <span class="badge bg-dark text-secondary font-monospace border border-secondary" style="font-size: 0.7rem;">Target framework: .NET 8.0</span>
+        <!-- ТОЧКА 2: Сменяме фабричния фреймуърк с името на текущия потребител -->
+        <span class="badge bg-dark text-secondary font-monospace border border-secondary" style="font-size: 0.7rem; color: #ffc107 !important;">user: @Model.Username</span>
     </div>
+
 
     <div class="row g-0 h-100" style="min-height: 75vh;">
         
