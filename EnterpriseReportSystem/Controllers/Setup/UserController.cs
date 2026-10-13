@@ -39,26 +39,50 @@ public class UserController : Controller
     // 2. ЗАПИСВАНЕ НА НАСТРОЙКИТЕ (POST) - С КОРЕКЦИЯ НА ОБВЪРЗВАНЕТО И ПРЕНАСОЧВАНЕТО
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SaveSettings(int Id, string LayoutType, string ThemeType, bool IsMenuExpanded)
+    public async Task<IActionResult> SaveSettings(int Id, string LayoutType, string ThemeType, bool IsCustomPaletteActive)
     {
+        // 1. Намираме основния потребител в SQL Server
         var user = await _context.SystemUsers.FirstOrDefaultAsync(u => u.Id == Id);
-
         if (user == null)
         {
             return NotFound();
         }
 
-        // Записваме точно зададените от екрана стойности
-        user.LayoutType = LayoutType;
-        user.ThemeType = ThemeType.Trim().ToLower(); // Пазим в малки букви за CSS файловете
-        user.IsMenuExpanded = IsMenuExpanded;
+        // 2. Записваме новите глобални флагове и изчистените Bootstrap режими
+        user.LayoutType = LayoutType;          // "RIBBON" или "DASHBOARD"
+        user.ThemeType = ThemeType.ToLower();  // "light" или "dark"
+        user.IsCustomPaletteActive = IsCustomPaletteActive;
 
         _context.SystemUsers.Update(user);
         await _context.SaveChangesAsync();
 
-        TempData["SettingsSuccess"] = "🎉 Визуалната тема и стил на менюто бяха обновени в SQL Server на секундата!";
+        // 3. АКО Е АКТИВИРАН USER.CSS -> АКТУАЛИЗИРАМЕ И КЛАСОВЕТЕ В НОВАТА ТАБЛИЦА
+        if (IsCustomPaletteActive)
+        {
+            var userStyles = await _context.SystemUserThemes.Where(t => t.SystemUserId == Id).ToListAsync();
 
-        // КОРЕКЦИЯ: Пренасочваме строго към празната Home страница (Home/Index)
+            // Пример за динамичен ъпдейт според избора (може да се разшири с палитрите)
+            var navbarStyle = userStyles.FirstOrDefault(s => s.ElementContext == "navbar");
+            if (navbarStyle != null)
+            {
+                navbarStyle.BootstrapClass = ThemeType == "light" ? "text-bg-light" : "text-bg-dark";
+                _context.SystemUserThemes.Update(navbarStyle);
+            }
+
+            var sidebarStyle = userStyles.FirstOrDefault(s => s.ElementContext == "sidebar");
+            if (sidebarStyle != null)
+            {
+                sidebarStyle.BootstrapClass = ThemeType == "light" ? "bg-light" : "bg-dark";
+                _context.SystemUserThemes.Update(sidebarStyle);
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        TempData["SettingsSuccess"] = "🎉 Всички интерфейсни промени бяха запечатани успешно в SQL Server!";
+
+        // Пренасочваме към чистата Home страница по твоя план
         return RedirectToAction("Index", "Home");
     }
+
 }
