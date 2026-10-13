@@ -59,31 +59,31 @@
                 <input type="hidden" asp-for="Id" />
 
                 <div class="tab-content flex-grow-1" id="vs-tab-content">
-                    
-                    <!-- РАЗДЕЛ 1: GENERAL (МАКЕТ И ГЛОБАЛНИ ТЕМИ) -->
+
+                    <!-- РАЗДЕЛ 1: ОСНОВНИ НАСТРОЙКИ (APPLICATION) -->
                     <div class="tab-pane fade show active" id="content-general" role="tabpanel" aria-labelledby="tab-general">
-                        <h4 class="text-white fw-light mb-1 font-sans-serif" style="font-size: 1.6rem;">Application</h4>
-                        <span class="text-muted small d-block mb-4 pb-2 border-bottom font-monospace" style="border-color: #3c3c3c !important;">General settings and framework interfaces management.</span>
-                        
+                        <h4 class="text-white fw-light mb-1" style="font-size: 1.6rem;">Основни настройки</h4>
+                        <span class="text-muted small d-block mb-4 pb-2 border-bottom font-monospace" style="border-color: #3c3c3c !important;">Управление на глобалната визуална тема и структура на потребителския интерфейс.</span>
+
                         <div class="row g-4 font-monospace" style="font-size: 0.85rem;">
                             <div class="col-md-8">
-                                <label asp-for="LayoutType" class="form-label fw-bold text-secondary mb-1">Output layout menu style</label>
-                                <select asp-for="LayoutType" id="layoutSelector" class="form-select form-select-sm rounded-1 bg-dark text-white border-secondary font-monospace" style="background-color: #333333 !important; border-color: #555555 !important;">
-                                    <option value="RIBBON">Console Ribbon UI (Horizontal Header Menu)</option>
-                                    <option value="DASHBOARD">Workspace Dashboard UI (Vertical Sidebar Panel)</option>
+                                <label asp-for="LayoutType" class="form-label fw-bold text-secondary mb-1">Вид на главното меню</label>
+                                <select asp-for="LayoutType" id="layoutSelector" class="form-select form-select-sm rounded-1 text-white border-secondary font-monospace" style="background-color: #333333 !important; border-color: #555555 !important;">
+                                    <option value="RIBBON">Хоризонтална лента тип RIBBON UI</option>
+                                    <option value="DASHBOARD">Вертикален страничен контролен панел</option>
                                 </select>
-                                <span class="text-muted small d-block mt-1">Specifies the navigation framework style to render the enterprise core routing links.</span>
+                                <span class="text-muted small d-block mt-1">Определя разположението на основните навигационни връзки в системата.</span>
                             </div>
 
                             <div class="col-md-8 mt-4">
-                                <label asp-for="ThemeType" class="form-label fw-bold text-secondary mb-1">Target theme runtime compilation mode</label>
-                                <select asp-for="ThemeType" id="themeSelector" class="form-select form-select-sm rounded-1 bg-dark text-white border-secondary font-monospace" style="background-color: #333333 !important; border-color: #555555 !important;">
-                                    <option value="light">Bootstrap Native v5.1.0 Light Web Engine</option>
-                                    <option value="dark">Bootstrap Native v5.1.0 Dark Charcoal Engine</option>
-                                    <option value="custom">Dynamic Decoupled JSON WordPress Palette Matrix</option>
-                                    <option value="external">Independent External user.css File Linkage</option>
+                                <label asp-for="ThemeType" class="form-label fw-bold text-secondary mb-1">Режим на уеб темата</label>
+                                <select asp-for="ThemeType" id="themeSelector" class="form-select form-select-sm rounded-1 text-white border-secondary font-monospace" style="background-color: #333333 !important; border-color: #555555 !important;">
+                                    <option value="light">Класическа Светла Офис Тема (Light Web)</option>
+                                    <option value="dark">Класическа Тъмна Офис Тема (Dark Web)</option>
+                                    <option value="custom">Персонална потребителска палитра (Custom Palette)</option>
+                                    <option value="external">Външен CSS модул (External user.css)</option>
                                 </select>
-                                <span class="text-muted small d-block mt-1">Defines the underlying theme compilation asset orchestra deployed during page request lifecycle.</span>
+                                <span class="text-muted small d-block mt-1">Избор на базов цветови енджин за визуализация на оперативния екран.</span>
                             </div>
                         </div>
                     </div>
