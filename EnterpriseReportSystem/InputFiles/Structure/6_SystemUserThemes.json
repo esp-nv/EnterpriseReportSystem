@@ -1,0 +1,32 @@
+[
+  {
+    "Id": 1,
+    "SystemUserId": 1,
+    "ElementContext": "navbar",
+    "BootstrapClass": "text-bg-dark"
+  },
+  {
+    "Id": 2,
+    "SystemUserId": 1,
+    "ElementContext": "sidebar",
+    "BootstrapClass": "bg-dark"
+  },
+  {
+    "Id": 3,
+    "SystemUserId": 1,
+    "ElementContext": "text",
+    "BootstrapClass": "text-white"
+  },
+  {
+    "Id": 4,
+    "SystemUserId": 1,
+    "ElementContext": "badge",
+    "BootstrapClass": "text-bg-warning"
+  },
+  {
+    "Id": 5,
+    "SystemUserId": 1,
+    "ElementContext": "active_menu",
+    "BootstrapClass": "text-warning"
+  }
+]

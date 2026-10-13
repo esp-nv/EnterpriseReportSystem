@@ -42,6 +42,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Language> Languages { get; set; } = null!;
     public DbSet<SystemMenuTranslation> SystemMenuTranslations { get; set; } = null!;
 
+    public DbSet<SystemUserTheme> SystemUserThemes { get; set; } = null!;
 
 
 

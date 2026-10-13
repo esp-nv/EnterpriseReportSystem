@@ -1,22 +1,31 @@
-﻿:root {
-    --bg-main: #141414; /* Изключително тъмен Photoshop фон */
-    --bg-card: #222222; /* Работен панел на Adobe */
-    --text-main: #e0e0e0;
-    --text-muted: #888888;
-    --border-color: #323232;
-    --accent-color: #ff5500; /* Яркият, разпознаваем оранжев Photoshop акцент! */
-    --accent-text: #ffffff;
-    --sidebar-bg: #1c1c1c;
-    --sidebar-text: #e0e0e0;
+﻿/* =========================================================================
+   ФАЙЛ 2: МАТРИЧНИ АТРИБУТНИ ОВЪРРАЙДИ ЗА data-bs-theme
+   ========================================================================= */
+
+/* СТЪЛБ 1: КЛАСИЧЕСКА СВЕТЛА ОФИС ТЕМА (LIGHT WEB) */
+[data-bs-theme="light"] {
+    --bs-body-bg: #f8f9fa;
+    --bs-body-color: #212529;
+    --bs-card-bg: #ffffff;
+    --bs-card-border-color: #dee2e6;
+    /* Фабрични връзки за нашите къстъм променливи в светъл режим */
+    --custom-navbar-bg: #f8f9fa;
+    --custom-navbar-text: #212529;
+    --custom-sidebar-bg: #212529;
+    --custom-sidebar-text: #ffffff;
+    --custom-accent-color: #0d6efd; /* Bootstrap синьо */
 }
 
-body {
-    background-color: var(--bg-main) !important;
-    color: var(--text-main) !important;
-}
-
-/* Специфично оцветяване за селектираните елементи във Photoshop стил */
-.active-menu-item {
-    border-left: 4px solid var(--accent-color) !important;
-    background-color: #2a2a2a !important;
+/* СТЪЛБ 2: КЛАСИЧЕСКА ТЪМНА ОФИС ТЕМА (DARK WEB) */
+[data-bs-theme="dark"] {
+    --bs-body-bg: #141414; /* Изчистен дълбок тъмен фон */
+    --bs-body-color: #e0e0e0;
+    --bs-card-bg: #222222; /* Карти тип работен панел */
+    --bs-card-border-color: #323232;
+    /* Фабрични връзки за нашите къстъм променливи в тъмен режим */
+    --custom-navbar-bg: #1c1c1c;
+    --custom-navbar-text: #e0e0e0;
+    --custom-sidebar-bg: #1c1c1c;
+    --custom-sidebar-text: #e0e0e0;
+    --custom-accent-color: #ff5500; /* Луксозен оранжев акцент */
 }
