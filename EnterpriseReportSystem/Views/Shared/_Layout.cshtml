@@ -1,15 +1,16 @@
-﻿@inject EnterpriseReportSystem.Data.ApplicationDbContext _context
+﻿@{
+    // Прочитаме глобалните параметри, налети директно от _ViewStart
+    string themeFile = ViewData["GlobalTheme"]?.ToString() ?? "dark";
+    string layoutStyle = ViewData["GlobalLayout"]?.ToString() ?? "RIBBON";
+    bool isCustomActive = Convert.ToBoolean(ViewData["IsCustomPaletteActive"]);
 
-@{
-    // Прочитаме глобалните теми, налети директно от _ViewStart
-    string themeFile = ViewData["GlobalTheme"]?.ToString() ?? "light";
-    string layoutStyle = ViewData["GlobalLayout"]?.ToString() ?? "WORD";
+    // Зареждаме класовете от релационната ни таблица
+    string navbarClass = ViewData["NavbarClass"]?.ToString() ?? "text-bg-dark";
+    string sidebarClass = ViewData["SidebarClass"]?.ToString() ?? "bg-dark";
+    string textClass = ViewData["TextClass"]?.ToString() ?? "text-white";
+    string badgeClass = ViewData["BadgeClass"]?.ToString() ?? "text-bg-warning";
+    string activeMenuClass = ViewData["ActiveMenuClass"]?.ToString() ?? "text-warning";
 
-    // ДОБАВЕНО: Захранваме долните редове 80 и 86, за да няма конфликт в контекста
-    string displayTheme = themeFile.ToUpper();
-    string displayLayout = layoutStyle;
-
-    // Извличаме името за аватара безопасно
     string displayUsername = "admin_holding";
 }
 
@@ -20,100 +21,109 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Холдинг ERP</title>
 
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- ТВОЯТА ВЪЛШЕБНА АРХИТЕКТУРНА ПРОВЕРКА ЗА ИЗКЛЮЧВАНЕ НА BOOTSTRAP -->
+    @if (!isCustomActive)
+    {
+        <!-- СТЪЛБ 1 & 2: ЧИСТ БУТСТРАП (Зарежда основния рамков фреймуърк) -->
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    }
+    else
+    {
+        <!-- СТЪЛБ 3 & 4: ПОТРЕБИТЕЛСКИ НАСТРОЙКИ (Твоите два матрични CSS модула) -->
+        <link rel="stylesheet" href="~/css/themes/user_variables.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/css/themes/user_themes.css" asp-append-version="true" />
+    }
+
+    <!-- Фиксиран линк за иконите на Bootstrap и базовия стил на проекта -->
     <link rel="stylesheet" href="https://jsdelivr.net">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-
-    <!-- ГЛОБАЛЕН СТИЛ: Променя цветовете на абсолютно всички форми едновременно -->
-    <link rel="stylesheet" href="~/css/themes/@(themeFile).css" asp-append-version="true" />
 </head>
 
+<!-- Вграждаме динамичния контрастен атрибут на Bootstrap 5.3 директно в тялото -->
+<body data-bs-theme="@themeFile">
 
-<body>
-
-    <!-- ОФИЦИАЛЕН ТЪМЕН БУТСТРАП ХЕДЪР (ВЕЧЕ НАПЪЛНО ДИНАМИЧЕН И СВЪРЗАН С ТЕМИТЕ) -->
-    <header class="p-3 shadow-sm" style="background-color: var(--sidebar-bg) !important; color: var(--text-main) !important; border-bottom: 1px solid var(--border-color) !important;">
-        <div class="container-fluid px-4">
-            <div class="d-flex align-items-center justify-content-between">
-
-                <!-- ЛЯВА ЧАСТ: ЛОГО И ИНТЕРАКТИВНИ ВРЪЗКИ -->
-                <div class="d-flex align-items-center gap-4">
-                    <a href="/" class="logo-link d-flex align-items-center text-decoration-none fw-bold fs-5 tracking-wider text-warning">
+    @if (layoutStyle == "DASHBOARD")
+    {
+        <!-- ========================================================================= -->
+        <!-- МАКЕТ А: ВЕРТИКАЛЕН СТРАНИЧЕН DASHBOARD ИНТЕРФЕЙС (CRYPTO WALLET СТИЛ)    -->
+        <!-- ========================================================================= -->
+        <div class="wrapper">
+            <nav class="sidebar @(isCustomActive ? "user-sidebar-custom" : sidebarClass)" style="min-width: 260px; max-width: 260px;">
+                <div class="sidebar-header">
+                    <a href="/" class="logo-link text-decoration-none fw-bold text-warning fs-5">
                         <i class="bi bi-building-fill me-2"></i> ХОЛДИНГ ERP
                     </a>
-
-                    <ul class="nav d-flex align-items-center gap-2 mb-0 fs-7">
-                        <li>
-                            <!-- КЛАСЪТ text-white СЪЩО Е ЗАМЕНЕН, ЗА ДА СЛЕДВА ТЕМАТА -->
-                            <a href="/Report/Index" class="nav-link px-3 fw-bold text-uppercase @(Context.Request.Path.Value == "/Report/Index" || Context.Request.Path.Value == "/Report" ? "active-page" : "")" style="color: var(--text-main) !important;">
-                                Оперативен Панел
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/Setup/CreateAsset" class="nav-link px-3 fw-bold text-uppercase @(Context.Request.Path.Value == "/Setup/CreateAsset" ? "active-page" : "")" style="color: var(--text-main) !important;">
-                                Нов Актив
-                            </a>
-                        </li>
-                    </ul>
                 </div>
+                <ul class="list-unstyled components">
+                    <li>
+                        <a href="/Report/Index" class="@(Context.Request.Path.Value == "/Report/Index" || Context.Request.Path.Value == "/Report" ? "active-page " + activeMenuClass : "")">
+                            <i class="bi bi-speedometer2 me-2 user-icon-accent"></i> Оперативен Панел
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/Setup/CreateAsset" class="@(Context.Request.Path.Value == "/Setup/CreateAsset" ? "active-page " + activeMenuClass : "")">
+                            <i class="bi bi-box-seam me-2 user-icon-accent"></i> Нов Актив
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/User/Settings" class="@(Context.Request.Path.Value == "/User/Settings" ? "active-page " + activeMenuClass : "")">
+                            <i class="bi bi-gear-fill me-2 user-icon-accent"></i> Настройки
+                        </a>
+                    </li>
+                </ul>
+            </nav>
 
-                <!-- ДЯСНА ЧАСТ: КРЪГЪЛ АВАТАР И ПАДАЩО МЕНЮ НА НАШИЯ USER -->
-                <div class="dropdown text-end">
-                    <!-- ПРОМЕНЯМЕ И БЕКГРАУНДА НА БУТОНА ЗА USER-A ДА СЛЕДВА ТЕМАТА -->
-                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle px-3 py-1 rounded-2 border shadow-sm"
-                       id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false"
-                       style="background-color: var(--bg-card) !important; color: var(--text-main) !important; border-color: var(--border-color) !important;">
-
-                        <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center fw-bold me-2 shadow-sm" style="width: 32px; height: 32px; font-size: 0.85rem;">
-                            @(displayUsername.Substring(0, Math.Min(2, displayUsername.Length)).ToUpper())
-                        </div>
-                        <span class="fw-bold small">@displayUsername</span>
-                    </a>
-
-                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow border-secondary mt-2 fs-7" aria-labelledby="userDropdown" style="min-width: 240px;">
-                        <li>
-                            <a class="dropdown-item py-2 d-flex align-items-center" href="#">
-                                <i class="bi bi-people me-2 text-secondary"></i> Превключи на друг user
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider border-secondary"></li>
-                        <li class="dropdown-header text-uppercase fw-bold pb-1 text-muted" style="font-size: 0.65rem;">
-                            <i class="bi bi-grid-1x2 me-1"></i> Вид меню
-                        </li>
-                        <li class="px-3 pb-2">
-                            <span class="badge bg-secondary text-white w-100 py-1 text-uppercase border border-secondary">@displayLayout</span>
-                        </li>
-                        <li class="dropdown-header text-uppercase fw-bold pb-1 text-muted" style="font-size: 0.65rem;">
-                            <i class="bi bi-palette me-1"></i> Тема
-                        </li>
-                        <li class="px-3 pb-2">
-                            <span class="badge bg-warning text-dark w-100 py-1 text-uppercase fw-bold">@displayTheme</span>
-                        </li>
-                        <li><hr class="dropdown-divider border-secondary"></li>
-                        <li>
-                            <a class="dropdown-item py-2 d-flex align-items-center fw-bold text-warning" href="/User/Settings">
-                                <i class="bi bi-gear-fill me-2"></i> Настройки
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider border-secondary"></li>
-                        <li>
-                            <span class="dropdown-item py-2 d-flex align-items-center text-danger fw-bold text-opacity-50" style="cursor: not-allowed; opacity: 0.5;">
-                                <i class="bi bi-box-arrow-right me-2"></i> Изход
-                            </span>
-                        </li>
-                    </ul>
+            <div class="content-area">
+                <!-- Горна бърза контролна лента на Dashboard-а -->
+                <div class="p-3 border-bottom d-flex align-items-center justify-content-between mx-3 mt-2 rounded-3 shadow-sm" style="background-color: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.05) !important;">
+                    <span class="fw-bold text-muted small text-uppercase"><i class="bi bi-layers-half me-1"></i> Контролен център</span>
+                    @Html.Partial("_UserProfileDropdown", displayUsername)
                 </div>
-
+                <div class="p-4">
+                    @RenderBody()
+                </div>
             </div>
         </div>
-    </header>
+    }
+    else
+    {
+        <!-- ========================================================================= -->
+        <!-- МАКЕТ Б: ХОРИЗОНТАЛЕН КЛАСИЧЕСКИ RIBBON UI ИНТЕРФЕЙС (ГОРНА ЛЕНТА)         -->
+        <!-- ========================================================================= -->
+        <header class="p-3 shadow-sm @(isCustomActive ? "user-navbar-custom" : navbarClass) border-bottom" style="border-color: rgba(255,255,255,0.08) !important;">
+            <div class="container-fluid px-4">
+                <div class="d-flex align-items-center justify-content-between">
 
-    <!-- ОСНОВНО СЪДЪРЖАНИЕ НА СТРАНИЦИТЕ -->
-    <div class="container-fluid px-4 py-4">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+                    <div class="d-flex align-items-center gap-4">
+                        <a href="/" class="logo-link d-flex align-items-center text-decoration-none fw-bold fs-5 tracking-wider text-warning">
+                            <i class="bi bi-building-fill me-2"></i> ХОЛДИНГ ERP
+                        </a>
+                        <ul class="nav d-flex align-items-center gap-2 mb-0 fs-7">
+                            <li>
+                                <a href="/Report/Index" class="nav-link px-3 fw-bold text-uppercase @(Context.Request.Path.Value == "/Report/Index" || Context.Request.Path.Value == "/Report" ? "active-page" : "")" style="color: @(isCustomActive ? "var(--custom-navbar-text)" : "inherit") !important;">
+                                    Оперативен Панел
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/Setup/CreateAsset" class="nav-link px-3 fw-bold text-uppercase @(Context.Request.Path.Value == "/Setup/CreateAsset" ? "active-page" : "")" style="color: @(isCustomActive ? "var(--custom-navbar-text)" : "inherit") !important;">
+                                    Нов Актив
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    @Html.Partial("_UserProfileDropdown", displayUsername)
+
+                </div>
+            </div>
+        </header>
+
+        <div class="container-fluid px-4 py-4">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+    }
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

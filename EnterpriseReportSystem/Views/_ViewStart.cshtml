@@ -1,13 +1,25 @@
 ﻿@inject EnterpriseReportSystem.Data.ApplicationDbContext _context
+@using Microsoft.EntityFrameworkCore
 
 @{
-    // ГЛОБАЛНА СЕЙФ ЗАЩИТА: Извличаме настройките на текущия потребител най-първи
-    var currentUser = _context.SystemUsers.FirstOrDefault(u => u.Id == 1);
+    // 1. Извличаме глобалните настройки на текущия потребител безопасно
+    var currentUser = _context.SystemUsers.AsNoTracking().FirstOrDefault(u => u.Id == 1);
 
-    // Записваме темата в глобалния споделен контейнер ViewData
-    ViewData["GlobalTheme"] = currentUser != null ? currentUser.ThemeType.Trim().ToLower() : "light";
-    ViewData["GlobalLayout"] = currentUser != null ? currentUser.LayoutType.Trim().ToUpper() : "WORD";
+    // 2. ИЗВЛИЧАМЕ ВСИЧКИ НЕГОВИ ЦВЕТОВИ КЛАСОВЕ ОТ НОВАТА ТАБЛИЦА ПРЕЗ LINQ
+    var userStyles = _context.SystemUserThemes.AsNoTracking().Where(t => t.SystemUserId == 1).ToList();
 
-    // Указваме на системата да използва основния навигационен шаблон
+    // 3. ПРЕДАВАМЕ ПАРАМЕТРИТЕ ГЛОБАЛНО ЧРЕЗ VIEWDATA КЪМ LAYOUT ШАБЛОНА
+    ViewData["GlobalTheme"] = currentUser != null ? currentUser.ThemeType.Trim().ToLower() : "dark";
+    ViewData["GlobalLayout"] = currentUser != null ? currentUser.LayoutType.Trim().ToUpper() : "RIBBON";
+    ViewData["IsCustomPaletteActive"] = currentUser != null ? currentUser.IsCustomPaletteActive : false;
+
+    // Зареждаме точните фабрични Bootstrap класове от базата за всяка интерфейсна зона
+    ViewData["NavbarClass"] = userStyles.FirstOrDefault(s => s.ElementContext == "navbar")?.BootstrapClass ?? "text-bg-dark";
+    ViewData["SidebarClass"] = userStyles.FirstOrDefault(s => s.ElementContext == "sidebar")?.BootstrapClass ?? "bg-dark";
+    ViewData["TextClass"] = userStyles.FirstOrDefault(s => s.ElementContext == "text")?.BootstrapClass ?? "text-white";
+    ViewData["BadgeClass"] = userStyles.FirstOrDefault(s => s.ElementContext == "badge")?.BootstrapClass ?? "text-bg-warning";
+    ViewData["ActiveMenuClass"] = userStyles.FirstOrDefault(s => s.ElementContext == "active_menu")?.BootstrapClass ?? "text-warning";
+
+    // Задаваме основния мастер шаблон на проекта
     Layout = "_Layout";
 }
