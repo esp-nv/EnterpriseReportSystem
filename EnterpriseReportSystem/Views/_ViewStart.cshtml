@@ -2,24 +2,48 @@
 @using Microsoft.EntityFrameworkCore
 
 @{
-    // 1. Извличаме глобалните настройки на текущия потребител безопасно
+    // 1. Извличаме глобалните настройки на текущия потребител безопасно през Анонимен одит
     var currentUser = _context.SystemUsers.AsNoTracking().FirstOrDefault(u => u.Id == 1);
 
-    // 2. ИЗВЛИЧАМЕ ВСИЧКИ НЕГОВИ ЦВЕТОВИ КЛАСОВЕ ОТ НОВАТА ТАБЛИЦА ПРЕЗ LINQ
-    var userStyles = _context.SystemUserThemes.AsNoTracking().Where(t => t.SystemUserId == 1).ToList();
+    // 2. ИЗВЛИЧАМЕ ВСИЧКИ НЕГОВИ СВОЙСТВА, ЗАЕДНО С НАИМЕНОВАНИЯТА НА ГЛАВНИТЕ ЗОНИ ПРЕЗ .INCLUDE()
+    var userStyles = _context.SystemUserThemes
+        .Include(t => t.SystemUIElement)
+        .AsNoTracking()
+        .Where(t => t.SystemUserId == 1)
+        .ToList();
 
-    // 3. ПРЕДАВАМЕ ПАРАМЕТРИТЕ ГЛОБАЛНО ЧРЕЗ VIEWDATA КЪМ LAYOUT ШАБЛОНА
+    // 3. ПРЕДАВАМЕ ГЛОБАЛНИТЕ ФЛАГОВЕ КЪМ LAYOUT-А ЧРЕЗ VIEWDATA
     ViewData["GlobalTheme"] = currentUser != null ? currentUser.ThemeType.Trim().ToLower() : "dark";
     ViewData["GlobalLayout"] = currentUser != null ? currentUser.LayoutType.Trim().ToUpper() : "RIBBON";
     ViewData["IsCustomPaletteActive"] = currentUser != null ? currentUser.IsCustomPaletteActive : false;
 
-    // Зареждаме точните фабрични Bootstrap класове от базата за всяка интерфейсна зона
-    ViewData["NavbarClass"] = userStyles.FirstOrDefault(s => s.ElementContext == "navbar")?.BootstrapClass ?? "text-bg-dark";
-    ViewData["SidebarClass"] = userStyles.FirstOrDefault(s => s.ElementContext == "sidebar")?.BootstrapClass ?? "bg-dark";
-    ViewData["TextClass"] = userStyles.FirstOrDefault(s => s.ElementContext == "text")?.BootstrapClass ?? "text-white";
-    ViewData["BadgeClass"] = userStyles.FirstOrDefault(s => s.ElementContext == "badge")?.BootstrapClass ?? "text-bg-warning";
-    ViewData["ActiveMenuClass"] = userStyles.FirstOrDefault(s => s.ElementContext == "active_menu")?.BootstrapClass ?? "text-warning";
+    // 4. ТВОЯТА СЪВЪРШЕНА WORDPRESS МАГИЯ: Сглобяваме на куп (с интервал) класовете за всяка зона!
 
-    // Задаваме основния мастер шаблон на проекта
+    // Сглобява всички редове за Хедъра (напр. "bg-dark text-warning")
+    ViewData["NavbarClass"] = string.Join(" ", userStyles
+        .Where(s => s.SystemUIElement?.ElementKey == "HEADER_ZONE")
+        .Select(s => s.BootstrapClass));
+
+    // Сглобява всички редове за Сайдбара (напр. "bg-dark")
+    ViewData["SidebarClass"] = string.Join(" ", userStyles
+        .Where(s => s.SystemUIElement?.ElementKey == "SIDEBAR_ZONE")
+        .Select(s => s.BootstrapClass));
+
+    // Сглобява всички редове за Таблиците (напр. "table-dark table-striped")
+    ViewData["AccountingTableClass"] = string.Join(" ", userStyles
+        .Where(s => s.SystemUIElement?.ElementKey == "TABLE_ZONE")
+        .Select(s => s.BootstrapClass));
+
+    // Сглобява контурите, заоблянето и сенките за Картите
+    ViewData["CardStyleClass"] = string.Join(" ", userStyles
+        .Where(s => s.SystemUIElement?.ElementKey == "CARD_ZONE")
+        .Select(s => s.BootstrapClass));
+
+    // Сглобява подравняването и цветовете за Футера
+    ViewData["FooterLayoutClass"] = string.Join(" ", userStyles
+        .Where(s => s.SystemUIElement?.ElementKey == "FOOTER_ZONE")
+        .Select(s => s.BootstrapClass));
+
+    // Насочваме проекта към главния майсторски шаблон
     Layout = "_Layout";
 }

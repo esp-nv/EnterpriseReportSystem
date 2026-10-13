@@ -607,6 +607,32 @@ namespace EnterpriseReportSystem.Migrations
                     b.ToTable("SystemMenuTranslations");
                 });
 
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemUIElement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ElementKey")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ElementKey")
+                        .IsUnique();
+
+                    b.ToTable("SystemUIElements");
+                });
+
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemUser", b =>
                 {
                     b.Property<int>("Id")
@@ -672,15 +698,25 @@ namespace EnterpriseReportSystem.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<string>("ElementContext")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int>("SystemUIElementId")
+                        .HasColumnType("int");
+
                     b.Property<int>("SystemUserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SystemUIElementId");
 
                     b.HasIndex("SystemUserId");
 
@@ -902,11 +938,19 @@ namespace EnterpriseReportSystem.Migrations
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemUserTheme", b =>
                 {
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Structure.SystemUIElement", "SystemUIElement")
+                        .WithMany()
+                        .HasForeignKey("SystemUIElementId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("EnterpriseReportSystem.Models.Entities.Structure.SystemUser", "SystemUser")
                         .WithMany()
                         .HasForeignKey("SystemUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("SystemUIElement");
 
                     b.Navigation("SystemUser");
                 });

@@ -70,4 +70,10 @@ public static class ValidationConstants
     public const int ThemeElementContextMaxLength = 50;  // За "navbar", "sidebar" и т.н.
     public const int ThemeBootstrapClassMaxLength = 100; // За "text-bg-dark", "bg-primary"
 
+
+    // ПОТРЕБИТЕЛСКИ ИНТЕРФЕЙСНИ ТЕМИ В СТИЛ WORDPRESS
+    public const int UIElementKeyMaxLength = 50;       // За "HEADER_ZONE", "TABLE_ZONE"
+    public const int UIElementNameMaxLength = 100;     // За "Главно хоризонтално меню"
+    public const int UIElementDescMaxLength = 200;     // За "Фон на горната Ribbon лента"
+
 }

@@ -2,37 +2,97 @@
   {
     "Id": 1,
     "SystemUserId": 1,
-    "ElementContext": "navbar_bg",
-    "BootstrapClass": "bg-dark"
+    "SystemUIElementId": 1,
+    "ElementContext": "navbar_background",
+    "BootstrapClass": "bg-dark",
+    "Description": "Фон на горната Ribbon лента"
   },
   {
     "Id": 2,
     "SystemUserId": 1,
-    "ElementContext": "navbar_text",
-    "BootstrapClass": "text-warning"
+    "SystemUIElementId": 1,
+    "ElementContext": "navbar_text_color",
+    "BootstrapClass": "text-warning",
+    "Description": "Цвят на буквите в горната Ribbon лента"
   },
   {
     "Id": 3,
     "SystemUserId": 1,
-    "ElementContext": "sidebar_bg",
-    "BootstrapClass": "bg-dark"
+    "SystemUIElementId": 2,
+    "ElementContext": "sidebar_background",
+    "BootstrapClass": "bg-dark",
+    "Description": "Цветова палитра на Dashboard сайдбара"
   },
   {
     "Id": 4,
     "SystemUserId": 1,
-    "ElementContext": "active_link",
-    "BootstrapClass": "text-warning fw-bold border-bottom border-warning"
+    "SystemUIElementId": 3,
+    "ElementContext": "table_background",
+    "BootstrapClass": "table-dark",
+    "Description": "Основен цвят на оперативните таблици"
   },
   {
     "Id": 5,
     "SystemUserId": 1,
-    "ElementContext": "content_alignment",
-    "BootstrapClass": "d-flex justify-content-between align-items-center"
+    "SystemUIElementId": 3,
+    "ElementContext": "table_striping",
+    "BootstrapClass": "table-striped",
+    "Description": "Раирани редове на оперативните таблици"
   },
   {
     "Id": 6,
     "SystemUserId": 1,
+    "SystemUIElementId": 4,
     "ElementContext": "card_shadow",
-    "BootstrapClass": "shadow rounded-3 border border-light"
+    "BootstrapClass": "shadow",
+    "Description": "Сенки на финансовите карти"
+  },
+  {
+    "Id": 7,
+    "SystemUserId": 1,
+    "SystemUIElementId": 4,
+    "ElementContext": "card_rounding",
+    "BootstrapClass": "rounded-3",
+    "Description": "Заобляне на ъглите на финансовите карти"
+  },
+  {
+    "Id": 8,
+    "SystemUserId": 1,
+    "SystemUIElementId": 4,
+    "ElementContext": "card_border_presence",
+    "BootstrapClass": "border",
+    "Description": "Наличие на външна рамка/контур на финансовите карти"
+  },
+  {
+    "Id": 9,
+    "SystemUserId": 1,
+    "SystemUIElementId": 4,
+    "ElementContext": "card_border_color",
+    "BootstrapClass": "border-light",
+    "Description": "Светъл цвят на контура на финансовите карти"
+  },
+  {
+    "Id": 10,
+    "SystemUserId": 1,
+    "SystemUIElementId": 5,
+    "ElementContext": "footer_layout_flex",
+    "BootstrapClass": "d-flex",
+    "Description": "Флекс структура на долния футер"
+  },
+  {
+    "Id": 11,
+    "SystemUserId": 1,
+    "SystemUIElementId": 5,
+    "ElementContext": "footer_alignment",
+    "BootstrapClass": "justify-content-between",
+    "Description": "Странично разпределение на елементите във футера"
+  },
+  {
+    "Id": 12,
+    "SystemUserId": 1,
+    "SystemUIElementId": 5,
+    "ElementContext": "footer_text_style",
+    "BootstrapClass": "text-muted",
+    "Description": "Приглушен цвят на системния текст във футера"
   }
 ]

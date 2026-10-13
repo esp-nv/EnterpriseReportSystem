@@ -1,0 +1,27 @@
+[
+  {
+    "Id": 1,
+    "ElementKey": "HEADER_ZONE",
+    "DisplayName": "Главно хоризонтално меню (Ribbon UI)"
+  },
+  {
+    "Id": 2,
+    "ElementKey": "SIDEBAR_ZONE",
+    "DisplayName": "Страничен вертикален панел (Dashboard)"
+  },
+  {
+    "Id": 3,
+    "ElementKey": "TABLE_ZONE",
+    "DisplayName": "Счетоводни и оперативни таблици"
+  },
+  {
+    "Id": 4,
+    "ElementKey": "CARD_ZONE",
+    "DisplayName": "Финансови карти и контейнери"
+  },
+  {
+    "Id": 5,
+    "ElementKey": "FOOTER_ZONE",
+    "DisplayName": "Долна лента за системна информация"
+  }
+]
