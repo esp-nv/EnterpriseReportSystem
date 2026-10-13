@@ -1,0 +1,29 @@
+﻿/* =========================================================================
+   ФАЙЛ 1: МОДУЛНИ ПОТРЕБИТЕЛСКИ ПРОМЕНЛИВИ И КОНТЕКСТУАЛНИ КЛАСОВЕ
+   ========================================================================= */
+
+/* Персонални утилити за твоя Color Combobox и детайлите на иконите */
+.user-navbar-custom {
+    background-color: var(--custom-navbar-bg) !important;
+    color: var(--custom-navbar-text) !important;
+}
+
+.user-sidebar-custom {
+    background-color: var(--custom-sidebar-bg) !important;
+    color: var(--custom-sidebar-text) !important;
+}
+
+/* Наливане на цвят директно в активните икони и зъбните колела без !important */
+.user-icon-accent {
+    color: var(--custom-accent-color);
+}
+
+.user-badge-custom {
+    background-color: var(--custom-accent-color) !important;
+    color: #ffffff !important;
+}
+
+/* Плавен преход при превключване на стиловете в реално време */
+header, nav, div, i, span, .card {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
