@@ -618,6 +618,9 @@ namespace EnterpriseReportSystem.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsCustomPaletteActive")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsGlobalAdmin")
                         .HasColumnType("bit");
 
@@ -654,6 +657,34 @@ namespace EnterpriseReportSystem.Migrations
                     b.HasIndex("CompanyId");
 
                     b.ToTable("SystemUsers");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemUserTheme", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BootstrapClass")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ElementContext")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("SystemUserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SystemUserId");
+
+                    b.ToTable("SystemUserThemes");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.ExchangeRateHistory", b =>
@@ -867,6 +898,17 @@ namespace EnterpriseReportSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemUserTheme", b =>
+                {
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Structure.SystemUser", "SystemUser")
+                        .WithMany()
+                        .HasForeignKey("SystemUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("SystemUser");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetGroup", b =>
