@@ -35,11 +35,12 @@
                     <i class="bi bi-gear-fill me-2 text-warning"></i> Application / General
                 </button>
                 
-                <button class="nav-link text-start py-2 px-3 rounded-0 font-monospace border-0 small text-light-muted" 
-                        id="tab-elements" data-bs-toggle="pill" data-bs-target="#content-elements" type="button" role="tab" 
+                <button class="nav-link text-start py-2 px-3 rounded-0 font-monospace border-0 small text-light-muted"
+                        id="tab-elements" data-bs-toggle="pill" data-bs-target="#content-elements" type="button" role="tab"
                         style="font-size: 0.85rem; letter-spacing: 0.3px;">
-                    <i class="bi bi-layers-half me-2 text-success"></i> SystemUIElements
+                    <i class="bi bi-layers-half me-2 text-success"></i> Системни визуални елементи
                 </button>
+
                 
                 <button class="nav-link text-start py-2 px-3 rounded-0 font-monospace border-0 small text-light-muted" 
                         id="tab-themes" data-bs-toggle="pill" data-bs-target="#content-themes" type="button" role="tab" 
@@ -88,33 +89,45 @@
                         </div>
                     </div>
 
-                    <!-- РАЗДЕЛ 2: SYSTEMUIELEMENTS (МАСТЪР КОТВИТЕ) -->
+                    <!-- РАЗДЕЛ 2: СИСТЕМНИ ВИЗУАЛНИ ЕЛЕМЕНТИ (SYSTEMUIELEMENTS) -->
                     <div class="tab-pane fade" id="content-elements" role="tabpanel" aria-labelledby="tab-elements">
-                        <h4 class="text-white fw-light mb-1" style="font-size: 1.6rem;">SystemUIElements</h4>
-                        <span class="text-muted small d-block mb-4 pb-2 border-bottom font-monospace" style="border-color: #3c3c3c !important;">Master immutable UI anchored zones metadata definitions.</span>
-                        
+                        <h4 class="text-white fw-light mb-1" style="font-size: 1.6rem;">Системни визуални елементи</h4>
+                        <span class="text-muted small d-block mb-4 pb-2 border-bottom font-monospace" style="border-color: #3c3c3c !important;">Списък с основните хардуерно и софтуерно фиксирани зони на потребителския интерфейс.</span>
+
                         <div class="table-responsive rounded-1 font-monospace" style="font-size: 0.8rem; border: 1px solid #3c3c3c;">
                             <table class="table table-sm table-dark table-striped mb-0 align-middle" style="background-color: #252526;">
-                                <thead style="background-color: #2d2d2d; color: #858585;">
+                                <thead style="background-color: #2d2d2d; color: #858585; font-size: 0.75rem;">
                                     <tr>
-                                        <th class="px-3 py-2 border-0">ID</th>
-                                        <th class="py-2 border-0">Element Name / Zone Description</th>
-                                        <th class="py-2 text-end px-3 border-0">Unique Element Key</th>
+                                        <th class="px-3 py-2 border-0" style="width: 10%;">ID</th>
+                                        <th class="py-2 border-0" style="width: 50%;">Наименование на интерфейсната зона</th>
+                                        <th class="py-2 text-end px-3 border-0" style="width: 40%;">Уникален системен ключ</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var element in uiElements)
+                                    @if (uiElements != null && uiElements.Any())
                                     {
-                                        <tr style="border-color: #3c3c3c !important;">
-                                            <td class="px-3 fw-bold text-info">@element.Id</td>
-                                            <td class="text-white">@element.DisplayName</td>
-                                            <td class="text-end text-warning px-3 fw-bold">@element.ElementKey</td>
+                                        @foreach (var element in uiElements)
+                                        {
+                                            <tr style="border-color: #3c3c3c !important;">
+                                                <td class="px-3 fw-bold text-info">@element.Id</td>
+                                                <td class="text-white">@element.DisplayName</td>
+                                                <td class="text-end text-warning px-3 font-monospace" style="font-size: 0.75rem;">@element.ElementKey</td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="3" class="text-center py-4 text-muted font-monospace small">
+                                                <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i> Няма заредени системни елементи в SQL Server.
+                                            </td>
                                         </tr>
                                     }
                                 </tbody>
                             </table>
                         </div>
                     </div>
+
 
                     <!-- РАЗДЕЛ 3: SYSTEMUSERTHEMES (АТОМАРНИТЕ СВОЙСТВА И КОМБОБОКСОВЕ) -->
                     <div class="tab-pane fade" id="content-themes" role="tabpanel" aria-labelledby="tab-themes">
