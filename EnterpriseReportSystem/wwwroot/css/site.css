@@ -1,3 +1,27 @@
+/* =========================================================================
+   ФАБРИЧЕН SITE.CSS, АДАПТИРАН ЗА BOOTSTRAP V5.1.0 (БЕЗ ВИЗУАЛНИ КРЪПКИ)
+   ========================================================================= */
+
+:root {
+    /* Автоматични резервни уеб променливи за теми и контраст */
+    --sidebar-bg: #212529;
+    --text-main: #212529;
+    --border-color: #dee2e6;
+    --bg-main: #ffffff;
+    --bg-card: #ffffff;
+    --accent-color: #ffc107;
+}
+
+/* Ако потребителят е на Тъмна Тема, пренаписваме променливите за v5.1.0 */
+[data-bs-theme="dark"] {
+    --sidebar-bg: #1c1c1c;
+    --text-main: #e0e0e0;
+    --border-color: #323232;
+    --bg-main: #141414;
+    --bg-card: #222222;
+    --accent-color: #ff5500;
+}
+
 html {
     font-size: 14px;
 }
@@ -8,24 +32,13 @@ html {
     }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-    position: relative;
-    min-height: 100%;
-}
-
 body {
     margin-bottom: 60px;
     background-color: var(--bg-main) !important;
     color: var(--text-main) !important;
 }
 
-/* =========================================================================
-   ГЛОБАЛНО АВТОМАТИЧНО ОЦВЕТЯВАНЕ НА BOOTSTRAP КАРТИТЕ СПРЯМО ТЕМИТЕ
-   ========================================================================= */
+/* Автоматично оцветяване на картите */
 .card {
     background-color: var(--bg-card) !important;
     color: var(--text-main) !important;
@@ -37,9 +50,7 @@ body {
     color: var(--text-main) !important;
 }
 
-/* =========================================================================
-   ГЛОБАЛНА СТРУКТУРА ЗА СТРАНИЧЕН ВЕРТИКАЛЕН PANEL (DASHBOARD)
-   ========================================================================= */
+/* Структура за страничен панел (Dashboard) */
 .wrapper {
     display: flex;
     align-items: stretch;
@@ -49,7 +60,7 @@ body {
 
 .sidebar {
     background-color: var(--sidebar-bg) !important;
-    color: var(--sidebar-text) !important;
+    color: #ffffff !important;
     border-right: 1px solid var(--border-color) !important;
     transition: all 0.3s ease;
 }
@@ -59,35 +70,22 @@ body {
         border-bottom: 1px solid var(--border-color);
     }
 
-    .sidebar ul.components {
-        padding: 20px 0;
-    }
-
     .sidebar ul li a {
         padding: 12px 20px;
         font-size: 0.95rem;
         display: flex;
         align-items: center;
-        color: var(--sidebar-text) !important;
+        color: #ffffff !important;
         text-decoration: none;
         transition: background 0.2s ease;
     }
 
         .sidebar ul li a:hover {
-            background-color: var(--bg-card) !important;
+            background-color: rgba(255,255,255,0.05) !important;
             color: var(--accent-color) !important;
         }
 
-.content-area {
-    width: 100%;
-    background-color: var(--bg-main) !important;
-    color: var(--text-main) !important;
-    transition: all 0.3s;
-}
-
-/* =========================================================================
-   ИНТЕРФЕКТИВНИ ЕФЕКТИ ЗА КОРПОРАТИВНИЯ НАВИГАЦИОНЕН ХЕДЪР
-   ========================================================================= */
+/* Интерактивни ефекти за навигационния хедър */
 .nav-link {
     transition: color 0.25s ease-in-out, border-color 0.25s ease-in-out !important;
     position: relative;
@@ -97,34 +95,10 @@ body {
         color: #ff5500 !important;
     }
 
-    .nav-link::after {
-        content: '';
-        position: absolute;
-        width: 0;
-        height: 2px;
-        bottom: -2px;
-        left: 15px;
-        background-color: #ff5500;
-        transition: width 0.25s ease-in-out;
-    }
-
-    .nav-link:hover::after {
-        width: calc(100% - 30px);
-    }
-
     .nav-link.active-page {
         color: #ffc107 !important;
         font-weight: 800 !important;
         border-bottom: 2px solid #ffc107;
-    }
-
-.dropdown-item {
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-    .dropdown-item:hover {
-        background-color: #ff5500 !important;
-        color: #ffffff !important;
     }
 
 .logo-link {
