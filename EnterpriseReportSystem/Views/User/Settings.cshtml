@@ -48,12 +48,15 @@
                                     </select>
                                 </div>
                                 <div class="col-md-6">
-                                    <label asp-for="ThemeType" class="form-label small fw-bold text-muted">Глобален режим на Bootstrap</label>
+                                    <label asp-for="ThemeType" class="form-label small fw-bold text-muted">Режим на уеб темата</label>
                                     <select asp-for="ThemeType" id="themeSelector" class="form-select form-select-sm rounded-2 font-monospace" required>
                                         <option value="light">Класическа Светла Офис Тема (Light Web)</option>
                                         <option value="dark">Класическа Тъмна Офис Тема (Dark Web)</option>
+                                        <option value="custom">Персонална потребителска палитра (Custom Palette)</option>
+                                        <option value="external">Външен CSS модул (External user.css)</option>
                                     </select>
                                 </div>
+
                             </div>
                         </div>
 
@@ -103,10 +106,10 @@
                                 <h6 class="fw-bold text-dark mb-0 text-uppercase fs-7 text-secondary">
                                     <i class="bi bi-palette text-danger me-2"></i> 3. Персонални цветови промени (user.css)
                                 </h6>
-                                <div class="form-check form-switch mb-0">
+                                <!--  <div class="form-check form-switch mb-0">
                                     <input class="form-check-input" type="checkbox" asp-for="IsCustomPaletteActive" id="customPaletteToggle">
                                     <label class="form-check-label small fw-bold text-danger" for="customPaletteToggle">Активирай</label>
-                                </div>
+                                </div> -->
                             </div>
                             <p class="small text-muted mb-3">При активиране, стандартният Bootstrap се изолира и се инжектират HEX палитрите долу:</p>
                             <div class="row text-center g-3">
