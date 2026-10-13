@@ -66,4 +66,8 @@ public static class ValidationConstants
     public const int ExchangeRatePrecision = 18; // Общ брой цифри в базата
     public const int ExchangeRateScale = 5;      // Брой цифри след десетичната запетая
 
+    // ПОТРЕБИТЕЛСКИ ИНТЕРФЕЙСНИ ТЕМИ (СЧЕТОВОДНИ КОНСТАНТИ)
+    public const int ThemeElementContextMaxLength = 50;  // За "navbar", "sidebar" и т.н.
+    public const int ThemeBootstrapClassMaxLength = 100; // За "text-bg-dark", "bg-primary"
+
 }

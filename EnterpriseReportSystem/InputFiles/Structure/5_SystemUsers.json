@@ -6,9 +6,10 @@
     "Password": "super_secret_admin",
     "LayoutType": "WORD",
     "IsMenuExpanded": true,
-    "ThemeType": "photoshop",
+    "ThemeType": "dark",
     "IsGlobalAdmin": true,
-    "WishListMenuIds": "2,8"
+    "WishListMenuIds": "2,8",
+    "IsCustomPaletteActive": false
   },
   {
     "Id": 2,
@@ -19,7 +20,8 @@
     "IsMenuExpanded": true,
     "ThemeType": "light",
     "IsGlobalAdmin": false,
-    "WishListMenuIds": "2"
+    "WishListMenuIds": "2",
+    "IsCustomPaletteActive": false
   },
   {
     "Id": 3,
@@ -30,6 +32,7 @@
     "IsMenuExpanded": false,
     "ThemeType": "dark",
     "IsGlobalAdmin": false,
-    "WishListMenuIds": "8,9"
+    "WishListMenuIds": "8,9",
+    "IsCustomPaletteActive": false
   }
 ]

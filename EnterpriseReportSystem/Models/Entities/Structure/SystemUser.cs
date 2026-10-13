@@ -29,4 +29,8 @@ public class SystemUser
 
     public int CompanyId { get; set; }
     public CompanyOrPerson Company { get; set; } = null!;
+
+    [Required]
+    public bool IsCustomPaletteActive { get; set; } = false; // false -> Bootstrap теми; true -> нашите няколко потребителски CSS файла
+
 }
