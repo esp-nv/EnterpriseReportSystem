@@ -19,52 +19,49 @@
     </div>
 
     <div class="row g-0 h-100" style="min-height: 75vh;">
-        
+
         <!-- ========================================================================= -->
-        <!-- ЛЯВ ВЕРТИКАЛЕН СИСТЕМЕН ПАНЕЛ (ФАБРИЧЕН СИНХРОНИЗИРАН МАКЕТ)               -->
+        <!-- ЛЯВ ВЕРТИКАЛЕН СИСТЕМЕН ПАНЕЛ (ЧИСТО И КОРЕКТНО МЕНЮ)                      -->
         <!-- ========================================================================= -->
-        <div class="col-md-3 border-end" style="border-color: #3c3c3c !important; background-color: #252526;">
+        <div class="col-md-3 border-end d-flex flex-column justify-content-between h-100" style="border-color: #3c3c3c !important; background-color: #252526; min-height: 75vh;">
+
+            <!-- ГОРНА ЧАСТ: ОСНОВНИТЕ СИСТЕМНИ ТАБОВЕ -->
             <div class="nav flex-column nav-pills p-3 gap-2" id="vs-tab-system" role="tablist" aria-orientation="vertical">
-                
-                       
-            
-            <div class="text-uppercase text-secondary font-monospace px-2 pt-2 pb-1 fw-bold" style="font-size: 0.7rem; letter-spacing: 0.5px;">
+                <div class="text-uppercase text-secondary font-monospace px-2 pt-2 pb-1 fw-bold" style="font-size: 0.7rem; letter-spacing: 0.5px;">
                     <i class="bi bi-sliders me-1 text-info"></i> Конфигуратор на теми
                 </div>
 
-                <!-- ТРИТЕ БУТОНА, ОБЕДИНЕНИ ВЪВ ВЕРТИКАЛНА BOOTSTRAP ГРУПА (ФАБРИЧЕН СТИЛ) -->
-                <div class="btn-toolbar mb-4" role="toolbar" aria-label="Панел за управление на свойствата">
-                    <div class="btn-group-vertical w-100 font-monospace shadow-sm" role="group" aria-label="Избор на режим">
+                <!-- БУТОН 1: Общи настройки -->
+                <button class="nav-link active text-start py-2 px-3 rounded-0 font-monospace border-0 small text-white position-relative"
+                        id="tab-general-btn" data-bs-toggle="pill" data-bs-target="#content-general" type="button" role="tab" aria-controls="content-general" aria-selected="true"
+                        style="background-color: #37373d; font-size: 0.85rem;">
+                    <i class="bi bi-gear-fill me-2 text-warning"></i> Общи настройки
+                </button>
 
+                <!-- БУТОН 2: Системни визуални елементи -->
+                <button class="nav-link text-start py-2 px-3 rounded-0 font-monospace border-0 small text-muted"
+                        id="tab-elements-btn" data-bs-toggle="pill" data-bs-target="#content-elements" type="button" role="tab" aria-controls="content-elements" aria-selected="false"
+                        style="font-size: 0.85rem;">
+                    <i class="bi bi-layers-half me-2 text-success"></i> Системни визуални елементи
+                </button>
 
-                        <!-- ТРИТЕ БУТОНА ЗА ИЗБОР НА ТЕМА ПО ОРИГИНАЛНИЯ ТИ РАБОТЕЩ ПЛАН -->
-                        <div class="d-flex gap-2 mb-4">
-                            <!-- БУТОН 1: Общи настройки -->
-                            <button class="btn btn-sm btn-secondary font-monospace px-3 fw-bold rounded-1 text-white border-secondary" type="button" id="props-btn-general" style="background-color: #007acc; border-color: #0062a3 !important;">1. Общи настройки</button>
-                            <!-- БУТОН 2: Тъмен, готов за ховър ефект -->
-                            <button class="btn btn-sm btn-dark font-monospace px-3 fw-bold rounded-1 text-muted border-secondary" type="button" id="props-btn-custom" style="background-color: #333333;">2. Персонални настройки</button>
-                            <!-- БУТОН 3: Потребителски профил -->
-                            <button class="btn btn-sm btn-dark font-monospace px-3 fw-bold rounded-1 text-muted border-secondary" type="button" id="props-btn-external" style="background-color: #333333;">3. Външна тема / CSS</button>
-                        </div>
-
-
-                    </div>
-                </div>
-
-                <!-- БУТОН 3: Запис на настройките -->
-
-                <!-- ПОПРАВКА: Използваме btn-primary за жив ховър и mt-auto за заковаване на дъното -->
-                <div class="mt-auto w-100 px-3 pb-3">
-                    <button type="submit" class="btn btn-sm btn-primary shadow-sm font-monospace rounded-1 border-0 w-100 py-2 fs-6">
-                        <i class="bi bi-cloud-check-fill me-2 text-warning"></i> Запечатай настройките
-                    </button>
-                </div>
-
-
-
-
+                <!-- БУТОН 3: Потребителски профил -->
+                <button class="nav-link text-start py-2 px-3 rounded-0 font-monospace border-0 small text-muted"
+                        id="tab-user-props-btn" data-bs-toggle="pill" data-bs-target="#content-user-props" type="button" role="tab" aria-controls="content-user-props" aria-selected="false"
+                        style="font-size: 0.85rem;">
+                    <i class="bi bi-person-vcard-fill me-2 text-info"></i> Потребителски профил
+                </button>
             </div>
+
+            <!-- БУТОН ЗА ЗАПИС: Перфектно закован долу вляво с чисти Bootstrap отстъпи -->
+            <div class="mt-auto w-100 px-3 pb-3">
+                <button type="submit" class="btn btn-sm btn-primary shadow-sm font-monospace rounded-1 border-0 w-100 py-2 fs-6">
+                    <i class="bi bi-cloud-check-fill me-2 text-warning"></i> Запечатай настройките
+                </button>
+            </div>
+
         </div>
+
 
         <!-- ========================================================================= -->
         <!-- ДЕСЕН ГОЛЯМ КОНТЕНЕР С ЧИСТ ФАБРИЧЕН TAB-CONTENT МЕХАНИЗЪМ                 -->
