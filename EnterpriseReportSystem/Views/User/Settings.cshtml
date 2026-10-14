@@ -26,8 +26,7 @@
         <div class="col-md-3 border-end" style="border-color: #3c3c3c !important; background-color: #252526;">
             <div class="nav flex-column nav-pills p-3 gap-2" id="vs-tab-system" role="tablist" aria-orientation="vertical">
                 
-               
-            
+                       
             
             <div class="text-uppercase text-secondary font-monospace px-2 pt-2 pb-1 fw-bold" style="font-size: 0.7rem; letter-spacing: 0.5px;">
                     <i class="bi bi-sliders me-1 text-info"></i> Конфигуратор на теми
@@ -37,23 +36,17 @@
                 <div class="btn-toolbar mb-4" role="toolbar" aria-label="Панел за управление на свойствата">
                     <div class="btn-group-vertical w-100 font-monospace shadow-sm" role="group" aria-label="Избор на режим">
 
-                        <!-- БУТОН 1: Общи настройки -->
-                        <!-- БУТОН 1: Активен по подразбиране, светнал в синьо -->
-                        <button type="button" class="btn btn-sm btn-primary text-start py-2 px-3 fw-bold rounded-1 border-secondary" id="props-btn-general">
-                            <i class="bi bi-1-square-fill me-2 text-warning"></i> 1. Общи настройки
-                        </button>
 
-                        <!-- БУТОН 2: Системни визуални елементи -->
-                        <!-- БУТОН 2: Тъмен, готов за ховър ефект -->
-                        <button type="button" class="btn btn-sm btn-dark text-start py-2 px-3 fw-bold border-secondary text-muted" id="props-btn-custom">
-                            <i class="bi bi-2-square-fill me-2 text-success"></i> 2. Персонални настройки
-                        </button>
+                        <!-- ТРИТЕ БУТОНА ЗА ИЗБОР НА ТЕМА ПО ОРИГИНАЛНИЯ ТИ РАБОТЕЩ ПЛАН -->
+                        <div class="d-flex gap-2 mb-4">
+                            <!-- БУТОН 1: Общи настройки -->
+                            <button class="btn btn-sm btn-secondary font-monospace px-3 fw-bold rounded-1 text-white border-secondary" type="button" id="props-btn-general" style="background-color: #007acc; border-color: #0062a3 !important;">1. Общи настройки</button>
+                            <!-- БУТОН 2: Тъмен, готов за ховър ефект -->
+                            <button class="btn btn-sm btn-dark font-monospace px-3 fw-bold rounded-1 text-muted border-secondary" type="button" id="props-btn-custom" style="background-color: #333333;">2. Персонални настройки</button>
+                            <!-- БУТОН 3: Потребителски профил -->
+                            <button class="btn btn-sm btn-dark font-monospace px-3 fw-bold rounded-1 text-muted border-secondary" type="button" id="props-btn-external" style="background-color: #333333;">3. Външна тема / CSS</button>
+                        </div>
 
-                        <!-- БУТОН 3: Потребителски профил -->
-                        <!-- БУТОН 3: Тъмен, готов за ховър ефект -->
-                        <button type="button" class="btn btn-sm btn-dark text-start py-2 px-3 fw-bold border-secondary text-muted" id="props-btn-external">
-                            <i class="bi bi-3-square-fill me-2 text-info"></i> 3. Външна тема / CSS
-                        </button>
 
                     </div>
                 </div>
@@ -208,25 +201,6 @@
 
     </div> <!-- Край на .row -->
 </div> <!-- Край на .container-fluid -->
-
-<script>
-    // Напълно фабрично превключване на активните бутони отляво за Visual Studio ефект
-    document.addEventListener("DOMContentLoaded", function () {
-        var pillButtons = document.querySelectorAll('#vs-tab-system .nav-link');
-        pillButtons.forEach(function (btn) {
-            btn.addEventListener('shown.bs.tab', function () {
-                pillButtons.forEach(function (b) {
-                    b.style.backgroundColor = 'transparent';
-                    b.classList.add('text-muted');
-                    b.classList.remove('text-white');
-                });
-                this.style.backgroundColor = '#37373d';
-                this.classList.remove('text-muted');
-                this.classList.add('text-white');
-            });
-        });
-    });
-</script>
 
 <style>
     /* ЖЕЛЕЗЕН СИСТЕМЕН МАКЕТ */

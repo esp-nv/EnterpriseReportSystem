@@ -1,7 +1,5 @@
 ﻿document.addEventListener("DOMContentLoaded", function () {
-    // =========================================================================
-    // 1. ИЗНЕСЕНА ФАБРИЧНА ЛОГИКА ЗА ЛЕВИТЕ ТАБОВЕ (ОТ ДЪНОТО НА HTML ФАЙЛА)
-    // =========================================================================
+    // 1. ВЪЗСТАНОВЯВАНЕ: Фабрично превключване на активните бутони отляво за Visual Studio ефект
     var pillButtons = document.querySelectorAll('#vs-tab-system .nav-link');
     pillButtons.forEach(function (btn) {
         btn.addEventListener('shown.bs.tab', function () {
@@ -16,9 +14,7 @@
         });
     });
 
-    // =========================================================================
-    // 2. УПРАВЛЕНИЕ НА ТРИТЕ НОВИ ВЕРТИКАЛНИ БУТОНА В СЕКЦИЯ 3
-    // =========================================================================
+    // 2. ВЪЗСТАНОВЯВАНЕ: Изпитаният скрипт за управление на трите десни бутона в Секция 3
     var propsBtnGeneral = document.getElementById('props-btn-general');
     var propsBtnCustom = document.getElementById('props-btn-custom');
     var propsBtnExternal = document.getElementById('props-btn-external');
@@ -28,21 +24,21 @@
     function handleSection3ButtonClick(clickedBtn) {
         if (!clickedBtn) return;
 
-        // Изчистваме и приглушаваме абсолютно всички три бутона накуп
+        // Връщаме оригиналните тъмни конзолни класове и стилове
         section3Buttons.forEach(function (btn) {
             if (btn) {
-                btn.classList.remove('btn-primary', 'text-white');
-                btn.classList.add('btn-dark', 'text-muted');
-                btn.style.backgroundColor = '';
-                btn.style.borderColor = '';
+                btn.style.backgroundColor = '#333333';
+                btn.style.setProperty('border-color', '#6c757d', 'important');
+                btn.classList.add('text-muted');
+                btn.classList.remove('text-white');
             }
         });
 
-        // Светваме в синьо само и единствено кликнатия бутон
-        clickedBtn.classList.remove('btn-dark', 'text-muted');
-        clickedBtn.classList.add('btn-primary', 'text-white');
+        // Светваме ярко в синьо само и единствено кликнатия бутон
         clickedBtn.style.backgroundColor = '#007acc';
-        clickedBtn.style.borderColor = '#0062a3';
+        clickedBtn.style.setProperty('border-color', '#0062a3', 'important');
+        clickedBtn.classList.remove('text-muted');
+        clickedBtn.classList.add('text-white');
     }
 
     if (propsBtnGeneral) {
