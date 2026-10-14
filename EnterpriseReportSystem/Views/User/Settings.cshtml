@@ -13,7 +13,7 @@
     <input type="hidden" asp-for="Id" />
 
     <div class="container-fluid my-4 font-sans-serif" style="background-color: #1e1e1e; color: #d4d4d4; min-height: 85vh; border: 1px solid #3c3c3c; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-        
+
         <!-- ГОРНА СИСТЕМНА ЛЕНТА С ИМЕТО НА ПРИЛОЖЕНИЕТО -->
         <div class="p-3 border-bottom d-flex align-items-center justify-content-between" style="border-color: #3c3c3c !important; background-color: #2d2d2d; margin-left: -12px; margin-right: -12px;">
             <div class="d-flex align-items-center gap-2">
@@ -24,35 +24,47 @@
         </div>
 
         <div class="row g-0" style="min-height: 75vh;">
-            
-            <div class="col-md-3 border-end d-flex flex-column justify-content-between" style="border-color: #3c3c3c !important; background-color: #252526; min-height: 75vh;">
 
-                <!-- ГОРНА ЧАСТ: МЕНЮ СЪС СЛЕПЕНИ ВЕРТИКАЛНИ БУТОНИ -->
+            <!-- ========================================================================= -->
+            <!-- ЛЯВ ВЕРТИКАЛЕН СИСТЕМЕН ПАНЕЛ (РАМКИРАНИ БУТОНИ И ОТСТЪПЕН ЗАПИС)          -->
+            <!-- ========================================================================= -->
+            <div class="col-md-3 border-end d-flex flex-column justify-content-between font-monospace" style="border-color: #3c3c3c !important; background-color: #252526; min-height: 75vh;">
+
+                <!-- ГОРНА ЧАСТ: КОНФИГУРАТОР СЪС СЛЕПЕНИ ВЕРТИКАЛНИ БУТОНИ С РАМКА -->
                 <div class="p-3">
                     <div class="text-uppercase text-secondary font-monospace px-2 pt-2 pb-2 fw-bold" style="font-size: 0.7rem; letter-spacing: 0.5px;">
                         <i class="bi bi-sliders me-1 text-info"></i> Конфигуратор на теми
                     </div>
 
-                    <div class="btn-group-vertical w-100 font-monospace shadow-sm" role="group" aria-label="Избор на режим">
+                    <!-- ТАБОВЕ С ОБЩА ВЪНШНА И МЕЖДУБЕНОВА РАМКА ОКОЛО ТЯХ -->
+                    <div class="btn-group-vertical w-100 id="vs-tab-system" role="tablist" aria-orientation="vertical">
+
                         <!-- БУТОН 1: Общи настройки -->
-                        <button type="button" class="btn btn-sm btn-primary text-start py-2 px-3 fw-bold border-secondary text-white" id="props-btn-general" data-bs-toggle="pill" data-bs-target="#content-general" role="tab" style="background-color: #007acc; border-color: #0062a3 !important;">
-                            1. Общи настройки
+                        <button class="nav-link active btn btn-sm text-start py-2 px-3 rounded-0 border border-secondary text-white position-relative"
+                                id="tab-general-btn" data-bs-toggle="pill" data-bs-target="#content-general" type="button" role="tab" aria-controls="content-general" aria-selected="true"
+                                style="font-size: 0.85rem; background-color: #37373d;">
+                            <i class="bi bi-gear-fill me-2 text-warning"></i> Общи настройки
                         </button>
 
-                        <!-- БУТОН 2: Персонални настройки -->
-                        <button type="button" class="btn btn-sm btn-dark text-start py-2 px-3 fw-bold border-secondary text-muted" id="props-btn-custom" data-bs-toggle="pill" data-bs-target="#content-elements" role="tab" style="background-color: #333333;">
-                            2. Персонални настройки
+                        <!-- БУТОН 2: Системни визуални елементи -->
+                        <button class="nav-link btn btn-sm text-start py-2 px-3 rounded-0 border border-secondary text-muted"
+                                id="tab-elements-btn" data-bs-toggle="pill" data-bs-target="#content-elements" type="button" role="tab" aria-controls="content-elements" aria-selected="false"
+                                style="font-size: 0.85rem; background-color: transparent;">
+                            <i class="bi bi-layers-half me-2 text-success"></i> Системни визуални елементи
                         </button>
 
-                        <!-- БУТОН 3: Външна тема / CSS -->
-                        <button type="button" class="btn btn-sm btn-dark text-start py-2 px-3 fw-bold border-secondary text-muted" id="props-btn-external" data-bs-toggle="pill" data-bs-target="#content-user-props" role="tab" style="background-color: #333333;">
-                            3. Външна тема / CSS
+                        <!-- БУТОН 3: Потребителски профил -->
+                        <button class="nav-link btn btn-sm text-start py-2 px-3 rounded-0 border border-secondary text-muted"
+                                id="tab-user-props-btn" data-bs-toggle="pill" data-bs-target="#content-user-props" type="button" role="tab" aria-controls="content-user-props" aria-selected="false"
+                                style="font-size: 0.85rem; background-color: transparent;">
+                            <i class="bi bi-person-vcard-fill me-2 text-info"></i> Потребителски профил
                         </button>
+
                     </div>
                 </div>
 
-                <!-- ДОЛНА ЧАСТ: КУТИЯТА С РАМКАТА, СИВИЯ ФОН И БУТОНА ЗА ЗАПИС -->
-                <div class="p-3 border-top mt-auto" style="border-color: #3c3c3c !important; background-color: #2d2d2d;">
+                <!-- БУТОН ЗА ЗАПИС: Изместен надолу с mt-auto и допълнителен сериозен padding pt-5 за ефект на "1 празен таб" -->
+                <div class="mt-auto w-100 px-3 pb-3 pt-5">
                     <button type="submit" class="btn btn-sm btn-primary shadow-sm font-monospace rounded-1 border-0 w-100 py-2 fs-6">
                         <i class="bi bi-cloud-check-fill me-2 text-warning"></i> Запечатай настройките
                     </button>
@@ -60,19 +72,20 @@
 
             </div>
 
+
             <!-- ========================================================================= -->
             <!-- ДЕСЕН ГОЛЯМ КОНТЕНЕР С ЧИСТ ФАБРИЧЕН TAB-CONTENT МЕХАНИЗЪМ                 -->
             <!-- ========================================================================= -->
             <div class="col-md-9 p-4" style="background-color: #1e1e1e;">
                 <div class="tab-content h-100" id="vs-tab-content-panes">
-                    
+
                     <!-- ----------------------------------------------------------------- -->
                     <!-- ПАНЕЛ 1: ОБЩИ НАСТРОЙКИ (АКТИВЕН ПО ПОДРАЗБИРАНЕ)                 -->
                     <!-- ----------------------------------------------------------------- -->
                     <div class="tab-pane fade show active" id="content-general" role="tabpanel" aria-labelledby="tab-general-btn">
                         <h4 class="text-white fw-light mb-1" style="font-size: 1.6rem;">Общи настройки</h4>
                         <span class="text-muted small d-block mb-4 pb-2 border-bottom font-monospace" style="border-color: #3c3c3c !important;">Управление на глобалната визуална тема и структура на потребителския интерфейс.</span>
-                        
+
                         <div class="row g-4 font-monospace" style="font-size: 0.85rem;">
                             <div class="col-md-8">
                                 <label class="form-label fw-bold text-secondary mb-1">Вид на главното меню</label>
