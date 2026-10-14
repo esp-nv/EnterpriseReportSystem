@@ -22,30 +22,39 @@
 
 
     <div class="row g-0 h-100" style="min-height: 75vh;">
-        
+
         <!-- ========================================================================= -->
-        <!-- ЛЯВ ВЕРТИКАЛЕН СИСТЕМЕН ПАНЕЛ (ТАБОВЕ ТОЧНО ПО ВТОРАТА СНИМКА)              -->
+        <!-- ЛЯВ ВЕРТИКАЛЕН СИСТЕМЕН ПАНЕЛ (ТАБОВЕ СЪС СИНХРОНИЗИРАНИ ТЕМИ)            -->
         <!-- ========================================================================= -->
         <div class="col-md-3 border-end" style="border-color: #3c3c3c !important; background-color: #252526;">
             <div class="nav flex-column nav-pills p-2 gap-1" id="vs-tab-system" role="tablist" aria-orientation="vertical">
-                
-                <button class="nav-link active text-start py-2 px-3 rounded-0 font-monospace border-0 small text-white position-relative" 
-                        id="tab-general" data-bs-toggle="pill" data-bs-target="#content-general" type="button" role="tab" 
-                        style="background-color: #37373d; font-size: 0.85rem; letter-spacing: 0.3px;">
-                    <i class="bi bi-gear-fill me-2 text-warning"></i> Application / General
+
+                <!-- ТАБ 1: ОБЩИ НАСТРОЙКИ (ПЪРВОНАЧАЛНО АКТИВЕН) -->
+                <button class="nav-link active text-start py-2 px-3 rounded-0 font-monospace border-0 small text-white position-relative"
+                        id="tab-general" data-bs-toggle="pill" data-bs-target="#content-general" type="button" role="tab" aria-controls="content-general" aria-selected="true"
+                        style="font-size: 0.85rem; letter-spacing: 0.3px;">
+                    <i class="bi bi-gear-fill me-2 text-warning"></i> Общи настройки
                 </button>
-                
+
+                <!-- ТАБ 2: СИСТЕМНИ ВИЗУАЛНИ ЕЛЕМЕНТИ -->
                 <button class="nav-link text-start py-2 px-3 rounded-0 font-monospace border-0 small text-light-muted"
-                        id="tab-elements" data-bs-toggle="pill" data-bs-target="#content-elements" type="button" role="tab"
+                        id="tab-elements" data-bs-toggle="pill" data-bs-target="#content-elements" type="button" role="tab" aria-controls="content-elements" aria-selected="false"
                         style="font-size: 0.85rem; letter-spacing: 0.3px;">
                     <i class="bi bi-layers-half me-2 text-success"></i> Системни визуални елементи
                 </button>
 
-                
-                <button class="nav-link text-start py-2 px-3 rounded-0 font-monospace border-0 small text-light-muted" 
-                        id="tab-themes" data-bs-toggle="pill" data-bs-target="#content-themes" type="button" role="tab" 
+                <!-- ТАБ 3: ПЕРСОНАЛНИ СВОЙСТВА И ТЕМИ -->
+                <button class="nav-link text-start py-2 px-3 rounded-0 font-monospace border-0 small text-light-muted"
+                        id="tab-themes" data-bs-toggle="pill" data-bs-target="#content-themes" type="button" role="tab" aria-controls="content-themes" aria-selected="false"
                         style="font-size: 0.85rem; letter-spacing: 0.3px;">
-                    <i class="bi bi-palette-fill me-2 text-danger"></i> SystemUserThemes
+                    <i class="bi bi-palette-fill me-2 text-danger"></i> Персонални свойства и теми
+                </button>
+
+                <!-- ТАБ 4: ПОТРЕБИТЕЛСКИ ПРОФИЛ -->
+                <button class="nav-link text-start py-2 px-3 rounded-0 font-monospace border-0 small text-light-muted"
+                        id="tab-user-props" data-bs-toggle="pill" data-bs-target="#content-user-props" type="button" role="tab" aria-controls="content-user-props" aria-selected="false"
+                        style="font-size: 0.85rem; letter-spacing: 0.3px;">
+                    <i class="bi bi-person-vcard-fill me-2 text-info"></i> Потребителски профил
                 </button>
 
             </div>
