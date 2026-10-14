@@ -25,42 +25,42 @@
 
         <div class="row g-0" style="min-height: 75vh;">
 
-            <!-- ========================================================================= -->
-            <!-- ЛЯВ ВЕРТИКАЛЕН СИСТЕМЕН ПАНЕЛ (ВЪЗСТАНОВЕН МАКЕТ С МАЛЪК ОТСТЪП)          -->
+         <!-- ========================================================================= -->
+            <!-- ЛЯВ ВЕРТИКАЛЕН СИСТЕМЕН ПАНЕЛ (РАЗМЕНЕНИ МЕСТА НА БУТОН 1 И 3)            -->
             <!-- ========================================================================= -->
             <div class="col-md-3 border-end" style="border-color: #3c3c3c !important; background-color: #252526; min-height: 75vh;">
 
                 <div class="text-uppercase text-secondary font-monospace px-3 pt-3 pb-1 fw-bold" style="font-size: 0.7rem; letter-spacing: 0.5px;">
                     <i class="bi bi-sliders me-1 text-info"></i> Конфигуратор на теми
                 </div>
-
-                <!-- СИСТЕМНИ ТАБОВЕ (Твоят оригинален работещ дизайн) -->
+         
+                <!-- СИСТЕМНИ ТАБОВЕ -->
                 <div class="nav flex-column nav-pills p-3 gap-2" id="vs-tab-system" role="tablist" aria-orientation="vertical">
-
-                    <!-- БУТОН 1: Общи настройки -->
+                    
+                    <!-- НОВ БУТОН 1: Потребителски профил (СЕГА Е АКТИВЕН ПО ПОДРАЗБИРАНЕ) -->
                     <button class="nav-link active text-start py-2 px-3 rounded-0 font-monospace border-0 small text-white position-relative"
-                            id="tab-general-btn" data-bs-toggle="pill" data-bs-target="#content-general" type="button" role="tab" aria-controls="content-general" aria-selected="true"
+                            id="tab-user-props-btn" data-bs-toggle="pill" data-bs-target="#content-user-props" type="button" role="tab" aria-controls="content-user-props" aria-selected="true"
                             style="font-size: 0.85rem;">
-                        <i class="bi bi-gear-fill me-2 text-warning"></i> Общи настройки
+                        <i class="bi bi-person-vcard-fill me-2 text-info"></i> Потребителски профил
                     </button>
 
-                    <!-- БУТОН 2: Системни визуални елементи -->
+                    <!-- БУТОН 2: Системни визуални елементи (Остава си по средата) -->
                     <button class="nav-link text-start py-2 px-3 rounded-0 font-monospace border-0 small text-muted"
                             id="tab-elements-btn" data-bs-toggle="pill" data-bs-target="#content-elements" type="button" role="tab" aria-controls="content-elements" aria-selected="false"
                             style="font-size: 0.85rem;">
                         <i class="bi bi-layers-half me-2 text-success"></i> Системни визуални елементи
                     </button>
 
-                    <!-- БУТОН 3: Потребителски профил -->
+                    <!-- НОВ БУТОН 3: Общи настройки (СЛЕЗЕ НА ПОСЛЕДНА ПОЗИЦИЯ) -->
                     <button class="nav-link text-start py-2 px-3 rounded-0 font-monospace border-0 small text-muted"
-                            id="tab-user-props-btn" data-bs-toggle="pill" data-bs-target="#content-user-props" type="button" role="tab" aria-controls="content-user-props" aria-selected="false"
+                            id="tab-general-btn" data-bs-toggle="pill" data-bs-target="#content-general" type="button" role="tab" aria-controls="content-general" aria-selected="false"
                             style="font-size: 0.85rem;">
-                        <i class="bi bi-person-vcard-fill me-2 text-info"></i> Потребителски профил
+                        <i class="bi bi-gear-fill me-2 text-warning"></i> Общи настройки
                     </button>
 
                 </div>
 
-                <!-- БУТОН ЗА ЗАПИС: Изцяло освободен от FlexBox. Нарежда се веднага отдолу с чист малък отстъп mt-2 -->
+                <!-- БУТОН ЗА ЗАПИС: Статичен с малък горен отстъп mt-2 -->
                 <div class="w-100 px-3 pb-3 mt-2">
                     <button type="submit" class="btn btn-sm btn-primary shadow-sm font-monospace rounded-1 border-0 w-100 py-2 fs-6">
                         <i class="bi bi-cloud-check-fill me-2 text-warning"></i> Запечатай настройките
@@ -68,8 +68,6 @@
                 </div>
 
             </div>
-
-
             <!-- ========================================================================= -->
             <!-- ДЕСЕН ГОЛЯМ КОНТЕНЕР С ЧИСТ ФАБРИЧЕН TAB-CONTENT МЕХАНИЗЪМ                 -->
             <!-- ========================================================================= -->
@@ -103,12 +101,36 @@
                     </div>
 
                     <!-- ----------------------------------------------------------------- -->
-                    <!-- ПАНЕЛ 2: СИСТЕМНИ ВИЗУАЛНИ ЕЛЕМЕНТИ                              -->
+                    <!-- ПАНЕЛ 2: СИСТЕМНИ ВИЗУАЛНИ ЕЛЕМЕНТИ (ОБВЪРЗАН С БУТОН 2)           -->
                     <!-- ----------------------------------------------------------------- -->
                     <div class="tab-pane fade" id="content-elements" role="tabpanel" aria-labelledby="tab-elements-btn">
                         <h4 class="text-white fw-light mb-1" style="font-size: 1.6rem;">Системни визуални елементи</h4>
-                        <span class="text-muted small d-block mb-4 pb-2 border-bottom font-monospace" style="border-color: #3c3c3c !important;">Списък с основните фиксирани зони на потребителския интерфейс от базата данни.</span>
+                        <span class="text-muted small d-block mb-4 pb-2 border-bottom font-monospace" style="border-color: #3c3c3c !important;">Интегрирано управление на базовите уеб параметри и фиксираните интерфейсни зони.</span>
 
+                        <!-- 1. ОБЩИ НАСТРОЙКИ (КОНСОЛИДИРАНИ НАЙ-ОТГОРЕ В ПАНЕЛ 2) -->
+                        <div class="card border-0 p-4 rounded-1 mb-4" style="background-color: #252526; border: 1px solid #3c3c3c !important;">
+                            <h6 class="text-white fw-bold mb-3 small text-uppercase border-bottom pb-2" style="border-color: #3c3c3c !important;">
+                                <i class="bi bi-gear-fill text-warning me-2"></i> Глобални параметри (Общи настройки)
+                            </h6>
+                            <div class="row g-3 font-monospace" style="font-size: 0.85rem;">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold text-secondary mb-1">Вид на главното меню</label>
+                                    <select name="LayoutType" id="layoutSelector" class="form-select form-select-sm text-white font-monospace" style="background-color: #333333 !important; border-color: #555555 !important;">
+                                        <option value="RIBBON" selected="@(Model.LayoutType == "RIBBON" ? "selected" : null)">Хоризонтална лента тип RIBBON UI</option>
+                                        <option value="DASHBOARD" selected="@(Model.LayoutType == "DASHBOARD" ? "selected" : null)">Вертикален страничен контролен панел</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold text-secondary mb-1">Режим на уеб темата</label>
+                                    <select name="ThemeType" id="themeSelector" class="form-select form-select-sm text-white font-monospace" style="background-color: #333333 !important; border-color: #555555 !important;">
+                                        <option value="dark" selected="@(Model.ThemeType == "dark" ? "selected" : null)">Класическа Тъмна Офис Тема (Dark Web)</option>
+                                        <option value="light" selected="@(Model.ThemeType == "light" ? "selected" : null)">Класическа Светла Офис Тема (Light Web)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. СЧЕТОВОДНА ТАБЛИЦА НА ФИКСИРАНИТЕ ИНТЕРФЕЙСНИ ЗОНИ -->
                         <div class="table-responsive rounded-1 font-monospace mb-4" style="font-size: 0.8rem; border: 1px solid #3c3c3c;">
                             <table class="table table-sm table-dark table-striped mb-0 align-middle" style="background-color: #252526;">
                                 <thead style="background-color: #2d2d2d; color: #858585; font-size: 0.75rem;">
@@ -131,7 +153,7 @@
                             </table>
                         </div>
 
-                        <!-- СЕКЦИЯ 3: ТРИТЕ БУТОНА ЗА УПРАВЛЕНИЕ -->
+                        <!-- 3. СЕКЦИЯ 3: ТРИТЕ ВЕРТИКАЛНИ БУТОНА И АТОМАРНИТЕ PROPERTIES ТОКЕНИ -->
                         <div class="card border-0 p-4 rounded-1 mb-3" style="background-color: #252526; border: 1px solid #3c3c3c !important;">
                             <h6 class="text-white fw-bold mb-3 small text-uppercase border-bottom pb-2" style="border-color: #3c3c3c !important;">
                                 <i class="bi bi-palette text-danger me-2"></i> Параметри и свойства на уеб темата
@@ -149,7 +171,7 @@
                                     <div class="col-md-12 mb-2">
                                         <label class="form-label fw-bold text-secondary mb-1" style="font-size: 0.8rem;"><i class="bi bi-terminal-fill text-info me-1"></i> @themeStyle.Description</label>
                                         <select name="BootstrapClasses[@themeStyle.Id]" class="form-select form-select-sm text-white font-monospace" style="background-color: #333333 !important; border-color: #555555 !important; font-size: 0.75rem;">
-                                            <option value="@themeStyle.BootstrapClass" selected>@themeStyle.BootstrapClass (Текущ токен)</option>
+                                            <option value="@themeStyle.BootstrapClass" selected>@themeStyle.BootstrapClass</option>
                                             @if (themeStyle.ElementContext.Contains("background"))
                                             {
                                                 <option value="bg-dark">bg-dark (Тъмен графит)</option>
@@ -171,6 +193,7 @@
                             </div>
                         </div>
                     </div>
+
 
                     <!-- ----------------------------------------------------------------- -->
                     <!-- ПАНЕЛ 3: ПОТРЕБИТЕЛСКИ ПРОФИЛ                                     -->
