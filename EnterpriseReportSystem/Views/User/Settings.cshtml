@@ -221,10 +221,11 @@
 
                                                                                 // Извеждаме ги като HTML опции, проверявайки коя е записаната стойност в SQL Server за маркиране
                                                                                 // Извеждаме ги като HTML опции с цветни квадратчета и отметки
+                                                                                // Извеждаме ги като HTML опции с цветни кубчета и чисти български имена
                                                                                 foreach (var option in bootstrapOptions)
                                                                                 {
-                                                                                    // Определяме цветното квадратче според името на Bootstrap класа
-                                                                                    string colorSquare = "⬛"; // По подразбиране за тъмни/bg-dark
+                                                                                    // 1. Определяме цветното квадратче според името на Bootstrap класа
+                                                                                    string colorSquare = "⬛"; // Тъмни
 
                                                                                     if (option.Key.Contains("primary") || option.Key.Contains("info")) colorSquare = "🟦";
                                                                                     else if (option.Key.Contains("success")) colorSquare = "🟩";
@@ -234,19 +235,33 @@
                                                                                     else if (option.Key.Contains("secondary")) colorSquare = "🟫";
                                                                                     else if (option.Key.Contains("transparent")) colorSquare = "🏁";
 
+                                                                                    // 2. Извличаме само българското описание, скривайки системното име от текста
+                                                                                    string cleanBulgarianName = option.Value;
+                                                                                    if (cleanBulgarianName.Contains("("))
+                                                                                    {
+                                                                                        // Премахваме повтарящата се предна част, ако има такава
+                                                                                        int startIndex = cleanBulgarianName.IndexOf('(') + 1;
+                                                                                        int endIndex = cleanBulgarianName.LastIndexOf(')');
+                                                                                        if (startIndex > 0 && endIndex > startIndex)
+                                                                                        {
+                                                                                            cleanBulgarianName = cleanBulgarianName.Substring(startIndex, endIndex - startIndex);
+                                                                                        }
+                                                                                    }
+
                                                                                     if (themeStyle.BootstrapClass == option.Key)
                                                                                     {
                                                                                         <option value="@option.Key" selected="selected" class="fw-bold" style="background-color: #37373d !important;">
-                                                                                            ✓ @colorSquare @option.Key — @option.Value
+                                                                                            ✓ @colorSquare @cleanBulgarianName
                                                                                         </option>
                                                                                     }
                                                                                     else
                                                                                     {
                                                                                         <option value="@option.Key">
-                                                                                            @colorSquare @option.Key — @option.Value
+                                                                                            @colorSquare @cleanBulgarianName
                                                                                         </option>
                                                                                     }
                                                                                 }
+
 
 
                                                                             }
