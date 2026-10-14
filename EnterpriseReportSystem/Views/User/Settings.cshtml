@@ -25,19 +25,20 @@
 
         <div class="row g-0" style="min-height: 75vh;">
 
+
             <!-- ========================================================================= -->
-            <!-- ЛЯВ ВЕРТИКАЛЕН СИСТЕМЕН ПАНЕЛ (РАМКИРАНИ БУТОНИ И ОТСТЪПЕН ЗАПИС)          -->
+            <!-- ЛЯВ ВЕРТИКАЛЕН СИСТЕМЕН ПАНЕЛ (ФИКСИРАН JS И ОПРЕДЕЛЕНО ОТСТОЯНИЕ)         -->
             <!-- ========================================================================= -->
-            <div class="col-md-3 border-end d-flex flex-column justify-content-between font-monospace" style="border-color: #3c3c3c !important; background-color: #252526; min-height: 75vh;">
+            <div class="col-md-3 border-end font-monospace" style="border-color: #3c3c3c !important; background-color: #252526; min-height: 75vh;">
 
                 <!-- ГОРНА ЧАСТ: КОНФИГУРАТОР СЪС СЛЕПЕНИ ВЕРТИКАЛНИ БУТОНИ С РАМКА -->
-                <div class="p-3">
+                <div class="p-3 pb-0">
                     <div class="text-uppercase text-secondary font-monospace px-2 pt-2 pb-2 fw-bold" style="font-size: 0.7rem; letter-spacing: 0.5px;">
                         <i class="bi bi-sliders me-1 text-info"></i> Конфигуратор на теми
                     </div>
 
-                    <!-- ТАБОВЕ С ОБЩА ВЪНШНА И МЕЖДУБЕНОВА РАМКА ОКОЛО ТЯХ -->
-                    <div class="btn-group-vertical w-100 id="vs-tab-system" role="tablist" aria-orientation="vertical">
+                    <!-- ФИКСИРАНО ID: Връщаме id="vs-tab-system", за да проработи JS на секундата -->
+                    <div class="btn-group-vertical w-100 font-monospace shadow-sm" id="vs-tab-system" role="tablist" aria-orientation="vertical">
 
                         <!-- БУТОН 1: Общи настройки -->
                         <button class="nav-link active btn btn-sm text-start py-2 px-3 rounded-0 border border-secondary text-white position-relative"
@@ -63,14 +64,15 @@
                     </div>
                 </div>
 
-                <!-- БУТОН ЗА ЗАПИС: Изместен надолу с mt-auto и допълнителен сериозен padding pt-5 за ефект на "1 празен таб" -->
-                <div class="mt-auto w-100 px-3 pb-3 pt-5">
+                <!-- ПОПРАВКА: Твърдо отстояние mt-5 (точно колкото 1 таб разстояние под списъка) и махане на mt-auto -->
+                <div class="w-100 px-3 pb-3 mt-5">
                     <button type="submit" class="btn btn-sm btn-primary shadow-sm font-monospace rounded-1 border-0 w-100 py-2 fs-6">
                         <i class="bi bi-cloud-check-fill me-2 text-warning"></i> Запечатай настройките
                     </button>
                 </div>
 
             </div>
+
 
 
             <!-- ========================================================================= -->
