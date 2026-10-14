@@ -1,5 +1,7 @@
 ﻿document.addEventListener("DOMContentLoaded", function () {
-    // 1. ВЪЗСТАНОВЯВАНЕ: Фабрично превключване на активните бутони отляво за Visual Studio ефект
+    // =========================================================================
+    // 1. СИНХРОНИЗАЦИЯ НА ЛЕВИТЕ СТРАНИЧНИ ТАБОВЕ (Visual Studio Ефект)
+    // =========================================================================
     var pillButtons = document.querySelectorAll('#vs-tab-system .nav-link');
     pillButtons.forEach(function (btn) {
         btn.addEventListener('shown.bs.tab', function () {
@@ -14,48 +16,35 @@
         });
     });
 
-    // 2. ВЪЗСТАНОВЯВАНЕ: Изпитаният скрипт за управление на трите десни бутона в Секция 3
-    var propsBtnGeneral = document.getElementById('props-btn-general');
-    var propsBtnCustom = document.getElementById('props-btn-custom');
-    var propsBtnExternal = document.getElementById('props-btn-external');
+    // =========================================================================
+    // 2. ИНТЕЛЕГЕНТНО УПРАВЛЕНИЕ НА ТРИТЕ БУТОНА ВЪТРЕ В СЕКЦИЯ 3 (В СГЪВАЕМИТЕ КУТИИ)
+    // =========================================================================
+    // Използваме Event Delegation, за да уловим кликанията върху бутоните динамично
+    document.addEventListener('click', function (event) {
+        // Проверяваме дали кликнатият елемент е някой от трите бутона в Секция 3
+        if (event.target && (event.target.id === 'props-btn-general' || event.target.id === 'props-btn-custom' || event.target.id === 'props-btn-external')) {
+            var clickedBtn = event.target;
 
-    var section3Buttons = [propsBtnGeneral, propsBtnCustom, propsBtnExternal];
+            // Намираме родителския контейнер на конкретната Секция 3
+            var parentContainer = clickedBtn.closest('.card');
+            if (!parentContainer) return;
 
-    function handleSection3ButtonClick(clickedBtn) {
-        if (!clickedBtn) return;
+            // Извличаме трите бутона в рамките само на ТАЗИ конкретна кутия
+            var section3Buttons = parentContainer.querySelectorAll('#props-btn-general, #props-btn-custom, #props-btn-external');
 
-        // Връщаме оригиналните тъмни конзолни класове и стилове
-        section3Buttons.forEach(function (btn) {
-            if (btn) {
+            // Изчистваме и приглушаваме абсолютно всички три бутона накуп
+            section3Buttons.forEach(function (btn) {
                 btn.style.backgroundColor = '#333333';
                 btn.style.setProperty('border-color', '#6c757d', 'important');
                 btn.classList.add('text-muted');
                 btn.classList.remove('text-white');
-            }
-        });
+            });
 
-        // Светваме ярко в синьо само и единствено кликнатия бутон
-        clickedBtn.style.backgroundColor = '#007acc';
-        clickedBtn.style.setProperty('border-color', '#0062a3', 'important');
-        clickedBtn.classList.remove('text-muted');
-        clickedBtn.classList.add('text-white');
-    }
-
-    if (propsBtnGeneral) {
-        propsBtnGeneral.addEventListener('click', function () {
-            handleSection3ButtonClick(this);
-        });
-    }
-
-    if (propsBtnCustom) {
-        propsBtnCustom.addEventListener('click', function () {
-            handleSection3ButtonClick(this);
-        });
-    }
-
-    if (propsBtnExternal) {
-        propsBtnExternal.addEventListener('click', function () {
-            handleSection3ButtonClick(this);
-        });
-    }
+            // Светваме ярко в синьо само и единствено кликнатия бутон
+            clickedBtn.style.backgroundColor = '#007acc';
+            clickedBtn.style.setProperty('border-color', '#0062a3', 'important');
+            clickedBtn.classList.remove('text-muted');
+            clickedBtn.classList.add('text-white');
+        }
+    });
 });
