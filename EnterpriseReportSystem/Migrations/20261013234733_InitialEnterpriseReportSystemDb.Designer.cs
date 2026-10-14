@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EnterpriseReportSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20261013230248_InitialEnterpriseReportSystemDb")]
+    [Migration("20261013234733_InitialEnterpriseReportSystemDb")]
     partial class InitialEnterpriseReportSystemDb
     {
         /// <inheritdoc />

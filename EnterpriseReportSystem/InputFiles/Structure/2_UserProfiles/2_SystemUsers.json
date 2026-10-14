@@ -1,0 +1,14 @@
+[
+  {
+    "Id": 1,
+    "Username": "admin_holding",
+    "Password": "admin123",
+    "LayoutType": "RIBBON",
+    "IsMenuExpanded": true,
+    "ThemeType": "dark",
+    "IsGlobalAdmin": true,
+    "WishListMenuIds": "1,2,3",
+    "CompanyId": 1,
+    "IsCustomPaletteActive": false
+  }
+]

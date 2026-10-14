@@ -45,7 +45,7 @@
     "SystemUIElementId": 4,
     "ElementContext": "card_shadow",
     "BootstrapClass": "shadow",
-    "Description": "Сенки на финансовите карти"
+    "Description": "Сенки на financial карти"
   },
   {
     "Id": 7,
@@ -61,7 +61,7 @@
     "SystemUIElementId": 4,
     "ElementContext": "card_border_presence",
     "BootstrapClass": "border",
-    "Description": "Наличие на външна рамка/контур на финансовите карти"
+    "Description": "Наличие на външна рамка на картите"
   },
   {
     "Id": 9,
@@ -85,7 +85,7 @@
     "SystemUIElementId": 5,
     "ElementContext": "footer_alignment",
     "BootstrapClass": "justify-content-between",
-    "Description": "Странично разпределение на елементите във футера"
+    "Description": "Разпределение на елементите във футера"
   },
   {
     "Id": 12,
@@ -93,6 +93,6 @@
     "SystemUIElementId": 5,
     "ElementContext": "footer_text_style",
     "BootstrapClass": "text-muted",
-    "Description": "Приглушен цвят на системния текст във футера"
+    "Description": "Приглушен цвят на текста във футера"
   }
 ]

@@ -61,7 +61,7 @@
     <Content Update="InputFiles\Structure\6_SystemUserThemes.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="InputFiles\Structure\7_SystemUIElements.json">
+    <Content Update="InputFiles\Structure\6_SystemUIElements.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
