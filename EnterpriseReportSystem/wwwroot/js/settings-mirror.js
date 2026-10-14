@@ -1,42 +1,65 @@
 ﻿document.addEventListener("DOMContentLoaded", function () {
-    // 1. Намираме всички леви бутони, които имат заложена дясна страница (data-bs-target)
-    var navButtons = document.querySelectorAll('#bd-docs-nav button[data-bs-target]');
-    var tabPanes = document.querySelectorAll('.tab-content .tab-pane');
-
-    navButtons.forEach(function (button) {
-        button.addEventListener('click', function (event) {
-            event.preventDefault();
-
-            // Прочитаме кой десен панел трябва да се отвори (напр. #content-elements)
-            var targetId = this.getAttribute('data-bs-target');
-            if (!targetId) return;
-
-            // СТЪПКА А: Премахваме активния цвят от абсолютно всички леви бутони
-            navButtons.forEach(function (btn) {
-                btn.classList.remove('active');
-                btn.style.backgroundColor = 'transparent';
-                btn.style.color = '#858585'; // Сиво по подразбиране
+    // =========================================================================
+    // 1. ИЗНЕСЕНА ФАБРИЧНА ЛОГИКА ЗА ЛЕВИТЕ ТАБОВЕ (ОТ ДЪНОТО НА HTML ФАЙЛА)
+    // =========================================================================
+    var pillButtons = document.querySelectorAll('#vs-tab-system .nav-link');
+    pillButtons.forEach(function (btn) {
+        btn.addEventListener('shown.bs.tab', function () {
+            pillButtons.forEach(function (b) {
+                b.style.backgroundColor = 'transparent';
+                b.classList.add('text-muted');
+                b.classList.remove('text-white');
             });
-
-            // СТЪПКА Б: Светваме в бяло само текущо избрания бутон
-            this.classList.add('active');
-            this.style.color = '#ffffff';
-
-            // Ако е избран първия главен таб, му връщаме сивия Visual Studio фон
-            if (this.id === 'tab-general') {
-                this.style.backgroundColor = '#37373d';
-            }
-
-            // СТЪПКА В: Скриваме всички десни десктоп панели
-            tabPanes.forEach(function (pane) {
-                pane.classList.remove('show', 'active');
-            });
-
-            // СТЪПКА Г: Отваряме чисто и ярко избрания панел вдясно
-            var targetPane = document.querySelector(targetId);
-            if (targetPane) {
-                targetPane.classList.add('show', 'active');
-            }
+            this.style.backgroundColor = '#37373d';
+            this.classList.remove('text-muted');
+            this.classList.add('text-white');
         });
     });
+
+    // =========================================================================
+    // 2. УПРАВЛЕНИЕ НА ТРИТЕ НОВИ ВЕРТИКАЛНИ БУТОНА В СЕКЦИЯ 3
+    // =========================================================================
+    var propsBtnGeneral = document.getElementById('props-btn-general');
+    var propsBtnCustom = document.getElementById('props-btn-custom');
+    var propsBtnExternal = document.getElementById('props-btn-external');
+
+    var section3Buttons = [propsBtnGeneral, propsBtnCustom, propsBtnExternal];
+
+    function handleSection3ButtonClick(clickedBtn) {
+        if (!clickedBtn) return;
+
+        // Изчистваме и приглушаваме абсолютно всички три бутона накуп
+        section3Buttons.forEach(function (btn) {
+            if (btn) {
+                btn.classList.remove('btn-primary', 'text-white');
+                btn.classList.add('btn-dark', 'text-muted');
+                btn.style.backgroundColor = '';
+                btn.style.borderColor = '';
+            }
+        });
+
+        // Светваме в синьо само и единствено кликнатия бутон
+        clickedBtn.classList.remove('btn-dark', 'text-muted');
+        clickedBtn.classList.add('btn-primary', 'text-white');
+        clickedBtn.style.backgroundColor = '#007acc';
+        clickedBtn.style.borderColor = '#0062a3';
+    }
+
+    if (propsBtnGeneral) {
+        propsBtnGeneral.addEventListener('click', function () {
+            handleSection3ButtonClick(this);
+        });
+    }
+
+    if (propsBtnCustom) {
+        propsBtnCustom.addEventListener('click', function () {
+            handleSection3ButtonClick(this);
+        });
+    }
+
+    if (propsBtnExternal) {
+        propsBtnExternal.addEventListener('click', function () {
+            handleSection3ButtonClick(this);
+        });
+    }
 });
