@@ -7,131 +7,97 @@
     var uiElements = ViewBag.UIElements as List<EnterpriseReportSystem.Models.Entities.Structure.SystemUIElement> ?? new();
 }
 
-<div class="container-fluid my-4 font-sans-serif" style="background-color: #1e1e1e; color: #d4d4d4; min-height: 85vh; border: 1px solid #3c3c3c; rounded-3 shadow-lg;">
-
+<div class="container-fluid my-4 font-sans-serif" style="background-color: #1e1e1e; color: #d4d4d4; min-height: 85vh; border: 1px solid #3c3c3c; border-radius: 4px; shadow-lg;">
+    
     <!-- ГОРНА СИСТЕМНА ЛЕНТА С ИМЕТО НА ПРИЛОЖЕНИЕТО -->
     <div class="p-3 border-bottom d-flex align-items-center justify-content-between" style="border-color: #3c3c3c !important; background-color: #2d2d2d;">
         <div class="d-flex align-items-center gap-2">
             <i class="bi bi-window text-info fs-5"></i>
-            <!-- ТОЧКА 1: Променяме уеб заглавието на чист български език -->
             <span class="fw-bold text-white small font-monospace">Потребителски настройки и Визуални теми</span>
         </div>
-        <!-- ТОЧКА 2: Сменяме фабричния фреймуърк с името на текущия потребител -->
         <span class="badge bg-dark text-secondary font-monospace border border-secondary" style="font-size: 0.7rem; color: #ffc107 !important;">user: @Model.Username</span>
     </div>
 
-
     <div class="row g-0 h-100" style="min-height: 75vh;">
+        
         <!-- ========================================================================= -->
-        <!-- ЛЯВ ВЕРТИКАЛЕН СИСТЕМЕН ПАНЕЛ ПО ОФИЦИАЛЕН СТАНДАРТ НА BOOTSTRAP COLLAPSE -->
+        <!-- ЛЯВ ВЕРТИКАЛЕН СИСТЕМЕН ПАНЕЛ (СТАБИЛНО МЕНЮ С ТРИ СЕКЦИИ)                 -->
         <!-- ========================================================================= -->
-        <div class="col-md-3 border-end border-secondary" style="background-color: #252526;">
-            <nav class="p-3 font-monospace" id="bd-docs-nav" aria-label="Docs navigation">
-                <ul class="list-unstyled mb-0 d-flex flex-column gap-1 p-0">
+        <div class="col-md-3 border-end" style="border-color: #3c3c3c !important; background-color: #252526;">
+            <div class="nav flex-column p-3 gap-2" id="vs-tab-system">
+                
+                <div class="text-uppercase text-secondary font-monospace px-2 pt-2 pb-1 fw-bold" style="font-size: 0.7rem; letter-spacing: 0.5px;">
+                    <i class="bi bi-sliders me-1 text-info"></i> Конфигуратор на теми
+                </div>
 
-                    <!-- ТАБ 1: ОБЩИ НАСТРОЙКИ (ГЛАВЕН ЛИНК) -->
-                    <li class="mb-1">
-                        <button class="nav-link active text-start py-2 px-3 rounded-0 border-0 small text-white w-100"
-                                id="tab-general" data-bs-toggle="pill" data-bs-target="#content-general" type="button" role="tab" aria-controls="content-general" aria-selected="true"
-                                style="background-color: #37373d; font-size: 0.85rem;">
-                            <i class="bi bi-gear-fill me-2 text-warning"></i> Общи настройки
-                        </button>
-                    </li>
+                <!-- БУТОН 1: Общи настройки (Командва първия collapse панел вдясно) -->
+                <button class="nav-link text-start py-2 px-3 rounded-0 font-monospace border-0 small text-white position-relative" 
+                        type="button" data-bs-toggle="collapse" data-bs-target="#content-general" aria-expanded="true" aria-controls="content-general"
+                        style="background-color: #37373d; font-size: 0.85rem;" id="btn-general">
+                    <i class="bi bi-gear-fill me-2 text-warning"></i> Общи настройки
+                </button>
+                
+                <!-- БУТОН 2: Системни визуални елементи (Командва втория collapse панел вдясно) -->
+                <button class="nav-link text-start py-2 px-3 rounded-0 font-monospace border-0 small text-muted" 
+                        type="button" data-bs-toggle="collapse" data-bs-target="#content-elements" aria-expanded="false" aria-controls="content-elements"
+                        style="font-size: 0.85rem;" id="btn-elements">
+                    <i class="bi bi-layers-half me-2 text-success"></i> Системни визуални елементи
+                </button>
+                
+                <!-- БУТОН 3: Потребителски профил (Командва четвъртия collapse панел вдясно) -->
+                <button class="nav-link text-start py-2 px-3 rounded-0 font-monospace border-0 small text-muted" 
+                        type="button" data-bs-toggle="collapse" data-bs-target="#content-user-props" aria-expanded="false" aria-controls="content-user-props"
+                        style="font-size: 0.85rem;" id="btn-user-props">
+                    <i class="bi bi-person-vcard-fill me-2 text-info"></i> Потребителски профил
+                </button>
 
-                    <!-- ДЪРВО 2: СИСТЕМНИ ВИЗУАЛНИ ЕЛЕМЕНТИ (COLLAPSE МЕХАНИЗЪМ ТОЧНО ПО СНИМКАТА) -->
-                    <li class="mb-1">
-                        <!-- Бутонът, който отваря/затваря дървото автоматично през Bootstrap -->
-                        <button class="btn d-inline-flex align-items-center justify-content-between text-start py-2 px-3 rounded-0 border-0 small text-white w-100 fw-bold font-monospace collapse-trigger-btn"
-                                type="button" data-bs-toggle="collapse" data-bs-target="#components-collapse" aria-expanded="true" style="font-size: 0.85rem;">
-                            <span><i class="bi bi-chevron-down me-2 text-muted" id="collapseChevron"></i>Системни визуални елементи</span>
-                        </button>
-
-                        <!-- Контейнерът с под-елементите, който се управлява от Bootstrap Collapse -->
-                        <div class="collapse show mt-1" id="components-collapse">
-                            <ul class="btn-toggle-nav list-unstyled fw-normal ps-4 ms-1 border-start border-secondary d-flex flex-column gap-1 p-0">
-
-                                <!-- ПОД-ТАБ А: Списък с компоненти -->
-                                <li>
-                                    <button class="nav-link text-start py-1 px-2 rounded-0 border-0 small text-muted w-100"
-                                            id="tab-elements" data-bs-toggle="pill" data-bs-target="#content-elements" type="button" role="tab" aria-controls="content-elements" aria-selected="false"
-                                            style="font-size: 0.8rem; background: transparent;">
-                                        Списък с компоненти
-                                    </button>
-                                </li>
-
-                                <!-- ПОД-ТАБ Б: Персонални свойства и теми -->
-                                <li>
-                                    <button class="nav-link text-start py-1 px-2 rounded-0 border-0 small text-muted w-100"
-                                            id="tab-themes" data-bs-toggle="pill" data-bs-target="#content-themes" type="button" role="tab" aria-controls="content-themes" aria-selected="false"
-                                            style="font-size: 0.8rem; background: transparent;">
-                                        Персонални свойства и теми
-                                    </button>
-                                </li>
-
-                            </ul>
-                        </div>
-                    </li>
-
-                    <li class="my-2 border-top border-secondary"></li>
-
-                    <!-- ТАБ 4: ПОТРЕБИТЕЛСКИ ПРОФИЛ -->
-                    <li class="mb-1">
-                        <button class="nav-link text-start py-2 px-3 rounded-0 border-0 small text-muted w-100"
-                                id="tab-user-props" data-bs-toggle="pill" data-bs-target="#content-user-props" type="button" role="tab" aria-controls="content-user-props" aria-selected="false"
-                                style="font-size: 0.85rem; background: transparent;">
-                            <i class="bi bi-person-vcard-fill me-2 text-info"></i> Потребителски профил
-                        </button>
-                    </li>
-
-                </ul>
-            </nav>
+            </div>
         </div>
 
-
         <!-- ========================================================================= -->
-        <!-- ДЕСЕН ГОЛЯМ КОНТЕНЕР СЪС СЪДЪРЖАНИЕТО НА ТАБОВЕТЕ                          -->
+        <!-- ДЕСЕН ГОЛЯМ КОНТЕНЕР С ФАБРИЧЕН MULTI-COLLAPSE МЕХАНИЗЪМ                   -->
         <!-- ========================================================================= -->
         <div class="col-md-9 p-4" style="background-color: #1e1e1e;">
             <form asp-action="SaveSettings" asp-controller="User" method="post" class="needs-validation h-100 d-flex flex-column justify-content-between" novalidate>
                 @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="Id" />
 
-                <div class="tab-content flex-grow-1" id="vs-tab-content">
-
-                    <!-- РАЗДЕЛ 1: ОСНОВНИ НАСТРОЙКИ (APPLICATION) -->
-                    <div class="tab-pane fade show active" id="content-general" role="tabpanel" aria-labelledby="tab-general">
-                        <h4 class="text-white fw-light mb-1" style="font-size: 1.6rem;">Основни настройки</h4>
+                <div class="position-relative flex-grow-1">
+                    
+                    <!-- ----------------------------------------------------------------- -->
+                    <!-- ПАНЕЛ 1: ОБЩИ НАСТРОЙКИ (COLLAPSE - ОТВОРЕН ПО ПОДРАЗБИРАНЕ)       -->
+                    <!-- ----------------------------------------------------------------- -->
+                    <div class="collapse show multi-collapse" id="content-general">
+                        <h4 class="text-white fw-light mb-1" style="font-size: 1.6rem;">Общи настройки</h4>
                         <span class="text-muted small d-block mb-4 pb-2 border-bottom font-monospace" style="border-color: #3c3c3c !important;">Управление на глобалната визуална тема и структура на потребителския интерфейс.</span>
-
+                        
                         <div class="row g-4 font-monospace" style="font-size: 0.85rem;">
                             <div class="col-md-8">
                                 <label asp-for="LayoutType" class="form-label fw-bold text-secondary mb-1">Вид на главното меню</label>
-                                <select asp-for="LayoutType" id="layoutSelector" class="form-select form-select-sm rounded-1 text-white border-secondary font-monospace" style="background-color: #333333 !important; border-color: #555555 !important;">
+                                <select asp-for="LayoutType" id="layoutSelector" class="form-select form-select-sm text-white font-monospace" style="background-color: #333333 !important; border-color: #555555 !important;">
                                     <option value="RIBBON">Хоризонтална лента тип RIBBON UI</option>
                                     <option value="DASHBOARD">Вертикален страничен контролен панел</option>
                                 </select>
-                                <span class="text-muted small d-block mt-1">Определя разположението на основните навигационни връзки в системата.</span>
                             </div>
 
                             <div class="col-md-8 mt-4">
                                 <label asp-for="ThemeType" class="form-label fw-bold text-secondary mb-1">Режим на уеб темата</label>
-                                <select asp-for="ThemeType" id="themeSelector" class="form-select form-select-sm rounded-1 text-white border-secondary font-monospace" style="background-color: #333333 !important; border-color: #555555 !important;">
-                                    <option value="light">Класическа Светла Офис Тема (Light Web)</option>
+                                <select asp-for="ThemeType" id="themeSelector" class="form-select form-select-sm text-white font-monospace" style="background-color: #333333 !important; border-color: #555555 !important;">
                                     <option value="dark">Класическа Тъмна Офис Тема (Dark Web)</option>
-                                    <option value="custom">Персонална потребителска палитра (Custom Palette)</option>
-                                    <option value="external">Външен CSS модул (External user.css)</option>
+                                    <option value="light">Класическа Светла Офис Тема (Light Web)</option>
                                 </select>
-                                <span class="text-muted small d-block mt-1">Избор на базов цветови енджин за визуализация на оперативния екран.</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- РАЗДЕЛ 2: СИСТЕМНИ ВИЗУАЛНИ ЕЛЕМЕНТИ (SYSTEMUIELEMENTS) -->
-                    <div class="tab-pane fade" id="content-elements" role="tabpanel" aria-labelledby="tab-elements">
+                    <!-- ----------------------------------------------------------------- -->
+                    <!-- ПАНЕЛ 2: СИСТЕМНИ ВИЗУАЛНИ ЕЛЕМЕНТИ (COLLAPSE - СКРИТ)            -->
+                    <!-- ----------------------------------------------------------------- -->
+                    <div class="collapse multi-collapse" id="content-elements">
                         <h4 class="text-white fw-light mb-1" style="font-size: 1.6rem;">Системни визуални елементи</h4>
-                        <span class="text-muted small d-block mb-4 pb-2 border-bottom font-monospace" style="border-color: #3c3c3c !important;">Списък с основните хардуерно и софтуерно фиксирани зони на потребителския интерфейс.</span>
-
-                        <div class="table-responsive rounded-1 font-monospace" style="font-size: 0.8rem; border: 1px solid #3c3c3c;">
+                        <span class="text-muted small d-block mb-4 pb-2 border-bottom font-monospace" style="border-color: #3c3c3c !important;">Списък с основните фиксирани зони на потребителския интерфейс от базата данни.</span>
+                        
+                        <div class="table-responsive rounded-1 font-monospace mb-4" style="font-size: 0.8rem; border: 1px solid #3c3c3c;">
                             <table class="table table-sm table-dark table-striped mb-0 align-middle" style="background-color: #252526;">
                                 <thead style="background-color: #2d2d2d; color: #858585; font-size: 0.75rem;">
                                     <tr>
@@ -141,92 +107,91 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if (uiElements != null && uiElements.Any())
+                                    @foreach (var element in uiElements)
                                     {
-                                        @foreach (var element in uiElements)
-                                        {
-                                            <tr style="border-color: #3c3c3c !important;">
-                                                <td class="px-3 fw-bold text-info">@element.Id</td>
-                                                <td class="text-white">@element.DisplayName</td>
-                                                <td class="text-end text-warning px-3 font-monospace" style="font-size: 0.75rem;">@element.ElementKey</td>
-                                            </tr>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <tr>
-                                            <td colspan="3" class="text-center py-4 text-muted font-monospace small">
-                                                <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i> Няма заредени системни елементи в SQL Server.
-                                            </td>
+                                        <tr style="border-color: #3c3c3c !important;">
+                                            <td class="px-3 fw-bold text-info">@element.Id</td>
+                                            <td class="text-white">@element.DisplayName</td>
+                                            <td class="text-end text-warning px-3 font-monospace" style="font-size: 0.75rem;">@element.ElementKey</td>
                                         </tr>
                                     }
                                 </tbody>
                             </table>
                         </div>
-                    </div>
 
+                        <!-- ========================================================================= -->
+                        <!-- СЕКЦИЯ 3: ТВОИТЕ ТРИ БУТОНА ЗА УПРАВЛЕНИЕ ПО НОВИЯ ПЛАН                  -->
+                        <!-- ========================================================================= -->
+                        <div class="card border-0 p-4 rounded-1 mb-3" style="background-color: #252526; border: 1px solid #3c3c3c !important;">
+                            <h6 class="text-white fw-bold mb-3 small text-uppercase border-bottom pb-2" style="border-color: #3c3c3c !important;">
+                                <i class="bi bi-palette text-danger me-2"></i> Параметри и свойства на уеб темата
+                            </h6>
 
-                    <!-- РАЗДЕЛ 3: SYSTEMUSERTHEMES (АТОМАРНИТЕ СВОЙСТВА И КОМБОБОКСОВЕ) -->
-                    <div class="tab-pane fade" id="content-themes" role="tabpanel" aria-labelledby="tab-themes">
-                        <h4 class="text-white fw-light mb-1" style="font-size: 1.6rem;">SystemUserThemes</h4>
-                        <span class="text-muted small d-block mb-4 pb-2 border-bottom font-monospace" style="border-color: #3c3c3c !important;">Atomic properties binding context orchestration layout profiles.</span>
+                            <!-- ТРИТЕ БУТОНА ЗА ИЗБОР НА ТЕМА ПО ТВОЯ ПЛАН -->
+                            <div class="d-flex gap-2 mb-4">
+                                <button class="btn btn-sm btn-secondary font-monospace px-3 fw-bold rounded-1 text-white border-secondary" type="button" style="background-color: #007acc; border-color: #0062a3 !important;">1. Общи настройки</button>
+                                <button class="btn btn-sm btn-dark font-monospace px-3 fw-bold rounded-1 text-muted border-secondary" type="button" style="background-color: #333333;">2. Персонални настройки</button>
+                                <button class="btn btn-sm btn-dark font-monospace px-3 fw-bold rounded-1 text-muted border-secondary" type="button" style="background-color: #333333;">3. Външна тема / CSS</button>
+                            </div>
 
-                        <div class="row g-3 font-monospace" style="font-size: 0.85rem;">
-                            @foreach (var themeStyle in userStyles)
-                            {
-                                <div class="col-md-9 mb-3">
-                                    <label class="form-label fw-bold text-secondary mb-1">
-                                        <i class="bi bi-terminal-fill text-info me-1"></i> @themeStyle.Description
-                                    </label>
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-text bg-dark border-secondary text-muted" style="font-size: 0.7rem; border-color: #555555 !important;">Token:</span>
+                            <div class="row g-3 font-monospace" style="font-size: 0.85rem;">
+                                @foreach (var themeStyle in userStyles)
+                                {
+                                    <div class="col-md-12 mb-2">
+                                        <label class="form-label fw-bold text-secondary mb-1" style="font-size: 0.8rem;">
+                                            <i class="bi bi-terminal-fill text-info me-1"></i> @themeStyle.Description
+                                        </label>
                                         <select name="BootstrapClasses[@themeStyle.Id]" class="form-select form-select-sm text-white font-monospace" style="background-color: #333333 !important; border-color: #555555 !important; font-size: 0.75rem;">
-                                            <option value="@themeStyle.BootstrapClass" selected>@themeStyle.BootstrapClass (Current value)</option>
+                                            <option value="@themeStyle.BootstrapClass" selected>@themeStyle.BootstrapClass (Текущ токен)</option>
                                             @if (themeStyle.ElementContext.Contains("background"))
                                             {
-                                                <option value="bg-dark">bg-dark (Default Dark Slate)</option>
-                                                <option value="bg-light">bg-light (Standard Office Pure)</option>
+                                                <option value="bg-dark">bg-dark (Дълбок тъмен въглен)</option>
+                                                <option value="bg-light">bg-light (Стандартен чист светъл офис)</option>
                                             }
                                             @if (themeStyle.ElementContext.Contains("table"))
                                             {
-                                                <option value="table-dark table-striped">table-dark (Accounting Dense Grid Style)</option>
-                                                <option value="table-light table-striped">table-light (Accounting Office White Grid)</option>
+                                                <option value="table-dark table-striped">table-dark (Тъмна раирана решетка)</option>
+                                                <option value="table-light table-striped">table-light (Светла раирана решетка)</option>
                                             }
                                             @if (themeStyle.ElementContext.Contains("shadow"))
                                             {
-                                                <option value="shadow">shadow (Medium Layout Depth)</option>
-                                                <option value="shadow-lg">shadow-lg (High Luxury Depth)</option>
-                                                <option value="shadow-none">shadow-none (Flat Macro Surface)</option>
+                                                <option value="shadow">shadow (Средна дълбочина на елементите)</option>
+                                                <option value="shadow-lg">shadow-lg (Голяма луксозна сянка)</option>
+                                                <option value="shadow-none">shadow-none (Напълно плосък макет)</option>
                                             }
                                         </select>
                                     </div>
-                                </div>
-                            }
+                                }
+                            </div>
+                        </div>
+                    </div>
 
-                            <!-- HEX ПОТРЕБИТЕЛСКИ ПАЛИТРИ НА ДЪНОТО НА ПРОЗОРЕЦА -->
-                            <div class="col-md-9 mt-4 pt-3 border-top" style="border-color: #3c3c3c !important;">
-                                <h6 class="text-secondary fw-bold mb-3 small text-uppercase"><i class="bi bi-sliders2-vertical me-2"></i> Custom Palette Parameters Override</h6>
-                                <div class="row text-center g-3">
-                                    <div class="col-4">
-                                        <label class="form-label small d-block text-muted">Background HEX</label>
-                                        <input type="color" class="form-control form-control-color mx-auto rounded-0 border-secondary bg-transparent p-0" id="bgColorPicker" value="#141414" disabled style="width: 35px; height: 35px;">
-                                    </div>
-                                    <div class="col-4">
-                                        <label class="form-label small d-block text-muted">Accent HEX</label>
-                                        <input type="color" class="form-control form-control-color mx-auto rounded-0 border-secondary bg-transparent p-0" id="accentColorPicker" value="#ff5500" disabled style="width: 35px; height: 35px;">
-                                    </div>
-                                    <div class="col-4">
-                                        <label class="form-label small d-block text-muted">Foreground HEX</label>
-                                        <input type="color" class="form-control form-control-color mx-auto rounded-0 border-secondary bg-transparent p-0" id="textColorPicker" value="#e0e0e0" disabled style="width: 35px; height: 35px;">
-                                    </div>
-                                </div>
+                    <!-- ----------------------------------------------------------------- -->
+                    <!-- ПАНЕЛ 3: ПОТРЕБИТЕЛСКИ ПРОФИЛ (COLLAPSE - СКРИТ)                   -->
+                    <!-- ----------------------------------------------------------------- -->
+                    <div class="collapse multi-collapse" id="content-user-props">
+                        <h4 class="text-white fw-light mb-1" style="font-size: 1.6rem;">Потребителски профил</h4>
+                        <span class="text-muted small d-block mb-4 pb-2 border-bottom font-monospace" style="border-color: #3c3c3c !important;">Управление на потребителските идентификатори и права за достъп в холдинга.</span>
+
+                        <div class="row g-3 font-monospace" style="font-size: 0.85rem;">
+                            <div class="col-md-8 mb-2">
+                                <label asp-for="Username" class="form-label fw-bold text-secondary mb-1">Account security principal identifier (Username)</label>
+                                <input type="text" asp-for="Username" class="form-control form-control-sm text-white font-monospace bg-dark border-secondary" style="background-color: #333333 !important; border-color: #555555 !important;" required />
+                            </div>
+                            <div class="col-md-8 mb-2">
+                                <label asp-for="Password" class="form-label fw-bold text-secondary mb-1">Account cryptographic token (Password)</label>
+                                <input type="password" asp-for="Password" class="form-control form-control-sm text-white font-monospace bg-dark border-secondary" style="background-color: #333333 !important; border-color: #555555 !important;" required />
+                            </div>
+                            <div class="col-md-8 mb-2">
+                                <label class="form-label fw-bold text-secondary mb-1">Authorization access security level (Role)</label>
+                                <input type="text" class="form-control form-control-sm text-muted font-monospace bg-dark border-secondary" style="background-color: #252526 !important; border-color: #444444 !important;" readonly value="Administrator / Root" />
                             </div>
                         </div>
                     </div>
 
                 </div>
 
-                <!-- ГОЛЕМИЯТ СИСТЕМЕН ЗАПЕЧАТВАЩ БУТОН ЗА СЪХРАНЕНИЕ НА ПРОФИЛА -->
+                <!-- ГОЛЕМИЯТ СИСТЕМЕН ЗАПЕЧАТВАЩ БУТОН НА ДЪНОТО НА ЕКРАНА -->
                 <div class="mt-4 pt-3 border-top text-end" style="border-color: #3c3c3c !important;">
                     <button type="submit" class="btn btn-sm px-4 fw-bold font-monospace rounded-0 text-white"
                             style="background-color: #007acc; border: 1px solid #0062a3; font-size: 0.8rem; letter-spacing: 0.5px;">
@@ -237,28 +202,18 @@
         </div>
 
     </div> <!-- Край на .row -->
-</div> <!-- Край на .container-fluid -->
+</div> <!-- Край на .container-fluid 
 
 <style>
-    /* АВТЕНТИЧЕН VISUAL STUDIO СТИЛ ЗА СТРАНИЧНИТЕ СИСТЕМНИ ТАБОВЕ */
+    /* АВТЕНТИЧЕН СИСТЕМЕН МАКЕТ БЕЗ КОНФЛИКТНИ СТИЛОВЕ */
     #vs-tab-system .nav-link {
         color: #aaaaaa !important;
         border-left: 2px solid transparent !important;
-        transition: all 0.15s ease-in-out;
+        transition: none;
     }
 
-        #vs-tab-system .nav-link.active {
-            background-color: #2a2a2b !important;
-            color: #ffffff !important;
-            border-left: 2px solid #007acc !important;
-        }
-
-        #vs-tab-system .nav-link:hover:not(.active) {
+        #vs-tab-system .nav-link:hover:not([style*="background-color"]) {
             background-color: #2d2d2d !important;
             color: #ffffff !important;
         }
-
-    .text-light-muted {
-        color: #858585 !important;
-    }
-</style>
+</style>-->
