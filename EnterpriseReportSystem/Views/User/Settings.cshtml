@@ -51,12 +51,7 @@
                         <i class="bi bi-layers-half me-2 text-success"></i> Системни визуални елементи
                     </button>
 
-                    <!-- НОВ БУТОН 3: Общи настройки (СЛЕЗЕ НА ПОСЛЕДНА ПОЗИЦИЯ) -->
-                    <button class="nav-link text-start py-2 px-3 rounded-0 font-monospace border-0 small text-muted"
-                            id="tab-general-btn" data-bs-toggle="pill" data-bs-target="#content-general" type="button" role="tab" aria-controls="content-general" aria-selected="false"
-                            style="font-size: 0.85rem;">
-                        <i class="bi bi-gear-fill me-2 text-warning"></i> Общи настройки
-                    </button>
+                  
 
                 </div>
 
@@ -105,7 +100,8 @@
                     <!-- ----------------------------------------------------------------- -->
                     <div class="tab-pane fade" id="content-elements" role="tabpanel" aria-labelledby="tab-elements-btn">
                         <h4 class="text-white fw-light mb-1" style="font-size: 1.6rem;">Системни визуални елементи</h4>
-                        <span class="text-muted small d-block mb-4 pb-2 border-bottom font-monospace" style="border-color: #3c3c3c !important;">Интегрирано управление на базовите уеб параметри и фиксираните интерфейсни зони.</span>
+                        <span class="text-muted small d-block mb-4 pb-2 border-bottom font-monospace" style="border-color: #3c3c3c !important;">
+                        Интегрирано управление на базовите уеб параметри и фиксираните интерфейсни зони.</span>
 
                         <!-- 1. ОБЩИ НАСТРОЙКИ (КОНСОЛИДИРАНИ НАЙ-ОТГОРЕ В ПАНЕЛ 2) -->
                         <div class="card border-0 p-4 rounded-1 mb-4" style="background-color: #252526; border: 1px solid #3c3c3c !important;">
@@ -130,28 +126,51 @@
                             </div>
                         </div>
 
-                        <!-- 2. СЧЕТОВОДНА ТАБЛИЦА НА ФИКСИРАНИТЕ ИНТЕРФЕЙСНИ ЗОНИ -->
-                        <div class="table-responsive rounded-1 font-monospace mb-4" style="font-size: 0.8rem; border: 1px solid #3c3c3c;">
-                            <table class="table table-sm table-dark table-striped mb-0 align-middle" style="background-color: #252526;">
-                                <thead style="background-color: #2d2d2d; color: #858585; font-size: 0.75rem;">
-                                    <tr>
-                                        <th class="px-3 py-2 border-0" style="width: 10%;">ID</th>
-                                        <th class="py-2 border-0" style="width: 50%;">Наименование на интерфейсната зона</th>
-                                        <th class="py-2 text-end px-3 border-0" style="width: 40%;">Уникален системен ключ</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var element in uiElements)
-                                    {
-                                        <tr style="border-color: #3c3c3c !important;">
-                                            <td class="px-3 fw-bold text-info">@element.Id</td>
-                                            <td class="text-white">@element.DisplayName</td>
-                                            <td class="text-end text-warning px-3 font-monospace" style="font-size: 0.75rem;">@element.ElementKey</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
+                        <!-- 2. СЧЕТОВОДНА ТАБЛИЦА НА ФИКСИРАНИТЕ ИНТЕРФЕЙСНИ ЗОНИ (ВГРАДЕН СГЪВАЕМ ACCORDION FLUSH) -->
+                        <div class="accordion accordion-flush mb-4 font-monospace shadow-sm" id="accordionSystemElements" style="border: 1px solid #3c3c3c; border-radius: 4px; overflow: hidden;">
+                            <div class="accordion-item bg-transparent border-0">
+
+                                <!-- ЗАГЛАВЕН БУТОН ЗА СГЪВАНЕ / РАЗГЪВАНЕ -->
+                                <h2 class="accordion-header" id="flush-headingTable">
+                                    <button class="accordion-button collapsed bg-dark text-white font-monospace small border-0 py-2 px-3 d-flex align-items-center justify-content-between"
+                                            type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTable" aria-expanded="false" aria-controls="flush-collapseTable"
+                                            style="background-color: #252526 !important; box-shadow: none;">
+                                        <span><i class="bi bi-table text-info me-2"></i> Списък на фиксираните интерфейсни зони</span>
+                                    </button>
+                                </h2>
+
+                                <!-- СГЪВАЕМОТО СЪДЪРЖАНИЕ НА ТАБЛИЦАТА -->
+                                <div id="flush-collapseTable" class="accordion-collapse collapse" aria-labelledby="flush-headingTable" data-bs-parent="#accordionSystemElements">
+                                    <div class="accordion-body p-0" style="background-color: #1e1e1e;">
+
+                                        <div class="table-responsive m-0 p-0">
+                                            <table class="table table-sm table-dark table-striped mb-0 align-middle" style="background-color: #252526;">
+                                                <thead style="background-color: #2d2d2d; color: #858585; font-size: 0.75rem;">
+                                                    <tr>
+                                                        <th class="px-3 py-2 border-0" style="width: 10%;">ID</th>
+                                                        <th class="py-2 border-0" style="width: 50%;">Наименование на интерфейсната зона</th>
+                                                        <th class="py-2 text-end px-3 border-0" style="width: 40%;">Уникален системен ключ</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var element in uiElements)
+                                                    {
+                                                        <tr style="border-color: #3c3c3c !important;">
+                                                            <td class="px-3 fw-bold text-info">@element.Id</td>
+                                                            <td class="text-white">@element.DisplayName</td>
+                                                            <td class="text-end text-warning px-3 font-monospace" style="font-size: 0.75rem;">@element.ElementKey</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
+
 
                         <!-- 3. СЕКЦИЯ 3: ТРИТЕ ВЕРТИКАЛНИ БУТОНА И АТОМАРНИТЕ PROPERTIES ТОКЕНИ -->
                         <div class="card border-0 p-4 rounded-1 mb-3" style="background-color: #252526; border: 1px solid #3c3c3c !important;">
@@ -195,24 +214,7 @@
                     </div>
 
 
-                    <!-- ----------------------------------------------------------------- -->
-                    <!-- ПАНЕЛ 3: ПОТРЕБИТЕЛСКИ ПРОФИЛ                                     -->
-                    <!-- ----------------------------------------------------------------- -->
-                    <div class="tab-pane fade" id="content-user-props" role="tabpanel" aria-labelledby="tab-user-props-btn">
-                        <h4 class="text-white fw-light mb-1" style="font-size: 1.6rem;">Потребителски профил</h4>
-                        <span class="text-muted small d-block mb-4 pb-2 border-bottom font-monospace" style="border-color: #3c3c3c !important;">Управление на потребителските идентификатори и права за достъп в холдинга.</span>
-
-                        <div class="row g-3 font-monospace" style="font-size: 0.85rem;">
-                            <div class="col-md-8 mb-2">
-                                <label class="form-label fw-bold text-secondary mb-1">Потребителско име</label>
-                                <input type="text" name="Username" value="@Model.Username" class="form-control form-control-sm text-white font-monospace bg-dark border-secondary" style="background-color: #333333 !important; border-color: #555555 !important;" required />
-                            </div>
-                            <div class="col-md-8 mb-2">
-                                <label class="form-label fw-bold text-secondary mb-1">Парола за достъп</label>
-                                <input type="password" name="Password" value="@Model.Password" class="form-control form-control-sm text-white font-monospace bg-dark border-secondary" style="background-color: #333333 !important; border-color: #555555 !important;" required />
-                            </div>
-                        </div>
-                    </div>
+                  
 
                 </div>
             </div>
