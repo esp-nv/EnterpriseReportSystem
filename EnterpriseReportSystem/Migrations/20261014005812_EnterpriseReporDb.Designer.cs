@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EnterpriseReportSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20261013234733_InitialEnterpriseReportSystemDb")]
-    partial class InitialEnterpriseReportSystemDb
+    [Migration("20261014005812_EnterpriseReporDb")]
+    partial class EnterpriseReporDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

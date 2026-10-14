@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EnterpriseReportSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialEnterpriseReportSystemDb : Migration
+    public partial class EnterpriseReporDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

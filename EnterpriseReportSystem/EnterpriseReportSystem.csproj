@@ -46,22 +46,19 @@
     <Content Update="InputFiles\Structure\1_CompaniesOrPersons.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="InputFiles\Structure\2_Facilities.json">
+    <Content Update="InputFiles\Structure\00_SystemUIElements.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="InputFiles\Structure\3_SystemMenus.json">
+    <Content Update="InputFiles\Structure\6_Facilities.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="InputFiles\Structure\4_SystemMenuTranslations.json">
+    <Content Update="InputFiles\Structure\2_SystemUsers.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="InputFiles\Structure\5_SystemUsers.json">
+    <Content Update="InputFiles\Structure\3_SystemUserThemes.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="InputFiles\Structure\6_SystemUserThemes.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="InputFiles\Structure\6_SystemUIElements.json">
+    <Content Update="InputFiles\Structure\5_SystemMenuTranslations.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
