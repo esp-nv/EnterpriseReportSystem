@@ -146,6 +146,7 @@
                                 {
                                     <div class="col-md-12 mb-2">
                                         <label class="form-label fw-bold text-secondary mb-1" style="font-size: 0.8rem;"><i class="bi bi-terminal-fill text-info me-1"></i> @themeStyle.Description</label>
+                                        <!-- КОРЕКЦИЯ: Именуваме речника точно така, за да го прихване C# контролерът -->
                                         <select name="BootstrapClasses[@themeStyle.Id]" class="form-select form-select-sm text-white font-monospace" style="background-color: #333333 !important; border-color: #555555 !important; font-size: 0.75rem;">
                                             <option value="@themeStyle.BootstrapClass" selected>@themeStyle.BootstrapClass (Текущ токен)</option>
                                             @if (themeStyle.ElementContext.Contains("background"))
@@ -166,6 +167,7 @@
                                         </select>
                                     </div>
                                 }
+
                             </div>
                         </div>
                     </div>
