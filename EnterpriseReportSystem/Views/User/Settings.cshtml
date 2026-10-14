@@ -25,54 +25,49 @@
 
         <div class="row g-0" style="min-height: 75vh;">
 
-
             <!-- ========================================================================= -->
-            <!-- ЛЯВ ВЕРТИКАЛЕН СИСТЕМЕН ПАНЕЛ (ФИКСИРАН JS И ОПРЕДЕЛЕНО ОТСТОЯНИЕ)         -->
+            <!-- ЛЯВ ВЕРТИКАЛЕН СИСТЕМЕН ПАНЕЛ (ВЪЗСТАНОВЕН МАКЕТ С МАЛЪК ОТСТЪП)          -->
             <!-- ========================================================================= -->
-            <div class="col-md-3 border-end font-monospace" style="border-color: #3c3c3c !important; background-color: #252526; min-height: 75vh;">
+            <div class="col-md-3 border-end" style="border-color: #3c3c3c !important; background-color: #252526; min-height: 75vh;">
 
-                <!-- ГОРНА ЧАСТ: КОНФИГУРАТОР СЪС СЛЕПЕНИ ВЕРТИКАЛНИ БУТОНИ С РАМКА -->
-                <div class="p-3 pb-0">
-                    <div class="text-uppercase text-secondary font-monospace px-2 pt-2 pb-2 fw-bold" style="font-size: 0.7rem; letter-spacing: 0.5px;">
-                        <i class="bi bi-sliders me-1 text-info"></i> Конфигуратор на теми
-                    </div>
-
-                    <!-- ФИКСИРАНО ID: Връщаме id="vs-tab-system", за да проработи JS на секундата -->
-                    <div class="btn-group-vertical w-100 font-monospace shadow-sm" id="vs-tab-system" role="tablist" aria-orientation="vertical">
-
-                        <!-- БУТОН 1: Общи настройки -->
-                        <button class="nav-link active btn btn-sm text-start py-2 px-3 rounded-0 border border-secondary text-white position-relative"
-                                id="tab-general-btn" data-bs-toggle="pill" data-bs-target="#content-general" type="button" role="tab" aria-controls="content-general" aria-selected="true"
-                                style="font-size: 0.85rem; background-color: #37373d;">
-                            <i class="bi bi-gear-fill me-2 text-warning"></i> Общи настройки
-                        </button>
-
-                        <!-- БУТОН 2: Системни визуални елементи -->
-                        <button class="nav-link btn btn-sm text-start py-2 px-3 rounded-0 border border-secondary text-muted"
-                                id="tab-elements-btn" data-bs-toggle="pill" data-bs-target="#content-elements" type="button" role="tab" aria-controls="content-elements" aria-selected="false"
-                                style="font-size: 0.85rem; background-color: transparent;">
-                            <i class="bi bi-layers-half me-2 text-success"></i> Системни визуални елементи
-                        </button>
-
-                        <!-- БУТОН 3: Потребителски профил -->
-                        <button class="nav-link btn btn-sm text-start py-2 px-3 rounded-0 border border-secondary text-muted"
-                                id="tab-user-props-btn" data-bs-toggle="pill" data-bs-target="#content-user-props" type="button" role="tab" aria-controls="content-user-props" aria-selected="false"
-                                style="font-size: 0.85rem; background-color: transparent;">
-                            <i class="bi bi-person-vcard-fill me-2 text-info"></i> Потребителски профил
-                        </button>
-
-                    </div>
+                <div class="text-uppercase text-secondary font-monospace px-3 pt-3 pb-1 fw-bold" style="font-size: 0.7rem; letter-spacing: 0.5px;">
+                    <i class="bi bi-sliders me-1 text-info"></i> Конфигуратор на теми
                 </div>
 
-                <!-- ПОПРАВКА: Твърдо отстояние mt-5 (точно колкото 1 таб разстояние под списъка) и махане на mt-auto -->
-                <div class="w-100 px-3 pb-3 mt-5">
+                <!-- СИСТЕМНИ ТАБОВЕ (Твоят оригинален работещ дизайн) -->
+                <div class="nav flex-column nav-pills p-3 gap-2" id="vs-tab-system" role="tablist" aria-orientation="vertical">
+
+                    <!-- БУТОН 1: Общи настройки -->
+                    <button class="nav-link active text-start py-2 px-3 rounded-0 font-monospace border-0 small text-white position-relative"
+                            id="tab-general-btn" data-bs-toggle="pill" data-bs-target="#content-general" type="button" role="tab" aria-controls="content-general" aria-selected="true"
+                            style="font-size: 0.85rem;">
+                        <i class="bi bi-gear-fill me-2 text-warning"></i> Общи настройки
+                    </button>
+
+                    <!-- БУТОН 2: Системни визуални елементи -->
+                    <button class="nav-link text-start py-2 px-3 rounded-0 font-monospace border-0 small text-muted"
+                            id="tab-elements-btn" data-bs-toggle="pill" data-bs-target="#content-elements" type="button" role="tab" aria-controls="content-elements" aria-selected="false"
+                            style="font-size: 0.85rem;">
+                        <i class="bi bi-layers-half me-2 text-success"></i> Системни визуални елементи
+                    </button>
+
+                    <!-- БУТОН 3: Потребителски профил -->
+                    <button class="nav-link text-start py-2 px-3 rounded-0 font-monospace border-0 small text-muted"
+                            id="tab-user-props-btn" data-bs-toggle="pill" data-bs-target="#content-user-props" type="button" role="tab" aria-controls="content-user-props" aria-selected="false"
+                            style="font-size: 0.85rem;">
+                        <i class="bi bi-person-vcard-fill me-2 text-info"></i> Потребителски профил
+                    </button>
+
+                </div>
+
+                <!-- БУТОН ЗА ЗАПИС: Изцяло освободен от FlexBox. Нарежда се веднага отдолу с чист малък отстъп mt-2 -->
+                <div class="w-100 px-3 pb-3 mt-2">
                     <button type="submit" class="btn btn-sm btn-primary shadow-sm font-monospace rounded-1 border-0 w-100 py-2 fs-6">
                         <i class="bi bi-cloud-check-fill me-2 text-warning"></i> Запечатай настройките
                     </button>
                 </div>
 
             </div>
-
 
 
             <!-- ========================================================================= -->
