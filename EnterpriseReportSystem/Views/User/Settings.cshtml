@@ -25,41 +25,34 @@
 
         <div class="row g-0" style="min-height: 75vh;">
             
-            <!-- ========================================================================= -->
-            <!-- ЛЯВ ВЕРТИКАЛЕН СИСТЕМЕН ПАНЕЛ (КОНФИГУРАТОР С БУТОН ЗА ЗАПИС)              -->
-            <!-- ========================================================================= -->
             <div class="col-md-3 border-end d-flex flex-column justify-content-between" style="border-color: #3c3c3c !important; background-color: #252526; min-height: 75vh;">
-                
-                <!-- ГОРНА ЧАСТ: МЕНЮ С ТАБОВЕ -->
-                <div class="nav flex-column nav-pills p-3 gap-2" id="vs-tab-system" role="tablist" aria-orientation="vertical">
-                    <div class="text-uppercase text-secondary font-monospace px-2 pt-2 pb-1 fw-bold" style="font-size: 0.7rem; letter-spacing: 0.5px;">
+
+                <!-- ГОРНА ЧАСТ: МЕНЮ СЪС СЛЕПЕНИ ВЕРТИКАЛНИ БУТОНИ -->
+                <div class="p-3">
+                    <div class="text-uppercase text-secondary font-monospace px-2 pt-2 pb-2 fw-bold" style="font-size: 0.7rem; letter-spacing: 0.5px;">
                         <i class="bi bi-sliders me-1 text-info"></i> Конфигуратор на теми
                     </div>
 
-                    <!-- БУТОН 1: Общи настройки -->
-                    <button class="nav-link active text-start py-2 px-3 rounded-0 font-monospace border-0 small text-white position-relative" 
-                            id="tab-general-btn" data-bs-toggle="pill" data-bs-target="#content-general" type="button" role="tab" aria-controls="content-general" aria-selected="true"
-                            style="font-size: 0.85rem;">
-                        <i class="bi bi-gear-fill me-2 text-warning"></i> Общи настройки
-                    </button>
-                    
-                    <!-- БУТОН 2: Системни визуални елементи -->
-                    <button class="nav-link text-start py-2 px-3 rounded-0 font-monospace border-0 small text-muted" 
-                            id="tab-elements-btn" data-bs-toggle="pill" data-bs-target="#content-elements" type="button" role="tab" aria-controls="content-elements" aria-selected="false"
-                            style="font-size: 0.85rem;">
-                        <i class="bi bi-layers-half me-2 text-success"></i> Системни визуални елементи
-                    </button>
-                    
-                    <!-- БУТОН 3: Потребителски профил -->
-                    <button class="nav-link text-start py-2 px-3 rounded-0 font-monospace border-0 small text-muted" 
-                            id="tab-user-props-btn" data-bs-toggle="pill" data-bs-target="#content-user-props" type="button" role="tab" aria-controls="content-user-props" aria-selected="false"
-                            style="font-size: 0.85rem;">
-                        <i class="bi bi-person-vcard-fill me-2 text-info"></i> Потребителски профил
-                    </button>
+                    <div class="btn-group-vertical w-100 font-monospace shadow-sm" role="group" aria-label="Избор на режим">
+                        <!-- БУТОН 1: Общи настройки -->
+                        <button type="button" class="btn btn-sm btn-primary text-start py-2 px-3 fw-bold border-secondary text-white" id="props-btn-general" data-bs-toggle="pill" data-bs-target="#content-general" role="tab" style="background-color: #007acc; border-color: #0062a3 !important;">
+                            1. Общи настройки
+                        </button>
+
+                        <!-- БУТОН 2: Персонални настройки -->
+                        <button type="button" class="btn btn-sm btn-dark text-start py-2 px-3 fw-bold border-secondary text-muted" id="props-btn-custom" data-bs-toggle="pill" data-bs-target="#content-elements" role="tab" style="background-color: #333333;">
+                            2. Персонални настройки
+                        </button>
+
+                        <!-- БУТОН 3: Външна тема / CSS -->
+                        <button type="button" class="btn btn-sm btn-dark text-start py-2 px-3 fw-bold border-secondary text-muted" id="props-btn-external" data-bs-toggle="pill" data-bs-target="#content-user-props" role="tab" style="background-color: #333333;">
+                            3. Външна тема / CSS
+                        </button>
+                    </div>
                 </div>
 
-                <!-- БУТОН ЗА ЗАПИС: Изцяло фабричен Bootstrap и Flex обвързан -->
-                <div class="mt-auto w-100 px-3 pb-3">
+                <!-- ДОЛНА ЧАСТ: КУТИЯТА С РАМКАТА, СИВИЯ ФОН И БУТОНА ЗА ЗАПИС -->
+                <div class="p-3 border-top mt-auto" style="border-color: #3c3c3c !important; background-color: #2d2d2d;">
                     <button type="submit" class="btn btn-sm btn-primary shadow-sm font-monospace rounded-1 border-0 w-100 py-2 fs-6">
                         <i class="bi bi-cloud-check-fill me-2 text-warning"></i> Запечатай настройките
                     </button>
