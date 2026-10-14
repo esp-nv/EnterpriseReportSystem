@@ -45,50 +45,43 @@ public class UserController : Controller
     // 2. ЗАПИСВАНЕ НА НАСТРОЙКИТЕ (POST) - С КОРЕКЦИЯ НА ОБВЪРЗВАНЕТО И ПРЕНАСОЧВАНЕТО
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SaveSettings(int Id, string LayoutType, string ThemeType, bool IsCustomPaletteActive)
+    public async Task<IActionResult> SaveSettings(SystemUser model, Dictionary<int, string> BootstrapClasses)
     {
-        // 1. Намираме основния потребител в SQL Server
-        var user = await _context.SystemUsers.FirstOrDefaultAsync(u => u.Id == Id);
-        if (user == null)
+        // 1. Намираме съществуващия потребител в базата данни на чисто
+        var dbUser = await _context.SystemUsers.FirstOrDefaultAsync(u => u.Id == model.Id);
+        if (dbUser == null) return NotFound();
+
+        // 2. Обновяваме главните системни параметри от Раздел 1 и Раздел 4
+        dbUser.LayoutType = model.LayoutType;
+        dbUser.ThemeType = model.ThemeType;
+
+        if (!string.IsNullOrEmpty(model.Username)) dbUser.Username = model.Username;
+        if (!string.IsNullOrEmpty(model.Password)) dbUser.Password = model.Password;
+
+        // 3. ЖЕЛЕЗЕН ЦИКЪЛ: Обновяваме атомарните свойства от Секция 3 в SQL Server
+        if (BootstrapClasses != null && BootstrapClasses.Any())
         {
-            return NotFound();
+            foreach (var item in BootstrapClasses)
+            {
+                var themeId = item.Key;
+                var selectedClass = item.Value;
+
+                var dbThemeRow = await _context.SystemUserThemes
+                    .FirstOrDefaultAsync(t => t.Id == themeId && t.SystemUserId == dbUser.Id);
+
+                if (dbThemeRow != null)
+                {
+                    dbThemeRow.BootstrapClass = selectedClass;
+                }
+            }
         }
 
-        // 2. Записваме новите глобални флагове и изчистените Bootstrap режими
-        user.LayoutType = LayoutType;          // "RIBBON" или "DASHBOARD"
-        user.ThemeType = ThemeType.ToLower();  // "light" или "dark"
-        user.IsCustomPaletteActive = IsCustomPaletteActive;
-
-        _context.SystemUsers.Update(user);
+        // 4. ОФИЦИАЛНО ЗАПЕЧАТВАНЕ НА ТРАНСАКЦИЯТА В SQL SERVER
         await _context.SaveChangesAsync();
 
-        // 3. АКО Е АКТИВИРАН USER.CSS -> АКТУАЛИЗИРАМЕ И КЛАСОВЕТЕ В НОВАТА ТАБЛИЦА
-        if (IsCustomPaletteActive)
-        {
-            var userStyles = await _context.SystemUserThemes.Where(t => t.SystemUserId == Id).ToListAsync();
-
-            // Пример за динамичен ъпдейт според избора (може да се разшири с палитрите)
-            var navbarStyle = userStyles.FirstOrDefault(s => s.ElementContext == "navbar");
-            if (navbarStyle != null)
-            {
-                navbarStyle.BootstrapClass = ThemeType == "light" ? "text-bg-light" : "text-bg-dark";
-                _context.SystemUserThemes.Update(navbarStyle);
-            }
-
-            var sidebarStyle = userStyles.FirstOrDefault(s => s.ElementContext == "sidebar");
-            if (sidebarStyle != null)
-            {
-                sidebarStyle.BootstrapClass = ThemeType == "light" ? "bg-light" : "bg-dark";
-                _context.SystemUserThemes.Update(sidebarStyle);
-            }
-
-            await _context.SaveChangesAsync();
-        }
-
-      //  TempData["SettingsSuccess"] = "🎉 Всички интерфейсни промени бяха запечатани успешно в SQL Server!";
-
-        // Пренасочваме към чистата Home страница по твоя план
+        // 5. ЗАТВАРЯНЕ НА ПРОЗОРЕЦА: Автоматично пренасочване към началната страница Home
         return RedirectToAction("Index", "Home");
     }
+
 
 }
