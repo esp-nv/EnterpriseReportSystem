@@ -22,57 +22,70 @@
 
 
     <div class="row g-0 h-100" style="min-height: 75vh;">
-
         <!-- ========================================================================= -->
-        <!-- ЛЯВ ВЕРТИКАЛЕН СИСТЕМЕН ПАНЕЛ (ЧИСТ BOOTSTRAP БЕЗ НИТО ЕДИН РЕД CSS)        -->
+        <!-- ЛЯВ ВЕРТИКАЛЕН СИСТЕМЕН ПАНЕЛ ПО ОФИЦИАЛЕН СТАНДАРТ НА BOOTSTRAP COLLAPSE -->
         <!-- ========================================================================= -->
         <div class="col-md-3 border-end border-secondary" style="background-color: #252526;">
-            <div class="nav flex-column nav-pills p-3 gap-1" id="vs-tab-system" role="tablist" aria-orientation="vertical">
+            <nav class="p-3 font-monospace" id="bd-docs-nav" aria-label="Docs navigation">
+                <ul class="list-unstyled mb-0 d-flex flex-column gap-1 p-0">
 
-                <!-- ТАБ 1: ОБЩИ НАСТРОЙКИ -->
-                <button class="nav-link active text-start py-2 px-3 rounded-0 font-monospace border-0 small text-white"
-                        id="tab-general" data-bs-toggle="pill" data-bs-target="#content-general" type="button" role="tab" aria-controls="content-general" aria-selected="true"
-                        style="background-color: #37373d; font-size: 0.85rem;">
-                    <i class="bi bi-gear-fill me-2 text-warning"></i> Общи настройки
-                </button>
+                    <!-- ТАБ 1: ОБЩИ НАСТРОЙКИ (ГЛАВЕН ЛИНК) -->
+                    <li class="mb-1">
+                        <button class="nav-link active text-start py-2 px-3 rounded-0 border-0 small text-white w-100"
+                                id="tab-general" data-bs-toggle="pill" data-bs-target="#content-general" type="button" role="tab" aria-controls="content-general" aria-selected="true"
+                                style="background-color: #37373d; font-size: 0.85rem;">
+                            <i class="bi bi-gear-fill me-2 text-warning"></i> Общи настройки
+                        </button>
+                    </li>
 
-                <!-- ГЛАВНО ЗАГЛАВИЕ С КЛАСИЧЕСКА ПАДАЩА СТРЕЛКА ОТИВА ТУК -->
-                <div class="font-monospace text-white py-2 px-2 d-flex align-items-center gap-1 small fw-bold">
-                    <i class="bi bi-chevron-down text-muted"></i>
-                    <span>Системни визуални елементи</span>
-                </div>
+                    <!-- ДЪРВО 2: СИСТЕМНИ ВИЗУАЛНИ ЕЛЕМЕНТИ (COLLAPSE МЕХАНИЗЪМ ТОЧНО ПО СНИМКАТА) -->
+                    <li class="mb-1">
+                        <!-- Бутонът, който отваря/затваря дървото автоматично през Bootstrap -->
+                        <button class="btn d-inline-flex align-items-center justify-content-between text-start py-2 px-3 rounded-0 border-0 small text-white w-100 fw-bold font-monospace collapse-trigger-btn"
+                                type="button" data-bs-toggle="collapse" data-bs-target="#components-collapse" aria-expanded="true" style="font-size: 0.85rem;">
+                            <span><i class="bi bi-chevron-down me-2 text-muted" id="collapseChevron"></i>Системни визуални елементи</span>
+                        </button>
 
-                <!-- ВЛОЖЕНИ ПОД-ЕЛЕМЕНТИ ЧРЕЗ ВГРАДЕНИТЕ КЛАСОВЕ ЗА ОТСТЪП (ps-4) И ЛЯВА РАМКА (border-start) -->
-                <div class="ps-4 ms-1 border-start border-secondary d-flex flex-column gap-1">
+                        <!-- Контейнерът с под-елементите, който се управлява от Bootstrap Collapse -->
+                        <div class="collapse show mt-1" id="components-collapse">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal ps-4 ms-1 border-start border-secondary d-flex flex-column gap-1 p-0">
 
-                    <!-- ПОД-ТАБ А: SystemUIElements -->
-                    <button class="nav-link text-start py-1 px-2 rounded-0 font-monospace border-0 small text-muted w-100"
-                            id="tab-elements" data-bs-toggle="pill" data-bs-target="#content-elements" type="button" role="tab" aria-controls="content-elements" aria-selected="false"
-                            style="font-size: 0.8rem; background: transparent;">
-                        Списък с компоненти
-                    </button>
+                                <!-- ПОД-ТАБ А: Списък с компоненти -->
+                                <li>
+                                    <button class="nav-link text-start py-1 px-2 rounded-0 border-0 small text-muted w-100"
+                                            id="tab-elements" data-bs-toggle="pill" data-bs-target="#content-elements" type="button" role="tab" aria-controls="content-elements" aria-selected="false"
+                                            style="font-size: 0.8rem; background: transparent;">
+                                        Списък с компоненти
+                                    </button>
+                                </li>
 
-                    <!-- ПОД-ТАБ Б: SystemUserThemes -->
-                    <button class="nav-link text-start py-1 px-2 rounded-0 font-monospace border-0 small text-muted w-100"
-                            id="tab-themes" data-bs-toggle="pill" data-bs-target="#content-themes" type="button" role="tab" aria-controls="content-themes" aria-selected="false"
-                            style="font-size: 0.8rem; background: transparent;">
-                        Персонални свойства и теми
-                    </button>
+                                <!-- ПОД-ТАБ Б: Персонални свойства и теми -->
+                                <li>
+                                    <button class="nav-link text-start py-1 px-2 rounded-0 border-0 small text-muted w-100"
+                                            id="tab-themes" data-bs-toggle="pill" data-bs-target="#content-themes" type="button" role="tab" aria-controls="content-themes" aria-selected="false"
+                                            style="font-size: 0.8rem; background: transparent;">
+                                        Персонални свойства и теми
+                                    </button>
+                                </li>
 
-                </div>
+                            </ul>
+                        </div>
+                    </li>
 
-                <div class="border-top border-secondary my-2"></div>
+                    <li class="my-2 border-top border-secondary"></li>
 
-                <!-- ТАБ 4: ПОТРЕБИТЕЛСКИ ПРОФИЛ -->
-                <button class="nav-link text-start py-2 px-3 rounded-0 font-monospace border-0 small text-muted"
-                        id="tab-user-props" data-bs-toggle="pill" data-bs-target="#content-user-props" type="button" role="tab" aria-controls="content-user-props" aria-selected="false"
-                        style="font-size: 0.85rem;">
-                    <i class="bi bi-person-vcard-fill me-2 text-info"></i> Потребителски профил
-                </button>
+                    <!-- ТАБ 4: ПОТРЕБИТЕЛСКИ ПРОФИЛ -->
+                    <li class="mb-1">
+                        <button class="nav-link text-start py-2 px-3 rounded-0 border-0 small text-muted w-100"
+                                id="tab-user-props" data-bs-toggle="pill" data-bs-target="#content-user-props" type="button" role="tab" aria-controls="content-user-props" aria-selected="false"
+                                style="font-size: 0.85rem; background: transparent;">
+                            <i class="bi bi-person-vcard-fill me-2 text-info"></i> Потребителски профил
+                        </button>
+                    </li>
 
-            </div>
+                </ul>
+            </nav>
         </div>
-
 
 
         <!-- ========================================================================= -->
