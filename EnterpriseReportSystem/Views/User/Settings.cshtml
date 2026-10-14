@@ -126,50 +126,88 @@
                             </div>
                         </div>
 
-                        <!-- 2. СЧЕТОВОДНА ТАБЛИЦА НА ФИКСИРАНИТЕ ИНТЕРФЕЙСНИ ЗОНИ (ВГРАДЕН СГЪВАЕМ ACCORDION FLUSH) -->
-                        <div class="accordion accordion-flush mb-4 font-monospace shadow-sm" id="accordionSystemElements" style="border: 1px solid #3c3c3c; border-radius: 4px; overflow: hidden;">
-                            <div class="accordion-item bg-transparent border-0">
+                        <!-- 2. СГЪВАЕМ МАКЕТ: ВСЕКИ ACCORDION ITEM СЪДЪРЖА ФИЛТРИРАНИТЕ СИ СВОЙСТВА -->
+                        <div class="accordion accordion-flush mb-4 font-monospace shadow-sm" id="accordionFlushUiElements" style="border: 1px solid #3c3c3c; border-radius: 4px;">
 
-                                <!-- ЗАГЛАВЕН БУТОН ЗА СГЪВАНЕ / РАЗГЪВАНЕ -->
-                                <h2 class="accordion-header" id="flush-headingTable">
-                                    <button class="accordion-button collapsed bg-dark text-white font-monospace small border-0 py-2 px-3 d-flex align-items-center justify-content-between"
-                                            type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTable" aria-expanded="false" aria-controls="flush-collapseTable"
-                                            style="background-color: #252526 !important; box-shadow: none;">
-                                        <span><i class="bi bi-table text-info me-2"></i> Списък на фиксираните интерфейсни зони</span>
-                                    </button>
-                                </h2>
+                            @foreach (var element in uiElements)
+                            {
+                                // Извличаме само свойствата от базата, които принадлежат на текущата интерфейсна зона
+                                var filteredStyles = userStyles.Where(s => s.SystemUIElementId == element.Id).ToList();
 
-                                <!-- СГЪВАЕМОТО СЪДЪРЖАНИЕ НА ТАБЛИЦАТА -->
-                                <div id="flush-collapseTable" class="accordion-collapse collapse" aria-labelledby="flush-headingTable" data-bs-parent="#accordionSystemElements">
-                                    <div class="accordion-body p-0" style="background-color: #1e1e1e;">
+                                <div class="accordion-item bg-transparent" style="border-bottom: 1px solid #3c3c3c !important;">
 
-                                        <div class="table-responsive m-0 p-0">
-                                            <table class="table table-sm table-dark table-striped mb-0 align-middle" style="background-color: #252526;">
-                                                <thead style="background-color: #2d2d2d; color: #858585; font-size: 0.75rem;">
-                                                    <tr>
-                                                        <th class="px-3 py-2 border-0" style="width: 10%;">ID</th>
-                                                        <th class="py-2 border-0" style="width: 50%;">Наименование на интерфейсната зона</th>
-                                                        <th class="py-2 text-end px-3 border-0" style="width: 40%;">Уникален системен ключ</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach (var element in uiElements)
-                                                    {
-                                                        <tr style="border-color: #3c3c3c !important;">
-                                                            <td class="px-3 fw-bold text-info">@element.Id</td>
-                                                            <td class="text-white">@element.DisplayName</td>
-                                                            <td class="text-end text-warning px-3 font-monospace" style="font-size: 0.75rem;">@element.ElementKey</td>
-                                                        </tr>
-                                                    }
-                                                </tbody>
-                                            </table>
+                                    <h2 class="accordion-header" id="flush-heading-@element.Id">
+                                        <button class="accordion-button collapsed text-white font-monospace small py-2.5 px-3 border-0"
+                                                type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-@element.Id" aria-expanded="false" aria-controls="flush-collapse-@element.Id"
+                                                style="background-color: #252526 !important; box-shadow: none;">
+                                            Accordion Item #@element.Id — @element.DisplayName
+                                        </button>
+                                    </h2>
+
+                                    <div id="flush-collapse-@element.Id" class="accordion-collapse collapse" aria-labelledby="flush-heading-@element.Id" data-bs-parent="#accordionFlushUiElements">
+                                        <div class="accordion-body p-3 font-monospace" style="background-color: #1e1e1e;">
+
+                                            <div class="mb-3 text-muted" style="font-size: 0.75rem;">
+                                                <i class="bi bi-info-circle me-1 text-info"></i> Системен ключ: <span class="text-warning">@element.ElementKey</span>
+                                            </div>
+
+                                            @if (filteredStyles.Any())
+                                            {
+                                                <!-- ТАБЛИЦА СЪС СВОЙСТВАТА, ФИЛТРИРАНА ЕДИНСТВЕНО ЗА ТАЗИ ЗОНА -->
+                                                <div class="table-responsive rounded-1 border border-secondary" style="border-color: #2d2d2d !important;">
+                                                    <table class="table table-sm table-dark table-striped mb-0 align-middle" style="background-color: #252526; font-size: 0.8rem;">
+                                                        <thead style="background-color: #2d2d2d; color: #858585; font-size: 0.75rem;">
+                                                            <tr>
+                                                                <th class="px-3 py-2 border-0" style="width: 50%;">Описание на свойството</th>
+                                                                <th class="py-2 text-end px-3 border-0" style="width: 50%;">Избор на Bootstrap токен / Клас</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach (var themeStyle in filteredStyles)
+                                                            {
+                                                                <tr style="border-color: #2d2d2d !important;">
+                                                                    <td class="px-3 text-white">
+                                                                        <i class="bi bi-terminal-fill text-info me-2" style="font-size: 0.75rem;"></i>@themeStyle.Description
+                                                                    </td>
+                                                                    <td class="text-end px-3">
+                                                                        <select name="BootstrapClasses[@themeStyle.Id]" class="form-select form-select-sm text-white font-monospace d-inline-block" style="background-color: #333333 !important; border-color: #555555 !important; font-size: 0.75rem; width: auto; min-width: 200px;">
+                                                                            <option value="@themeStyle.BootstrapClass" selected>@themeStyle.BootstrapClass</option>
+                                                                            @if (themeStyle.ElementContext.Contains("background"))
+                                                                            {
+                                                                                <option value="bg-dark">bg-dark (Тъмен графит)</option>
+                                                                                <option value="bg-light">bg-light (Чист офис светъл)</option>
+                                                                            }
+                                                                            @if (themeStyle.ElementContext.Contains("table"))
+                                                                            {
+                                                                                <option value="table-dark table-striped">table-dark (Тъмна решетка)</option>
+                                                                                <option value="table-light table-striped">table-light (Светла решетка)</option>
+                                                                            }
+                                                                            @if (themeStyle.ElementContext.Contains("shadow"))
+                                                                            {
+                                                                                <option value="shadow">shadow (Средна сянка)</option>
+                                                                                <option value="shadow-lg">shadow-lg (Дълбока сянка)</option>
+                                                                            }
+                                                                        </select>
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-secondary small font-monospace d-block py-2"><i class="bi bi-exclamation-triangle me-1 text-muted"></i> Няма намерени прикачени свойства за този компонент.</span>
+                                            }
+
                                         </div>
-
                                     </div>
-                                </div>
 
-                            </div>
+                                </div>
+                            }
+
                         </div>
+
 
 
                         <!-- 3. СЕКЦИЯ 3: ТРИТЕ ВЕРТИКАЛНИ БУТОНА И АТОМАРНИТЕ PROPERTIES ТОКЕНИ -->
