@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EnterpriseReportSystem.Common.Constants;
+using EnterpriseReportSystem.Common.Enum;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using EnterpriseReportSystem.Common.Constants;
 
 namespace EnterpriseReportSystem.Models.Entities.Structure
 {
@@ -21,7 +22,12 @@ namespace EnterpriseReportSystem.Models.Entities.Structure
         [StringLength(ValidationConstants.FileSizeMaxLength)]
         public string FileSize { get; set; } = "0 KB"; // Мета-данни за размер
 
+        /// <summary>
+        /// Контрастен капацитет на темата: 1 = Светла, 2 = Тъмна, 3 = Универсална (И двете)
+        /// </summary>
         [Required]
-        public bool IsDark { get; set; } // Флаг: true за Тъмна, false за Светла тема
+        public ThemeSupportType SupportType { get; set; } = ThemeSupportType.Universal;
     }
+
+}
 }
