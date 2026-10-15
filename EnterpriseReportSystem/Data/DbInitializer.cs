@@ -1,7 +1,7 @@
-﻿using EnterpriseReportSystem.Common.Enum;
-using EnterpriseReportSystem.Models.Entities.Structure;
+﻿using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
+using EnterpriseReportSystem.Models.Entities.Structure;
+using EnterpriseReportSystem.Common.Enum;
 
 namespace EnterpriseReportSystem.Data;
 
@@ -11,7 +11,7 @@ public static class DbInitializer
     {
         try
         {
-            // 1. АВТОМАТИЧНО НАЛИВАНЕ НА ЦЕНТРАЛНИЯ КАТАЛОГ ЗА CSS ТЕМИ
+            // 1. ДИНАМИЧНО НАЛИВАНЕ НА ЦЕНТРАЛНИЯ КАТАЛОГ ЗА CSS ТЕМИ ОТ JSON ФАЙЛА
             if (!await context.GlobalThemes.AnyAsync())
             {
                 var themesPath = Path.Combine(webRootPath, "InputFiles", "Structure", "00_GlobalThemes.json");
@@ -27,7 +27,7 @@ public static class DbInitializer
                 }
             }
 
-            // 2. АВТОМАТИЧНО НАЛИВАНЕ НА ПОТРЕБИТЕЛИТЕ (С ОПТИМИЗИРАН ENUM LAYOUT)
+            // 2. ДИНАМИЧНО НАЛИВАНЕ НА ПОТРЕБИТЕЛИТЕ (С МАПВАНЕ НА LAYOUT ENUM)
             if (!await context.SystemUsers.AnyAsync())
             {
                 var usersPath = Path.Combine(webRootPath, "InputFiles", "Structure", "2_SystemUsers.json");
@@ -39,6 +39,7 @@ public static class DbInitializer
 
                     foreach (var userEl in root.EnumerateArray())
                     {
+                        // Преобразуваме текстовия низ от JSON файла директно към нашия нов сигурен Enum
                         string jsonLayout = userEl.GetProperty("LayoutType").GetString() ?? "DASHBOARD";
                         AppLayoutType finalLayout = jsonLayout.ToUpper() switch
                         {
@@ -52,15 +53,17 @@ public static class DbInitializer
                             Id = userEl.GetProperty("Id").GetInt32(),
                             Username = userEl.GetProperty("Username").GetString() ?? string.Empty,
                             Password = userEl.GetProperty("Password").GetString() ?? string.Empty,
-                            LayoutType = finalLayout,
+                            LayoutType = finalLayout, // Записва се като чист int в SQL Server
                             IsMenuExpanded = userEl.GetProperty("IsMenuExpanded").GetBoolean(),
                             ThemeType = userEl.GetProperty("ThemeType").GetString() ?? "LIGHT",
                             IsGlobalAdmin = userEl.GetProperty("IsGlobalAdmin").GetBoolean(),
                             WishListMenuIds = userEl.GetProperty("WishListMenuIds").GetString() ?? string.Empty,
                             CompanyId = userEl.GetProperty("CompanyId").GetInt32(),
                             IsCustomPaletteActive = userEl.GetProperty("IsCustomPaletteActive").GetBoolean(),
-                            ThemeId = userEl.TryGetProperty("ThemeId", out var tProp) ? tUr(tProp) : null,
-                            IsDarkUserPreference = userEl.TryGetProperty("IsDarkUserPreference", out var dProp) && dProp.GetBoolean()
+
+                            // Четем новите свойства от потребителския JSON файл
+                            ThemeId = userEl.TryGetProperty("ThemeId", out var tProp) ? tUr(tProp) : 1, // Фиксиран бекъп към Id 1
+                            IsDarkUserPreference = !userEl.TryGetProperty("IsDarkUserPreference", out var dProp) || dProp.GetBoolean()
                         };
 
                         await context.SystemUsers.AddAsync(newUser);
@@ -70,7 +73,7 @@ public static class DbInitializer
                 }
             }
 
-            return "SUCCESS"; // Всички папки са налети автоматично без нито один ред твърд код!
+            return "SUCCESS"; // Всички папки са налети автоматично без нито един ред твърд код!
         }
         catch (Exception ex)
         {
