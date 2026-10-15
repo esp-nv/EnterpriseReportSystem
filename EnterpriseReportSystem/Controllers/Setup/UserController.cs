@@ -13,22 +13,23 @@ public class UserController : Controller
     {
         _context = context;
     }
-
     [HttpGet]
+    [Route("User/Settings")]
     public async Task<IActionResult> Settings()
     {
-        // 1. Извличаме текущия оператор безопасно заедно с прикачената му тема
+        // 1. Извличаме оператора заедно с неговата активна тема по релацията
         var user = await _context.SystemUsers
             .Include(u => u.GlobalTheme)
-            .FirstOrDefaultAsync(u => u.Id == 1); // Мапваме към тестовия администратор #1
+            .FirstOrDefaultAsync(u => u.Id == 1); // Тестов администратор #1
 
         if (user == null) return NotFound();
 
-        // 2. Извличаме динамично всички достъпни теми от новата каталог-таблица
-        ViewBag.GlobalThemes = await _context.GlobalThemes.ToListAsync();
+        // 2. Извличаме целия списък с теми от новата каталог-таблица
+        ViewBag.GlobalThemes = await _context.GlobalThemes.AsNoTracking().ToListAsync();
 
         return View(user);
     }
+
 
     [HttpPost]
     [ValidateAntiForgeryToken]
