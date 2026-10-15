@@ -33,20 +33,49 @@ public class UserController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Route("User/SaveSettings")]
     public async Task<IActionResult> SaveSettings(SystemUser model)
     {
+        // 1. Извличаме оригиналния потребител от базата данни, за да го модифицираме
         var dbUser = await _context.SystemUsers.FirstOrDefaultAsync(u => u.Id == model.Id);
         if (dbUser == null) return NotFound();
 
-        // Запечатваме новите релационни флагове директно в SQL Server
+        // 2. СИГУРНО РЪЧНО ИЗВЛИЧАНЕ НА РАДИО БУТОНИТЕ ОТ ФОРМАТА
+        // Четем суровите стойности "true"/"false" от браузъра и ги превръщаме в чист bool
+        string customPaletteRaw = Request.Form["IsCustomPaletteActive"].ToString();
+        string darkPreferenceRaw = Request.Form["IsDarkUserPreference"].ToString();
+
+        bool isCustomPaletteActive = !string.IsNullOrEmpty(customPaletteRaw) && customPaletteRaw.ToLower() == "true";
+        bool isDarkUserPreference = !string.IsNullOrEmpty(darkPreferenceRaw) && darkPreferenceRaw.ToLower() == "true";
+
+        // 3. ЗАПЕЧАТВАНЕ НА ВСИЧКИ ПАРАМЕТРИ В SQL SERVER
+        dbUser.Username = model.Username;
+        dbUser.Password = model.Password;
         dbUser.LayoutType = model.LayoutType;
         dbUser.IsMenuExpanded = model.IsMenuExpanded;
-        dbUser.ThemeId = model.ThemeId;
-        dbUser.IsCustomPaletteActive = model.IsCustomPaletteActive;
 
+        // Прехвърляме валидираните булеви радио флагове
+        dbUser.IsCustomPaletteActive = isCustomPaletteActive;
+        dbUser.IsDarkUserPreference = isDarkUserPreference;
+
+        // Ако е избран фабричен Bootstrap режим, зануляваме ThemeId в базата данни
+        if (!isCustomPaletteActive)
+        {
+            dbUser.ThemeId = null;
+        }
+        else
+        {
+            dbUser.ThemeId = model.ThemeId;
+        }
+
+        // Автоматично превключваме ThemeType текстовото поле спрямо контрастния избор
+        dbUser.ThemeType = isDarkUserPreference ? "dark" : "light";
+
+        // Записваме трансакцията на чисто в SQL Server
         await _context.SaveChangesAsync();
 
-        // Връщаме оператора към главното табло след успешна трансакция
-        return RedirectToAction("Index", "Home");
+        // 4. Мигновено връщане към страницата за настройки, за да се види визуалният ефект веднага
+        return RedirectToAction("Settings");
     }
+
 }
