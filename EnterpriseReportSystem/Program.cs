@@ -30,24 +30,28 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 // АВТОМАТИЧНО НАПЪЛВАНЕ НА БАЗАТА ДАННИ ПРИ СТАРТИРАНЕ (УЕБ ВАРИАНТ)
+// АВТОМАТИЧНО НАЛИВАНЕ НА БАЗАТА ДАННИ ПРИ СТАРТИРАНЕ (УЕБ ВАРИАНТ)
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    var logger = services.GetRequiredService<ILogger<Program>>(); // Извикваме уеб логера
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
-        string seedResult = DbInitializer.Seed(context);
+        var env = services.GetRequiredService<IWebHostEnvironment>();
 
-        // Ако има дружелюбно съобщение за грешка, уеб сървърът ще го изпише веднага
+        // Извикваме новия асинхронен метод с правилните параметри
+        string seedResult = DbInitializer.SeedAsync(context, env.WebRootPath).GetAwaiter().GetResult();
+
         if (seedResult != "SUCCESS")
         {
+            var logger = services.GetRequiredService<ILogger<Program>>();
             logger.LogWarning(seedResult);
         }
     }
     catch (Exception ex)
     {
-        logger.LogError(ex, "❌ Фатална грешка при първоначално стартиране на базата данни.");
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Х фатална грешка при първоначално стартиране на базата данни.");
     }
 }
 
