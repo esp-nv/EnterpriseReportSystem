@@ -109,3 +109,20 @@ body {
         color: #ff5500 !important;
         transform: scale(1.02);
     }
+/* =========================================================================
+   хмрептеиямх ярхкнбе гю бепрхйюкмхре рюанбе (VISUAL STUDIO 2022 етейр)
+   ========================================================================= */
+#vs-tab-system .nav-link {
+    color: #aaaaaa !important;
+    border-left: 2px solid transparent !important;
+    transition: none;
+}
+
+    #vs-tab-system .nav-link.active {
+        border-left: 2px solid #007acc !important;
+    }
+
+    #vs-tab-system .nav-link:hover:not(.active) {
+        background-color: #2d2d2d !important;
+        color: #ffffff !important;
+    }

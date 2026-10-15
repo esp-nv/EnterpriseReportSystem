@@ -117,10 +117,86 @@
                                 </div>
                             </div>
                         </div>
-                                             
-                        
-                    </div>                 
 
+                        <!-- 2. НОВИЯТ ИЗОЛИРАН GROUP BOX ЗА УПРАВЛЕНИЕ НА СТИЛОВЕТЕ -->
+                        <div class="card border-0 p-4 rounded-1 mb-4" style="background-color: #252526; border: 1px solid #3c3c3c !important;">
+                            <h6 class="text-white fw-bold mb-3 small text-uppercase border-bottom pb-2" style="border-color: #3c3c3c !important;">
+                                <i class="bi bi-palette-fill text-info me-2"></i> Конфигуратор на стилови файлове (bootstrap.build)
+                            </h6>
+
+                            <div class="row g-3 font-monospace" style="font-size: 0.85rem;">
+                                <!-- РАДИО БУТОНИ ВЪТРЕ В КУТИЯТА -->
+                                <div class="col-md-6 d-flex flex-column gap-2 border-end border-secondary pe-4" style="border-color: #3c3c3c !important;">
+                                    <label class="form-label fw-bold text-secondary mb-1">Произход на стила</label>
+
+                                    <div class="form-check">
+                                        <input class="form-check-input theme-source-radio" type="radio" name="IsCustomPaletteActive" id="radioFactoryStyle" value="false" checked="@(!Model.IsCustomPaletteActive ? "checked" : null)">
+                                        <label class="form-check-label text-white" for="radioFactoryStyle">
+                                            <i class="bi bi-cpu me-1 text-secondary"></i> Фабричен Bootstrap изглед
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check">
+                                        <input class="form-check-input theme-source-radio" type="radio" name="IsCustomPaletteActive" id="radioCustomStyle" value="true" checked="@(Model.IsCustomPaletteActive ? "checked" : null)">
+                                        <label class="form-check-label text-white" for="radioCustomStyle">
+                                            <i class="bi bi-file-earmark-code me-1 text-success"></i> Персонализирана тема (Външен файл)
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- ДИНАМИЧЕН COMBOBOX С ТЕМИ -->
+                                <div class="col-md-6 ps-md-4">
+                                    <label class="form-label fw-bold text-secondary mb-1" id="labelThemeDropdown">Избор на десктоп тема</label>
+                                    <select name="ThemeId" id="themeIdDropdown" class="form-select form-select-sm text-white font-monospace" style="background-color: #333333 !important; border-color: #555555 !important;">
+                                        <option value="">-- Изберете файл от списъка --</option>
+                                        @if (ViewBag.GlobalThemes != null)
+                                        {
+                                            foreach (var theme in (List<GlobalTheme>)ViewBag.GlobalThemes)
+                                            {
+                                                string square = theme.IsDark ? "⬛" : "⬜";
+                                                if (Model.ThemeId == theme.Id)
+                                                {
+                                                    <option value="@theme.Id" data-file="@theme.FileName" selected="selected">✓ @square @theme.ThemeName (@theme.FileSize)</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@theme.Id" data-file="@theme.FileName">@square @theme.ThemeName (@theme.FileSize)</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. ГЛОБАЛЕН КОНТРАСТЕН ИЗБОР (ИЗВЪН РАМКАТА С КОМЕНТАР TRUE->ТЪМНА) -->
+                        <div class="card border-0 p-4 rounded-1 mb-3" style="background-color: #252526; border: 1px solid #3c3c3c !important;">
+                            <h6 class="text-white fw-bold mb-3 small text-uppercase border-bottom pb-2" style="border-color: #3c3c3c !important;">
+                                <i class="bi bi-circle-half text-warning me-2"></i> Контраст на околната среда (Глобален Режим)
+                            </h6>
+
+                            <div class="d-flex gap-4 font-monospace small align-items-center">
+                                <div class="form-check m-0">
+                                    <!-- true -> Тъмна среда (База данни bit) -->
+                                    <input class="form-check-input" type="radio" name="IsDarkUserPreference" id="modeDarkRadio" value="true" checked="@(Model.IsDarkUserPreference ? "checked" : null)">
+                                    <label class="form-check-label text-white fw-bold" for="modeDarkRadio">
+                                        🌙 Тъмен конзолен профил (True)
+                                    </label>
+                                </div>
+
+                                <div class="form-check m-0">
+                                    <!-- false -> Светла среда (База данни bit) -->
+                                    <input class="form-check-input" type="radio" name="IsDarkUserPreference" id="modeLightRadio" value="false" checked="@(!Model.IsDarkUserPreference ? "checked" : null)">
+                                    <label class="form-check-label text-muted" for="modeLightRadio">
+                                        ☀️ Светъл уеб режим (False)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                   
                 </div>
             </div>
 
@@ -128,19 +204,3 @@
     </div> <!-- Край на .container-fluid -->
 </form>
 
-<style>
-    #vs-tab-system .nav-link {
-        color: #aaaaaa !important;
-        border-left: 2px solid transparent !important;
-        transition: none;
-    }
-
-        #vs-tab-system .nav-link.active {
-            border-left: 2px solid #007acc !important;
-        }
-
-        #vs-tab-system .nav-link:hover:not(.active) {
-            background-color: #2d2d2d !important;
-            color: #ffffff !important;
-        }
-</style>
