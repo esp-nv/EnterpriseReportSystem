@@ -102,12 +102,11 @@
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold text-secondary mb-1">Вид на главното меню</label>
                                     <select name="LayoutType" id="layoutSelector" class="form-select form-select-sm text-white font-monospace" style="background-color: #333333 !important; border-color: #555555 !important;">
-                                        <option value="DASHBOARD">Вертикален страничен контролен панел</option>
-                                        <option value="RIBBON">Хоризонтална лента тип MS Excel / Word</option>
-                                        <option value="NAVBAR">Хоризонтална лента тип NAVBAR</option>
+                                        <option value="1" selected="@(Model.LayoutType == AppLayoutType.Dashboard ? "selected" : null)">Вертикален страничен контролен панел</option>
+                                        <option value="2" selected="@(Model.LayoutType == AppLayoutType.Ribbon ? "selected" : null)">Хоризонтална лента тип MS Excel / Word</option>
+                                        <option value="3" selected="@(Model.LayoutType == AppLayoutType.Navbar ? "selected" : null)">Хоризонтална лента тип NAVBAR</option>
                                     </select>
                                 </div>
-
 
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold text-secondary mb-1">Режим на уеб темата</label>
