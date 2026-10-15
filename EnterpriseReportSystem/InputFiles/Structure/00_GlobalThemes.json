@@ -1,3 +1,30 @@
-{
-
-}
+[
+  {
+    "Id": 1,
+    "ThemeName": "Класически тъмен въглен",
+    "FileName": "vs_dark_charcoal.css",
+    "FileSize": "4.2 KB",
+    "IsDark": true
+  },
+  {
+    "Id": 2,
+    "ThemeName": "Стандартен светъл офис",
+    "FileName": "office_clean_light.css",
+    "FileSize": "3.8 KB",
+    "IsDark": false
+  },
+  {
+    "Id": 3,
+    "ThemeName": "Матрично оперативно зелено",
+    "FileName": "matrix_terminal_green.css",
+    "FileSize": "4.5 KB",
+    "IsDark": true
+  },
+  {
+    "Id": 4,
+    "ThemeName": "Луксозно корпоративно синьо",
+    "FileName": "corporate_high_blue.css",
+    "FileSize": "5.1 KB",
+    "IsDark": true
+  }
+]

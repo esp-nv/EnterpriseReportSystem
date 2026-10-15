@@ -9,6 +9,8 @@
     "IsGlobalAdmin": true,
     "WishListMenuIds": "1,2,3",
     "CompanyId": 1,
-    "IsCustomPaletteActive": false
+    "IsCustomPaletteActive": false,
+    "ThemeId": 1,
+    "IsDarkUserPreference": true
   }
 ]
