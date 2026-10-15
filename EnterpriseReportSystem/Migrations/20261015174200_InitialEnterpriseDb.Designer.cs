@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EnterpriseReportSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20261014005812_EnterpriseReporDb")]
-    partial class EnterpriseReporDb
+    [Migration("20261015174200_InitialEnterpriseDb")]
+    partial class InitialEnterpriseDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -526,6 +526,37 @@ namespace EnterpriseReportSystem.Migrations
                     b.ToTable("FacilityLogs");
                 });
 
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.GlobalTheme", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("FileSize")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsDark")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ThemeName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GlobalThemes");
+                });
+
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.Language", b =>
                 {
                     b.Property<int>("Id")
@@ -610,32 +641,6 @@ namespace EnterpriseReportSystem.Migrations
                     b.ToTable("SystemMenuTranslations");
                 });
 
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemUIElement", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("DisplayName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ElementKey")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ElementKey")
-                        .IsUnique();
-
-                    b.ToTable("SystemUIElements");
-                });
-
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemUser", b =>
                 {
                     b.Property<int>("Id")
@@ -650,21 +655,25 @@ namespace EnterpriseReportSystem.Migrations
                     b.Property<bool>("IsCustomPaletteActive")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsDarkUserPreference")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsGlobalAdmin")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsMenuExpanded")
                         .HasColumnType("bit");
 
-                    b.Property<string>("LayoutType")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                    b.Property<int>("LayoutType")
+                        .HasColumnType("int");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int?>("ThemeId")
+                        .HasColumnType("int");
 
                     b.Property<string>("ThemeType")
                         .IsRequired()
@@ -685,45 +694,9 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("CompanyId");
 
+                    b.HasIndex("ThemeId");
+
                     b.ToTable("SystemUsers");
-                });
-
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemUserTheme", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("BootstrapClass")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("ElementContext")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("SystemUIElementId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SystemUserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SystemUIElementId");
-
-                    b.HasIndex("SystemUserId");
-
-                    b.ToTable("SystemUserThemes");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.ExchangeRateHistory", b =>
@@ -936,26 +909,14 @@ namespace EnterpriseReportSystem.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Structure.GlobalTheme", "GlobalTheme")
+                        .WithMany()
+                        .HasForeignKey("ThemeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Company");
-                });
 
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemUserTheme", b =>
-                {
-                    b.HasOne("EnterpriseReportSystem.Models.Entities.Structure.SystemUIElement", "SystemUIElement")
-                        .WithMany()
-                        .HasForeignKey("SystemUIElementId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("EnterpriseReportSystem.Models.Entities.Structure.SystemUser", "SystemUser")
-                        .WithMany()
-                        .HasForeignKey("SystemUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("SystemUIElement");
-
-                    b.Navigation("SystemUser");
+                    b.Navigation("GlobalTheme");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetGroup", b =>

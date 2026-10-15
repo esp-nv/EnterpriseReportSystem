@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EnterpriseReportSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class EnterpriseReporDb : Migration
+    public partial class InitialEnterpriseDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -38,6 +38,22 @@ namespace EnterpriseReportSystem.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Currencies", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GlobalThemes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ThemeName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    FileName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    FileSize = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    IsDark = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GlobalThemes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -116,20 +132,6 @@ namespace EnterpriseReportSystem.Migrations
                         principalTable: "SystemMenus",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SystemUIElements",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ElementKey = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    DisplayName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SystemUIElements", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -356,14 +358,16 @@ namespace EnterpriseReportSystem.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Username = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    LayoutType = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    LayoutType = table.Column<int>(type: "int", nullable: false),
                     IsMenuExpanded = table.Column<bool>(type: "bit", nullable: false),
                     ThemeType = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     IsGlobalAdmin = table.Column<bool>(type: "bit", nullable: false),
                     WishListMenuIds = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     CompanyId = table.Column<int>(type: "int", nullable: false),
-                    IsCustomPaletteActive = table.Column<bool>(type: "bit", nullable: false)
+                    IsCustomPaletteActive = table.Column<bool>(type: "bit", nullable: false),
+                    ThemeId = table.Column<int>(type: "int", nullable: true),
+                    IsDarkUserPreference = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -372,6 +376,12 @@ namespace EnterpriseReportSystem.Migrations
                         name: "FK_SystemUsers_CompaniesOrPersons_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "CompaniesOrPersons",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_SystemUsers_GlobalThemes_ThemeId",
+                        column: x => x.ThemeId,
+                        principalTable: "GlobalThemes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -449,35 +459,6 @@ namespace EnterpriseReportSystem.Migrations
                         name: "FK_FacilityLogs_Facilities_FacilityId",
                         column: x => x.FacilityId,
                         principalTable: "Facilities",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SystemUserThemes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SystemUserId = table.Column<int>(type: "int", nullable: false),
-                    SystemUIElementId = table.Column<int>(type: "int", nullable: false),
-                    ElementContext = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    BootstrapClass = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SystemUserThemes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_SystemUserThemes_SystemUIElements_SystemUIElementId",
-                        column: x => x.SystemUIElementId,
-                        principalTable: "SystemUIElements",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_SystemUserThemes_SystemUsers_SystemUserId",
-                        column: x => x.SystemUserId,
-                        principalTable: "SystemUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -610,25 +591,14 @@ namespace EnterpriseReportSystem.Migrations
                 column: "SystemMenuId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SystemUIElements_ElementKey",
-                table: "SystemUIElements",
-                column: "ElementKey",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_SystemUsers_CompanyId",
                 table: "SystemUsers",
                 column: "CompanyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SystemUserThemes_SystemUIElementId",
-                table: "SystemUserThemes",
-                column: "SystemUIElementId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SystemUserThemes_SystemUserId",
-                table: "SystemUserThemes",
-                column: "SystemUserId");
+                name: "IX_SystemUsers_ThemeId",
+                table: "SystemUsers",
+                column: "ThemeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TownsOrVillages_MunicipalityId",
@@ -655,7 +625,7 @@ namespace EnterpriseReportSystem.Migrations
                 name: "SystemMenuTranslations");
 
             migrationBuilder.DropTable(
-                name: "SystemUserThemes");
+                name: "SystemUsers");
 
             migrationBuilder.DropTable(
                 name: "AssetAttributes");
@@ -676,10 +646,7 @@ namespace EnterpriseReportSystem.Migrations
                 name: "SystemMenus");
 
             migrationBuilder.DropTable(
-                name: "SystemUIElements");
-
-            migrationBuilder.DropTable(
-                name: "SystemUsers");
+                name: "GlobalThemes");
 
             migrationBuilder.DropTable(
                 name: "Facilities");

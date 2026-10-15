@@ -42,7 +42,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Currencies", (string)null);
+                    b.ToTable("Currencies");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.ExchangeRateHistory", b =>
@@ -74,7 +74,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("ToCurrencyId");
 
-                    b.ToTable("ExchangeRateHistories", (string)null);
+                    b.ToTable("ExchangeRateHistories");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetGroup", b =>
@@ -102,7 +102,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("MainTypeId");
 
-                    b.ToTable("AssetGroups", (string)null);
+                    b.ToTable("AssetGroups");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetSpecification", b =>
@@ -125,7 +125,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("AssetSubGroupId");
 
-                    b.ToTable("AssetSpecifications", (string)null);
+                    b.ToTable("AssetSpecifications");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetSubGroup", b =>
@@ -158,7 +158,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("AssetGroupId");
 
-                    b.ToTable("AssetSubGroups", (string)null);
+                    b.ToTable("AssetSubGroups");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.MainType", b =>
@@ -181,7 +181,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MainTypes", (string)null);
+                    b.ToTable("MainTypes");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Ledger.AssetAttribute", b =>
@@ -205,7 +205,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AssetAttributes", (string)null);
+                    b.ToTable("AssetAttributes");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Ledger.AssetAttributeValue", b =>
@@ -233,7 +233,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("TransactionId");
 
-                    b.ToTable("AssetAttributeValues", (string)null);
+                    b.ToTable("AssetAttributeValues");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Ledger.AssetTransaction", b =>
@@ -296,7 +296,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("ToGroupId");
 
-                    b.ToTable("AssetTransactions", (string)null);
+                    b.ToTable("AssetTransactions");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Ledger.OperationType", b =>
@@ -323,7 +323,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OperationTypes", (string)null);
+                    b.ToTable("OperationTypes");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Location.Municipality", b =>
@@ -346,7 +346,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("RegionId");
 
-                    b.ToTable("Municipalities", (string)null);
+                    b.ToTable("Municipalities");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Location.Region", b =>
@@ -364,7 +364,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Regions", (string)null);
+                    b.ToTable("Regions");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Location.TownOrVillage", b =>
@@ -392,7 +392,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("MunicipalityId");
 
-                    b.ToTable("TownsOrVillages", (string)null);
+                    b.ToTable("TownsOrVillages");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.CompanyOrPerson", b =>
@@ -430,7 +430,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("RegisteredTownId");
 
-                    b.ToTable("CompaniesOrPersons", (string)null);
+                    b.ToTable("CompaniesOrPersons");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.Facility", b =>
@@ -484,7 +484,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("TownOrVillageId");
 
-                    b.ToTable("Facilities", (string)null);
+                    b.ToTable("Facilities");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.FacilityLog", b =>
@@ -520,7 +520,38 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("FacilityId");
 
-                    b.ToTable("FacilityLogs", (string)null);
+                    b.ToTable("FacilityLogs");
+                });
+
+            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.GlobalTheme", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("FileSize")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsDark")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ThemeName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GlobalThemes");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.Language", b =>
@@ -543,7 +574,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Languages", (string)null);
+                    b.ToTable("Languages");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemMenu", b =>
@@ -571,7 +602,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("ParentMenuId");
 
-                    b.ToTable("SystemMenus", (string)null);
+                    b.ToTable("SystemMenus");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemMenuTranslation", b =>
@@ -604,33 +635,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("SystemMenuId");
 
-                    b.ToTable("SystemMenuTranslations", (string)null);
-                });
-
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemUIElement", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("DisplayName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ElementKey")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ElementKey")
-                        .IsUnique();
-
-                    b.ToTable("SystemUIElements", (string)null);
+                    b.ToTable("SystemMenuTranslations");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemUser", b =>
@@ -647,21 +652,25 @@ namespace EnterpriseReportSystem.Migrations
                     b.Property<bool>("IsCustomPaletteActive")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsDarkUserPreference")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsGlobalAdmin")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsMenuExpanded")
                         .HasColumnType("bit");
 
-                    b.Property<string>("LayoutType")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                    b.Property<int>("LayoutType")
+                        .HasColumnType("int");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int?>("ThemeId")
+                        .HasColumnType("int");
 
                     b.Property<string>("ThemeType")
                         .IsRequired()
@@ -682,45 +691,9 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("SystemUsers", (string)null);
-                });
+                    b.HasIndex("ThemeId");
 
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemUserTheme", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("BootstrapClass")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("ElementContext")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("SystemUIElementId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SystemUserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SystemUIElementId");
-
-                    b.HasIndex("SystemUserId");
-
-                    b.ToTable("SystemUserThemes", (string)null);
+                    b.ToTable("SystemUsers");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.ExchangeRateHistory", b =>
@@ -933,26 +906,14 @@ namespace EnterpriseReportSystem.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("EnterpriseReportSystem.Models.Entities.Structure.GlobalTheme", "GlobalTheme")
+                        .WithMany()
+                        .HasForeignKey("ThemeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Company");
-                });
 
-            modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemUserTheme", b =>
-                {
-                    b.HasOne("EnterpriseReportSystem.Models.Entities.Structure.SystemUIElement", "SystemUIElement")
-                        .WithMany()
-                        .HasForeignKey("SystemUIElementId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("EnterpriseReportSystem.Models.Entities.Structure.SystemUser", "SystemUser")
-                        .WithMany()
-                        .HasForeignKey("SystemUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("SystemUIElement");
-
-                    b.Navigation("SystemUser");
+                    b.Navigation("GlobalTheme");
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetGroup", b =>
