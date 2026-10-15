@@ -43,10 +43,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<SystemMenuTranslation> SystemMenuTranslations { get; set; } = null!;
    
     // ДОБАВЕНО: Регистрираме новата мастър таблица за главните WordPress котви по сайта
-    public DbSet<SystemUIElement> SystemUIElements { get; set; } = null!;
 
-    // Твоят съществуващ DbSet за свойствата си остава на мястото
-    public DbSet<SystemUserTheme> SystemUserThemes { get; set; } = null!;
+    public DbSet<GlobalTheme> GlobalThemes { get; set; }
 
 
 
