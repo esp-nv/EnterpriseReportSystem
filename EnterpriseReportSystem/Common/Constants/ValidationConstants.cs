@@ -57,7 +57,6 @@ public static class ValidationConstants
       // Системни потребители, пароли и менюта (ИЗЧИСТЕНИ ОТ МАГИЧЕСКИ ЧИСЛА)
     public const int UsernameMaxLength = 50;
     public const int PasswordMaxLength = 255;
-    public const int ThemeTypeMaxLength = 30;
     public const int LayoutTypeMaxLength = 30;
 
     public const int MenuNameMaxLength = 100;

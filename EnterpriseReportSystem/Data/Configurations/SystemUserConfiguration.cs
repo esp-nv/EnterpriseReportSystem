@@ -31,10 +31,7 @@ public class SystemUserConfiguration : IEntityTypeConfiguration<SystemUser>
         builder.Property(x => x.IsMenuExpanded)
             .IsRequired();
 
-        builder.Property(x => x.ThemeType)
-            .IsRequired()
-            .HasMaxLength(ValidationConstants.ThemeTypeMaxLength);
-
+       
         builder.Property(x => x.IsDarkUserPreference)
             .IsRequired();
 

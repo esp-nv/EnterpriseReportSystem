@@ -40,13 +40,10 @@ namespace EnterpriseReportSystem.Models.Entities.Structure
         [Required]
         public bool IsMenuExpanded { get; set; } = true;
 
-        [Required]
-        [StringLength(ValidationConstants.ThemeTypeMaxLength)]
-        public string ThemeType { get; set; } = "LIGHT";
-
+        
         public bool IsGlobalAdmin { get; set; } = false;
 
-        [StringLength(200)]
+        [StringLength(ValidationConstants.WishListMenuIds)]
         public string WishListMenuIds { get; set; } = string.Empty;
 
         [Required]
