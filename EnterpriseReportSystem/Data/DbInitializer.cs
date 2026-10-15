@@ -1,106 +1,144 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization; // ДОБАВЕНО ЗА ЕНУМЕРАЦИИТЕ
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using EnterpriseReportSystem.Models.Entities.Structure;
-using EnterpriseReportSystem.Common.Enum;
 
 namespace EnterpriseReportSystem.Data;
 
 public static class DbInitializer
 {
-    public static async Task<string> SeedAsync(ApplicationDbContext context, string webRootPath)
+    public static string Seed(ApplicationDbContext context)
     {
-        try
+        // 1. Подсигуряваме физическото съществуване на празната SQL база данни
+        context.Database.EnsureCreated(); //
+
+        // Откриваме правилния път до папка InputFiles в зависимост от работната среда
+        string? baseDir = AppDomain.CurrentDomain.BaseDirectory; //
+        string rootPath = Path.Combine(baseDir ?? string.Empty, "InputFiles"); //
+
+        if (!Directory.Exists(rootPath)) //
         {
-            // 1. ДИНАМИЧНО НАЛИВАНЕ НА ЦЕНТРАЛНИЯ КАТАЛОГ ЗА CSS ТЕМИ СЪС СТРОГИ ID-ТА
-            if (!await context.GlobalThemes.AnyAsync())
-            {
-                var themesPath = Path.Combine(webRootPath, "InputFiles", "Structure", "00_GlobalThemes.json");
-                if (File.Exists(themesPath))
-                {
-                    var themesJson = await File.ReadAllTextAsync(themesPath);
-                    var themes = JsonSerializer.Deserialize<List<GlobalTheme>>(themesJson);
-                    if (themes != null)
-                    {
-                        // Отключваме брояча на SQL Server за таблица GlobalThemes
-                        await context.Database.OpenConnectionAsync();
-                        await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT GlobalThemes ON");
-
-                        await context.GlobalThemes.AddRangeAsync(themes);
-                        await context.SaveChangesAsync();
-
-                        await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT GlobalThemes OFF");
-                        context.Database.CloseConnection();
-                    }
-                }
-            }
-
-            // 2. ДИНАМИЧНО НАЛИВАНЕ НА ПОТРЕБИТЕЛИТЕ СЪС СТРОГИ ID-ТА
-            if (!await context.SystemUsers.AnyAsync())
-            {
-                var usersPath = Path.Combine(webRootPath, "InputFiles", "Structure", "2_SystemUsers.json");
-                if (File.Exists(usersPath))
-                {
-                    var usersJson = await File.ReadAllTextAsync(usersPath);
-                    using var doc = JsonDocument.Parse(usersJson);
-                    var root = doc.RootElement;
-
-                    var usersList = new List<SystemUser>();
-
-                    foreach (var userEl in root.EnumerateArray())
-                    {
-                        string jsonLayout = userEl.GetProperty("LayoutType").GetString() ?? "DASHBOARD";
-                        AppLayoutType finalLayout = jsonLayout.ToUpper() switch
-                        {
-                            "RIBBON" => AppLayoutType.Ribbon,
-                            "NAVBAR" => AppLayoutType.Navbar,
-                            _ => AppLayoutType.Dashboard
-                        };
-
-                        var newUser = new SystemUser
-                        {
-                            Id = userEl.GetProperty("Id").GetInt32(), // Връщаме оригиналното ID от JSON
-                            Username = userEl.GetProperty("Username").GetString() ?? string.Empty,
-                            Password = userEl.GetProperty("Password").GetString() ?? string.Empty,
-                            LayoutType = finalLayout,
-                            IsMenuExpanded = userEl.GetProperty("IsMenuExpanded").GetBoolean(),
-                            ThemeType = userEl.GetProperty("ThemeType").GetString() ?? "LIGHT",
-                            IsGlobalAdmin = userEl.GetProperty("IsGlobalAdmin").GetBoolean(),
-                            WishListMenuIds = userEl.GetProperty("WishListMenuIds").GetString() ?? string.Empty,
-                            CompanyId = userEl.GetProperty("CompanyId").GetInt32(),
-                            IsCustomPaletteActive = userEl.GetProperty("IsCustomPaletteActive").GetBoolean(),
-                            ThemeId = userEl.TryGetProperty("ThemeId", out var tProp) ? tUr(tProp) : 1,
-                            IsDarkUserPreference = !userEl.TryGetProperty("IsDarkUserPreference", out var dProp) || dProp.GetBoolean()
-                        };
-
-                        usersList.Add(newUser);
-                    }
-
-                    if (usersList.Any())
-                    {
-                        // Отключваме брояча на SQL Server за таблица SystemUsers
-                        await context.Database.OpenConnectionAsync();
-                        await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT SystemUsers ON");
-
-                        await context.SystemUsers.AddRangeAsync(usersList);
-                        await context.SaveChangesAsync();
-
-                        await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT SystemUsers OFF");
-                        context.Database.CloseConnection();
-                    }
-                }
-            }
-
-            return "SUCCESS";
+            rootPath = Path.Combine(Directory.GetCurrentDirectory(), "InputFiles"); //
         }
-        catch (Exception ex)
+
+        if (!Directory.Exists(rootPath)) //
         {
-            if (context.Database.GetDbConnection().State == System.Data.ConnectionState.Open)
+            return "⚠️ [Грешка]: Основната папка InputFiles липсва в директорията на уеб сървъра."; //
+        }
+
+        // Подготвяме JSON опции, които автоматично конвертират текст към Enum флагове
+        var jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+        jsonOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+
+        // =========================================================================
+        // 2. ЖЕЛЯЗЕН СЧЕТОВОДЕН И РЕЛАЦИОНЕН РЕД НА ЗАРЕЖДАНЕ НА ДОМЕЙН ПАПКИТЕ
+        // =========================================================================
+        string[] domainFolders = new string[] { "Ledger", "Location", "Hierarchy", "Structure" }; //
+
+        try //
+        {
+            foreach (var folder in domainFolders) //
             {
-                context.Database.CloseConnection();
+                string folderPath = Path.Combine(rootPath, folder); //
+                if (!Directory.Exists(folderPath)) continue; //
+
+                // Четем всички JSON компоненти в папката, сортирани по азбучен ред спрямо техния префикс (1_, 2_)
+                var jsonFiles = Directory.GetFiles(folderPath, "*.json").OrderBy(f => f).ToList(); //
+
+                foreach (var file in jsonFiles) //
+                {
+                    string fileName = Path.GetFileNameWithoutExtension(file); //
+
+                    int underscoreIndex = fileName.IndexOf('_'); //
+                    if (underscoreIndex == -1) continue; //
+
+                    // Извличаме точното име на SQL таблицата (напр. "Regions", "SystemMenus")
+                    string tableName = fileName.Substring(underscoreIndex + 1); //
+
+                    // Чрез C# Reflection намираме съответния DbSet вътре в контекста на базата
+                    PropertyInfo? dbSetProperty = context.GetType().GetProperties() //
+                        .FirstOrDefault(p => p.Name == tableName && p.PropertyType.IsGenericType && //
+                                             (p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>) || //
+                                              p.PropertyType.GetGenericTypeDefinition() == typeof(IQueryable<>))); //
+
+                    if (dbSetProperty == null) continue; //
+
+                    // Извличаме типа на самата Entity класа безопасно
+                    var genericArgs = dbSetProperty.PropertyType.GetGenericArguments(); //
+                    if (genericArgs == null || genericArgs.Length == 0) continue; //
+                    Type entityType = genericArgs[0]; //
+
+                    // Проверяваме динамично дали в тази SQL таблица вече има записани данни
+                    IQueryable? queryableTable = dbSetProperty.GetValue(context) as IQueryable; //
+                    if (queryableTable == null) continue; //
+
+                    bool hasData = false; //
+                    foreach (var _ in queryableTable) { hasData = true; break; } //
+
+                    // Ако в таблицата в SQL вече има данни, я прескачаме, за да не дублираме мастър редовете
+                    if (hasData) continue; //
+
+                    // Разчитаме съдържанието на съответния JSON файл
+                    string jsonText = File.ReadAllText(file); //
+
+                    // Динамично конструираме десериализиращия списъчен тип List<EntityType>
+                    Type listType = typeof(List<>).MakeGenericType(entityType); //
+
+                    // Обвързваме с нашия прецизен JSON конвертор за низове и Енумерации
+                    object? deserializedList = JsonSerializer.Deserialize(jsonText, listType, jsonOptions);
+
+                    if (deserializedList == null) continue; //
+
+                    object? dbSetInstance = dbSetProperty.GetValue(context); //
+                    if (dbSetInstance == null) continue; //
+
+                    // Откриваме AddRange метода на DbSet обекта
+                    MethodInfo? addRangeMethod = dbSetInstance.GetType().GetMethod("AddRange", new Type[] { typeof(IEnumerable<>).MakeGenericType(entityType) }) //
+                                              ?? dbSetInstance.GetType().GetMethod("AddRange", new Type[] { typeof(object) }); //
+
+                    if (addRangeMethod == null) continue; //
+
+                    // АВТОМАТИЧНА СИСТЕМНА ЗАЩИТА
+                    bool requiresIdentityInsert = true; //
+
+                    if (requiresIdentityInsert) //
+                    {
+                        context.Database.OpenConnection(); //
+
+                        // Изключваме предупреждението за SQL инжекция само за този системен ред
+#pragma warning disable EF1002
+                        context.Database.ExecuteSqlRaw($"SET IDENTITY_INSERT {tableName} ON"); //
+#pragma warning restore EF1002
+                    }
+
+                    // Подаваме правилно конструиран обектен масив към Invoke метода на Рефлекшъна
+                    addRangeMethod.Invoke(dbSetInstance, new object[] { deserializedList }); //
+                    context.SaveChanges(); //
+
+                    if (requiresIdentityInsert) //
+                    {
+#pragma warning disable EF1002
+                        context.Database.ExecuteSqlRaw($"SET IDENTITY_INSERT {tableName} OFF"); //
+#pragma warning restore EF1002
+
+                        context.Database.CloseConnection(); //
+                    }
+
+                }
             }
-            return $"⚠️ [Критична грешка при Рефлекшън наливане]: Детайли: {ex.InnerException?.Message ?? ex.Message}";
+
+            return "SUCCESS"; // Всички папки са налети автоматично без нито един ред твърд код!
+        }
+        catch (Exception ex) //
+        {
+            return $"⚠️ [Критична грешка при Рефлекшън наливане]: Детайли: {ex.InnerException?.Message ?? ex.Message}"; //
         }
     }
-
-    private static int? tUr(JsonElement prop) => prop.ValueKind == JsonValueKind.Null ? null : prop.GetInt32();
 }

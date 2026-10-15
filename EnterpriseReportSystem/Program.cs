@@ -29,18 +29,17 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// АВТОМАТИЧНО НАПЪЛВАНЕ НА БАЗАТА ДАННИ ПРИ СТАРТИРАНЕ (УЕБ ВАРИАНТ)
-// АВТОМАТИЧНО НАЛИВАНЕ НА БАЗАТА ДАННИ ПРИ СТАРТИРАНЕ (УЕБ ВАРИАНТ)
+// АВТОМАТИЧНО НАПЪЛВАНЕ НА БАЗАТА ДАННИ ПРИ СТАРТИРАНЕ (УЕБ страница)
+// ГЛОБАЛНО СИНХРОННО НАЛИВАНЕ ЧРЕЗ ТВОЯ СТАБИЛЕН РЕФЛЕКШЪН ЕНДЖИН
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
-        var env = services.GetRequiredService<IWebHostEnvironment>();
 
-        // Извикваме новия асинхронен метод с правилните параметри
-        string seedResult = DbInitializer.SeedAsync(context, env.WebRootPath).GetAwaiter().GetResult();
+        // Извикваме твоя оригинален метод директно на чисто!
+        string seedResult = DbInitializer.Seed(context);
 
         if (seedResult != "SUCCESS")
         {
@@ -51,9 +50,10 @@ using (var scope = app.Services.CreateScope())
     catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Х фатална грешка при първоначално стартиране на базата данни.");
+        logger.LogError(ex, "Критична грешка при първоначално стартиране на базата данни.");
     }
 }
+
 
 app.UseRouting();
 
