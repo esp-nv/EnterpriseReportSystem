@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using EnterpriseReportSystem.Common.Constants;
 
 namespace EnterpriseReportSystem.Models.Entities.Structure
 {
@@ -10,14 +11,14 @@ namespace EnterpriseReportSystem.Models.Entities.Structure
         public int Id { get; set; }
 
         [Required]
-        [StringLength(100)]
+        [StringLength(ValidationConstants.ThemeNameMaxLength)]
         public string ThemeName { get; set; } = string.Empty; // Приятелско име: "Корпоративно синьо"
 
         [Required]
-        [StringLength(150)]
+        [StringLength(ValidationConstants.FileNameMaxLength)]
         public string FileName { get; set; } = string.Empty; // Име на файла: "corporate_blue.css"
 
-        [StringLength(50)]
+        [StringLength(ValidationConstants.FileSizeMaxLength)]
         public string FileSize { get; set; } = "0 KB"; // Мета-данни за размер
 
         [Required]

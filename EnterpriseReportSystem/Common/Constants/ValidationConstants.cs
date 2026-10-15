@@ -1,4 +1,6 @@
-﻿namespace EnterpriseReportSystem.Common.Constants;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace EnterpriseReportSystem.Common.Constants;
 
 public static class ValidationConstants
 {
@@ -52,28 +54,27 @@ public static class ValidationConstants
     public const int AttributeNameMaxLength = 60;   // напр. "Пол", "Номер на двигател"
     public const int AttributeValueMaxLength = 250;  // напр. "Женско", "ДВГ-987654"
 
-    // Системни потребители и менюта
+      // Системни потребители, пароли и менюта (ИЗЧИСТЕНИ ОТ МАГИЧЕСКИ ЧИСЛА)
     public const int UsernameMaxLength = 50;
+    public const int PasswordMaxLength = 255;
+    public const int ThemeTypeMaxLength = 30;
+    public const int LayoutTypeMaxLength = 30;
+
     public const int MenuNameMaxLength = 100;
-
     public const int LanguageCodeMaxLength = 10;
-
-    // Навигационни и интерфейсни константи (Премахване на магически числа)
     public const int MenuCssClassMaxLength = 150;
     public const int MenuShortcutMaxLength = 30;
 
-    // Валутна децимална точност (Премахване на магически числа)
-    public const int ExchangeRatePrecision = 18; // Общ брой цифри в базата
-    public const int ExchangeRateScale = 5;      // Брой цифри след десетичната запетая
+   public const int WishListMenuIds=200;  // Максимална дължина на списъка с избрани менюта (като низ от ID-та, разделени със запетаи)
 
-    // ПОТРЕБИТЕЛСКИ ИНТЕРФЕЙСНИ ТЕМИ (СЧЕТОВОДНИ КОНСТАНТИ)
-    public const int ThemeElementContextMaxLength = 50;  // За "navbar", "sidebar" и т.н.
-    public const int ThemeBootstrapClassMaxLength = 100; // За "text-bg-dark", "bg-primary"
+    // Валутна децимална точност
+    public const int ExchangeRatePrecision = 18;
+    public const int ExchangeRateScale = 5;
 
+   public const int ThemeNameMaxLength = 100;// Приятелско име: "Корпоративно синьо"
 
-    // ПОТРЕБИТЕЛСКИ ИНТЕРФЕЙСНИ ТЕМИ В СТИЛ WORDPRESS
-    public const int UIElementKeyMaxLength = 50;       // За "HEADER_ZONE", "TABLE_ZONE"
-    public const int UIElementNameMaxLength = 100;     // За "Главно хоризонтално меню"
-    public const int UIElementDescMaxLength = 200;     // За "Фон на горната Ribbon лента"
+    public const int FileNameMaxLength = 150; // Име на файла: "corporate_blue.css"
+
+    public const int FileSizeMaxLength = 50; // Максимална дължина на размера на файла (напр. "0 KB")
 
 }

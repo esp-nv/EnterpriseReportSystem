@@ -3,7 +3,7 @@
     "Id": 1,
     "Username": "admin_holding",
     "Password": "admin123",
-    "LayoutType": "RIBBON",
+    "LayoutType": 2,
     "IsMenuExpanded": true,
     "ThemeType": "dark",
     "IsGlobalAdmin": true,

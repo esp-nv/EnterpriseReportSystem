@@ -1,8 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using EnterpriseReportSystem.Common.Constants;
+using EnterpriseReportSystem.Common.Enum;
 
 namespace EnterpriseReportSystem.Models.Entities.Structure
 {
+    /// <summary>
+    /// ОФИЦИАЛНА ХОЛДИНГОВА МАТРИЦА ЗА ТИПОВЕТЕ ОФОРМЛЕНИЕ НА НАВИГАЦИЯТА
+    /// Елиминира напълно магическите числа и записва леки флагове (1, 2, 3) в SQL Server.
+    /// </summary>
+   
+
     [Table("SystemUsers")]
     public class SystemUser
     {
@@ -10,25 +18,22 @@ namespace EnterpriseReportSystem.Models.Entities.Structure
         public int Id { get; set; }
 
         [Required]
-        [StringLength(100)]
+        [StringLength(ValidationConstants.UsernameMaxLength)]
         public string Username { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(255)]
+        [StringLength(ValidationConstants.PasswordMaxLength)]
         public string Password { get; set; } = string.Empty;
 
         /// <summary>
-        /// ОПТИМИЗИРАН ТИП НА ОФОРМЛЕНИЕТО (ПАЗИ ЧИСЛО В БАЗАТА):
-        /// 1 = DASHBOARD (Страничен вертикален контролен панел)
-        /// 2 = RIBBON (Хоризонтална широка лента тип MS Excel / Word)
-        /// 3 = NAVBAR (Хоризонтална лента най-отгоре с два варианта на визуализация)
+        /// Системен тип на оформлението, защитен чрез системния enum AppLayoutType
         /// </summary>
         [Required]
-        public int LayoutType { get; set; } = 1; // По подразбиране е 1 (DASHBOARD)
+        public AppLayoutType LayoutType { get; set; } = AppLayoutType.Dashboard;
 
         /// <summary>
         /// КОНТРОЛ НА ВАРИАНТИТЕ ЗА ИЗБРАНОТО ОФОРМЛЕНИЕ:
-        /// За LayoutType = 3 (NAVBAR):
+        /// За LayoutType = Navbar (3):
         /// - false = Вариант 1 (Тънка хоризонтална лента с класически падащи списъци)
         /// - true  = Вариант 2 (Масивно Мега Меню с разгърната решетка на колони)
         /// </summary>
@@ -36,11 +41,12 @@ namespace EnterpriseReportSystem.Models.Entities.Structure
         public bool IsMenuExpanded { get; set; } = true;
 
         [Required]
-        [StringLength(50)]
-        public string ThemeType { get; set; } = "LIGHT"; // LIGHT, DARK, CUSTOM
+        [StringLength(ValidationConstants.ThemeTypeMaxLength)]
+        public string ThemeType { get; set; } = "LIGHT";
 
         public bool IsGlobalAdmin { get; set; } = false;
 
+        [StringLength(200)]
         public string WishListMenuIds { get; set; } = string.Empty;
 
         [Required]
@@ -50,17 +56,15 @@ namespace EnterpriseReportSystem.Models.Entities.Structure
         public virtual CompanyOrPerson Company { get; set; } = null!;
 
         [Required]
-        public bool IsCustomPaletteActive { get; set; } = false; // false -> Bootstrap; true -> Външни CSS файлове
+        public bool IsCustomPaletteActive { get; set; } = false;
 
-        // =========================================================================
-        // СВЪРЗВАНЕ С НОВАТА СИСТЕМА ЗА ЦЕНТРАЛНИ CSS ТЕМИ
-        // =========================================================================
-        public int? ThemeId { get; set; } // Външен ключ към таблица GlobalThemes
+       
+        public int? ThemeId { get; set; }
 
         [ForeignKey("ThemeId")]
         public virtual GlobalTheme? GlobalTheme { get; set; }
 
         [Required]
-        public bool IsDarkUserPreference { get; set; } = true; // bit: true = Тъмна, false = Светла
+        public bool IsDarkUserPreference { get; set; } = true;
     }
 }
