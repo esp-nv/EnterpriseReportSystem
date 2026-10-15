@@ -30,4 +30,4 @@ namespace EnterpriseReportSystem.Models.Entities.Structure
     }
 
 }
-}
+

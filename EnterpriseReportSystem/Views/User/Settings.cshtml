@@ -6,8 +6,8 @@
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Application Settings";
-  //  var userStyles = ViewBag.UserStyles as List<EnterpriseReportSystem.Models.Entities.Structure.SystemUserTheme> ?? new();
-   // var uiElements = ViewBag.UIElements as List<EnterpriseReportSystem.Models.Entities.Structure.SystemUIElement> ?? new();
+    //  var userStyles = ViewBag.UserStyles as List<EnterpriseReportSystem.Models.Entities.Structure.SystemUserTheme> ?? new();
+    // var uiElements = ViewBag.UIElements as List<EnterpriseReportSystem.Models.Entities.Structure.SystemUIElement> ?? new();
 }
 
 <form asp-action="SaveSettings" asp-controller="User" method="post" class="needs-validation m-0 p-0" novalidate>
@@ -111,13 +111,6 @@
                                     </select>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold text-secondary mb-1">Режим на уеб темата</label>
-                                    <select name="ThemeType" id="themeSelector" class="form-select form-select-sm text-white font-monospace" style="background-color: #333333 !important; border-color: #555555 !important;">
-                                        <option value="dark" selected="@(Model.ThemeType == "dark" ? "selected" : null)">Класическа Тъмна Офис Тема (Dark Web)</option>
-                                        <option value="light" selected="@(Model.ThemeType == "light" ? "selected" : null)">Класическа Светла Офис Тема (Light Web)</option>
-                                    </select>
-                                </div>
                             </div>
                         </div>
 
@@ -145,30 +138,7 @@
                                             <i class="bi bi-file-earmark-code me-1 text-success"></i> Персонализирана тема (Външен файл)
                                         </label>
                                     </div>
-                                </div>
-
-                                <!-- ДИНАМИЧЕН COMBOBOX С ТЕМИ -->
-                                <div class="col-md-6 ps-md-4">
-                                    <label class="form-label fw-bold text-secondary mb-1" id="labelThemeDropdown">Избор на десктоп тема</label>
-                                    <select name="ThemeId" id="themeIdDropdown" class="form-select form-select-sm text-white font-monospace" style="background-color: #333333 !important; border-color: #555555 !important;">
-                                        <option value="">-- Изберете файл от списъка --</option>
-                                        @if (ViewBag.GlobalThemes != null)
-                                        {
-                                            foreach (var theme in (List<GlobalTheme>)ViewBag.GlobalThemes)
-                                            {
-                                                string square = theme.IsDark ? "⬛" : "⬜";
-                                                if (Model.ThemeId == theme.Id)
-                                                {
-                                                    <option value="@theme.Id" data-file="@theme.FileName" selected="selected">✓ @square @theme.ThemeName (@theme.FileSize)</option>
-                                                }
-                                                else
-                                                {
-                                                    <option value="@theme.Id" data-file="@theme.FileName">@square @theme.ThemeName (@theme.FileSize)</option>
-                                                }
-                                            }
-                                        }
-                                    </select>
-                                </div>
+                                </div>                               
                             </div>
                         </div>
 
@@ -199,7 +169,7 @@
 
                     </div>
 
-                   
+
                 </div>
             </div>
 

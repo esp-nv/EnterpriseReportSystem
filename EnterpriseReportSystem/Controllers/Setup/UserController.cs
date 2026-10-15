@@ -68,8 +68,6 @@ public class UserController : Controller
             dbUser.ThemeId = model.ThemeId;
         }
 
-        // Автоматично превключваме ThemeType текстовото поле спрямо контрастния избор
-        dbUser.ThemeType = isDarkUserPreference ? "dark" : "light";
 
         // Записваме трансакцията на чисто в SQL Server
         await _context.SaveChangesAsync();
