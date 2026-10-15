@@ -11,7 +11,7 @@ public static class DbInitializer
     {
         try
         {
-            // 1. ДИНАМИЧНО НАЛИВАНЕ НА ЦЕНТРАЛНИЯ КАТАЛОГ ЗА CSS ТЕМИ ОТ JSON ФАЙЛА
+            // 1. ДИНАМИЧНО НАЛИВАНЕ НА ЦЕНТРАЛНИЯ КАТАЛОГ ЗА CSS ТЕМИ СЪС СТРОГИ ID-ТА
             if (!await context.GlobalThemes.AnyAsync())
             {
                 var themesPath = Path.Combine(webRootPath, "InputFiles", "Structure", "00_GlobalThemes.json");
@@ -21,13 +21,20 @@ public static class DbInitializer
                     var themes = JsonSerializer.Deserialize<List<GlobalTheme>>(themesJson);
                     if (themes != null)
                     {
+                        // Отключваме брояча на SQL Server за таблица GlobalThemes
+                        await context.Database.OpenConnectionAsync();
+                        await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT GlobalThemes ON");
+
                         await context.GlobalThemes.AddRangeAsync(themes);
                         await context.SaveChangesAsync();
+
+                        await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT GlobalThemes OFF");
+                        context.Database.CloseConnection();
                     }
                 }
             }
 
-            // 2. ДИНАМИЧНО НАЛИВАНЕ НА ПОТРЕБИТЕЛИТЕ (С МАПВАНЕ НА LAYOUT ENUM)
+            // 2. ДИНАМИЧНО НАЛИВАНЕ НА ПОТРЕБИТЕЛИТЕ СЪС СТРОГИ ID-ТА
             if (!await context.SystemUsers.AnyAsync())
             {
                 var usersPath = Path.Combine(webRootPath, "InputFiles", "Structure", "2_SystemUsers.json");
@@ -37,9 +44,10 @@ public static class DbInitializer
                     using var doc = JsonDocument.Parse(usersJson);
                     var root = doc.RootElement;
 
+                    var usersList = new List<SystemUser>();
+
                     foreach (var userEl in root.EnumerateArray())
                     {
-                        // Преобразуваме текстовия низ от JSON файла директно към нашия нов сигурен Enum
                         string jsonLayout = userEl.GetProperty("LayoutType").GetString() ?? "DASHBOARD";
                         AppLayoutType finalLayout = jsonLayout.ToUpper() switch
                         {
@@ -50,33 +58,46 @@ public static class DbInitializer
 
                         var newUser = new SystemUser
                         {
-                            Id = userEl.GetProperty("Id").GetInt32(),
+                            Id = userEl.GetProperty("Id").GetInt32(), // Връщаме оригиналното ID от JSON
                             Username = userEl.GetProperty("Username").GetString() ?? string.Empty,
                             Password = userEl.GetProperty("Password").GetString() ?? string.Empty,
-                            LayoutType = finalLayout, // Записва се като чист int в SQL Server
+                            LayoutType = finalLayout,
                             IsMenuExpanded = userEl.GetProperty("IsMenuExpanded").GetBoolean(),
                             ThemeType = userEl.GetProperty("ThemeType").GetString() ?? "LIGHT",
                             IsGlobalAdmin = userEl.GetProperty("IsGlobalAdmin").GetBoolean(),
                             WishListMenuIds = userEl.GetProperty("WishListMenuIds").GetString() ?? string.Empty,
                             CompanyId = userEl.GetProperty("CompanyId").GetInt32(),
                             IsCustomPaletteActive = userEl.GetProperty("IsCustomPaletteActive").GetBoolean(),
-
-                            // Четем новите свойства от потребителския JSON файл
-                            ThemeId = userEl.TryGetProperty("ThemeId", out var tProp) ? tUr(tProp) : 1, // Фиксиран бекъп към Id 1
+                            ThemeId = userEl.TryGetProperty("ThemeId", out var tProp) ? tUr(tProp) : 1,
                             IsDarkUserPreference = !userEl.TryGetProperty("IsDarkUserPreference", out var dProp) || dProp.GetBoolean()
                         };
 
-                        await context.SystemUsers.AddAsync(newUser);
+                        usersList.Add(newUser);
                     }
 
-                    await context.SaveChangesAsync();
+                    if (usersList.Any())
+                    {
+                        // Отключваме брояча на SQL Server за таблица SystemUsers
+                        await context.Database.OpenConnectionAsync();
+                        await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT SystemUsers ON");
+
+                        await context.SystemUsers.AddRangeAsync(usersList);
+                        await context.SaveChangesAsync();
+
+                        await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT SystemUsers OFF");
+                        context.Database.CloseConnection();
+                    }
                 }
             }
 
-            return "SUCCESS"; // Всички папки са налети автоматично без нито един ред твърд код!
+            return "SUCCESS";
         }
         catch (Exception ex)
         {
+            if (context.Database.GetDbConnection().State == System.Data.ConnectionState.Open)
+            {
+                context.Database.CloseConnection();
+            }
             return $"⚠️ [Критична грешка при Рефлекшън наливане]: Детайли: {ex.InnerException?.Message ?? ex.Message}";
         }
     }
