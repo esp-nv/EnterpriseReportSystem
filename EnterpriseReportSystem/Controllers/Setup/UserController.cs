@@ -17,15 +17,12 @@ public class UserController : Controller
     [HttpGet]
     public async Task<IActionResult> Settings()
     {
-        // 1. Взимаме първия потребител за тест или текущо логнатия
-        var user = await _context.SystemUsers
-            .Include(u => u.GlobalTheme)
-            .FirstOrDefaultAsync();
-
+        // Взимаме потребителя чисто, без връзки към несъществуващи обекти
+        var user = await _context.SystemUsers.FirstOrDefaultAsync();
         if (user == null) return NotFound();
 
-        // 2. Наливаме списъка с всички достъпни теми в уеб каталога
-        ViewBag.GlobalThemes = await _context.GlobalThemes.ToListAsync();
+        // Подаваме празен списък, за да зареди изгледа безопасно преди миграцията
+        ViewBag.GlobalThemes = new List<GlobalTheme>();
 
         return View(user);
     }
@@ -37,7 +34,6 @@ public class UserController : Controller
         var dbUser = await _context.SystemUsers.FirstOrDefaultAsync(u => u.Id == model.Id);
         if (dbUser == null) return NotFound();
 
-        // Обновяваме само трите чисти параметъра по новия ни план
         dbUser.LayoutType = model.LayoutType;
         dbUser.IsMenuExpanded = model.IsMenuExpanded;
         dbUser.ThemeId = model.ThemeId;
