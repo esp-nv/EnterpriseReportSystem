@@ -41,16 +41,15 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Language> Languages { get; set; } = null!;
     public DbSet<SystemMenuTranslation> SystemMenuTranslations { get; set; } = null!;
-   
-    // ДОБАВЕНО: Регистрираме новата мастър таблица за главните WordPress котви по сайта
-
-    public DbSet<GlobalTheme> GlobalThemes { get; set; }
 
 
+    // НОВО: Регистрираме централния конфигурационен каталог за външните CSS теми от bootstrap.build
+    public DbSet<GlobalTheme> GlobalThemes { get; set; } = null!;
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
         base.OnModelCreating(modelBuilder);
 
         // ЖЕЛЯЗНО ПРАВИЛО: Автоматично сканиране и зареждане на всички конфигурационни класове от папката
@@ -67,5 +66,7 @@ public class ApplicationDbContext : DbContext
 
         // ТВОЯТА НОВА СЧЕТОВОДНА ЗАЩИТА: Автоматично скриване на детайлите, ако главната трансакция е Soft Deleted
         modelBuilder.Entity<AssetAttributeValue>().HasQueryFilter(av => !av.Transaction.IsDeleted);
+
+
     }
 }

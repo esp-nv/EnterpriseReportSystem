@@ -1,27 +1,34 @@
 ﻿@inject EnterpriseReportSystem.Data.ApplicationDbContext _context
 @using Microsoft.EntityFrameworkCore
+@using EnterpriseReportSystem.Models.Entities.Structure
 
 @{
-    // 1. Извличаме глобалните настройки на текущия потребител безопасно
-    var currentUser = _context.SystemUsers.AsNoTracking().FirstOrDefault(u => u.Id == 1);
-
-    // 2. ИЗВЛИЧАМЕ ВСИЧКИ НЕГОВИ СВОЙСТВА ЗАЕДНО С МАСТЪР КОТВИТЕ
-    var userStyles = _context.SystemUserThemes
-        .Include(t => t.SystemUIElement)
+    // 1. Извличаме глобалните настройки на текущия потребител безопасно заедно с темата му
+    var currentUser = _context.SystemUsers
+        .Include(u => u.GlobalTheme)
         .AsNoTracking()
-        .Where(t => t.SystemUserId == 1)
-        .ToList();
+        .FirstOrDefault(u => u.Id == 1);
 
-    // 3. ОПРЕДЕЛЯМЕ АКТИВНАТА ТЕМА И МАКЕТ
-    string activeTheme = currentUser != null ? currentUser.ThemeType.Trim().ToLower() : "dark";
-    ViewData["GlobalTheme"] = activeTheme;
-    ViewData["GlobalLayout"] = currentUser != null ? currentUser.LayoutType.Trim().ToUpper() : "RIBBON";
-    ViewData["IsCustomPaletteActive"] = currentUser != null ? currentUser.IsCustomPaletteActive : false;
+    // 2. ОПРЕДЕЛЯМЕ АКТИВНАТА ТЕМА И ОФОРМЛЕНИЕТО ЧРЕЗ ENUM ФЛАГОВЕТЕ
+    bool isDark = currentUser != null ? currentUser.IsDarkUserPreference : true;
 
-    // 4. ИНТЕЛИГЕНТНА КОНТРАСТНА ЗАЩИТА НА КЛАСОВЕТЕ СПРЯМО СВЕТЪЛ/ТЪМЕН РЕЖИМ
-    if (activeTheme == "light")
+    // Преобразуваме числото от базата към текстова директива за шаблона
+    string layoutStyle = "DASHBOARD";
+    if (currentUser != null)
     {
-        // Ако потребителят е на СВЕТЛА ТЕМА, форсираме фабричните светли класове за реалния сайт
+       // if (currentUser.LayoutType == AppLayoutType.Ribbon) layoutStyle = "RIBBON";
+      //  else if (currentUser.LayoutType == AppLayoutType.Navbar) layoutStyle = "NAVBAR";
+    }
+
+    ViewData["GlobalTheme"] = isDark ? "dark" : "light";
+    ViewData["GlobalLayout"] = layoutStyle;
+    ViewData["IsCustomPaletteActive"] = currentUser != null ? currentUser.IsCustomPaletteActive : false;
+    ViewData["CustomThemeFileName"] = currentUser?.GlobalTheme?.FileName ?? string.Empty;
+
+    // 3. ИНТЕЛЕГЕНТНА КОНТРАСТНА ЗАЩИТА НА КЛАСОВЕТЕ СПРЯМО СВЕТЪЛ/ТЪМЕН РЕЖИМ
+    if (!isDark)
+    {
+        // Ако потребителят е маркиран за СВЕТЪЛ режим (false)
         ViewData["NavbarClass"] = "navbar-light bg-light border-bottom";
         ViewData["SidebarClass"] = "bg-light border-end";
         ViewData["AccountingTableClass"] = "table-light table-striped";
@@ -32,17 +39,15 @@
     }
     else
     {
-        // Ако е на ТЪМНА ТЕМА, прочитаме атомарните редове от твоя JSON / База данни
-        ViewData["NavbarClass"] = string.Join(" ", userStyles.Where(s => s.SystemUIElement?.ElementKey == "HEADER_ZONE").Select(s => s.BootstrapClass));
-        ViewData["SidebarClass"] = string.Join(" ", userStyles.Where(s => s.SystemUIElement?.ElementKey == "SIDEBAR_ZONE").Select(s => s.BootstrapClass));
-        ViewData["AccountingTableClass"] = string.Join(" ", userStyles.Where(s => s.SystemUIElement?.ElementKey == "TABLE_ZONE").Select(s => s.BootstrapClass));
-        ViewData["CardStyleClass"] = string.Join(" ", userStyles.Where(s => s.SystemUIElement?.ElementKey == "CARD_ZONE").Select(s => s.BootstrapClass));
-        ViewData["FooterLayoutClass"] = string.Join(" ", userStyles.Where(s => s.SystemUIElement?.ElementKey == "FOOTER_ZONE").Select(s => s.BootstrapClass));
-
+        // Ако е в ТЪМЕН режим (true) - Ако има качен външен CSS, той ще пренапише тези базови класове
+        ViewData["NavbarClass"] = "navbar-dark bg-dark border-bottom border-secondary";
+        ViewData["SidebarClass"] = "bg-dark border-end border-secondary";
+        ViewData["AccountingTableClass"] = "table-dark table-striped";
+        ViewData["CardStyleClass"] = "bg-secondary shadow";
+        ViewData["FooterLayoutClass"] = "d-flex justify-content-between align-items-center text-white bg-dark border-top border-secondary";
         ViewData["TextClass"] = "text-white";
         ViewData["ActiveMenuClass"] = "text-warning fw-bold";
     }
 
-    // Насочваме проекта към главния майсторски шаблон
     Layout = "_Layout";
 }

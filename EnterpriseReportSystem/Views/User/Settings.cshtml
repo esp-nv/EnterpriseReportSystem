@@ -3,8 +3,8 @@
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Application Settings";
-    var userStyles = ViewBag.UserStyles as List<EnterpriseReportSystem.Models.Entities.Structure.SystemUserTheme> ?? new();
-    var uiElements = ViewBag.UIElements as List<EnterpriseReportSystem.Models.Entities.Structure.SystemUIElement> ?? new();
+  //  var userStyles = ViewBag.UserStyles as List<EnterpriseReportSystem.Models.Entities.Structure.SystemUserTheme> ?? new();
+   // var uiElements = ViewBag.UIElements as List<EnterpriseReportSystem.Models.Entities.Structure.SystemUIElement> ?? new();
 }
 
 <form asp-action="SaveSettings" asp-controller="User" method="post" class="needs-validation m-0 p-0" novalidate>
@@ -102,8 +102,9 @@
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold text-secondary mb-1">Вид на главното меню</label>
                                     <select name="LayoutType" id="layoutSelector" class="form-select form-select-sm text-white font-monospace" style="background-color: #333333 !important; border-color: #555555 !important;">
-                                        <option value="RIBBON" selected="@(Model.LayoutType == "RIBBON" ? "selected" : null)">Хоризонтална лента тип RIBBON UI</option>
-                                        <option value="DASHBOARD" selected="@(Model.LayoutType == "DASHBOARD" ? "selected" : null)">Вертикален страничен контролен панел</option>
+                                        <option value="NAVBAR" selected="1== " NAVBAR" ? "selected" : null)">Вертикален страничен контролен панел</option>
+                                        <option value="DASHBOARD" selected="2== "DASHBOARD" ? "selected" : null)">Вертикален страничен контролен панел</option>
+                                        <option value="RIBBON" selected="3== "RIBBON" ? "selected" : null)">Хоризонтална лента тип RIBBON UI</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
@@ -115,168 +116,7 @@
                                 </div>
                             </div>
                         </div>
-                                               <!-- 2. СГЪВАЕМ МАКЕТ: ВСЕКИ ACCORDION ITEM СЪДЪРЖА ФИЛТРИРАНИТЕ СИ СВОЙСТВА -->
-                        <div class="accordion accordion-flush mb-4 font-monospace shadow-sm" id="accordionFlushUiElements" style="border: 1px solid #3c3c3c; border-radius: 4px;">
-                            
-                            @foreach (var element in uiElements)
-                            {
-                                // Извличаме само свойствата от базата, които принадлежат на текущата интерфейсна зона
-                                var filteredStyles = userStyles.Where(s => s.SystemUIElementId == element.Id && s.SystemUserId == Model.Id).ToList();
-
-                                <div class="accordion-item bg-transparent" style="border-bottom: 1px solid #3c3c3c !important;">
-                                    
-                                    <h2 class="accordion-header" id="flush-heading-@element.Id">
-                                        <button class="accordion-button collapsed text-white font-monospace small py-2.5 px-3 border-0" 
-                                                type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-@element.Id" aria-expanded="false" aria-controls="flush-collapse-@element.Id"
-                                                style="background-color: #252526 !important; box-shadow: none;">
-                                            Accordion Item #@element.Id — @element.DisplayName
-                                        </button>
-                                    </h2>
-
-                                    <div id="flush-collapse-@element.Id" class="accordion-collapse collapse" aria-labelledby="flush-heading-@element.Id" data-bs-parent="#accordionFlushUiElements">
-                                        <div class="accordion-body p-3 font-monospace" style="background-color: #1e1e1e;">
-                                            
-                                            <div class="mb-3 text-muted" style="font-size: 0.75rem;">
-                                                <i class="bi bi-info-circle me-1 text-info"></i> Системен ключ: <span class="text-warning">@element.ElementKey</span>
-                                            </div>
-
-                                            @if (filteredStyles.Any())
-                                            {
-                                                <!-- ТАБЛИЦА СЪС СВОЙСТВАТА, ФИЛТРИРАНА ЕДИНСТВЕНО ЗА ТАЗИ ЗОНА -->
-                                                <div class="table-responsive rounded-1 border border-secondary" style="border-color: #2d2d2d !important;">
-                                                    <table class="table table-sm table-dark table-striped mb-0 align-middle" style="background-color: #252526; font-size: 0.8rem;">
-                                                        <thead style="background-color: #2d2d2d; color: #858585; font-size: 0.75rem;">
-                                                            <tr>
-                                                                <th class="px-3 py-2 border-0" style="width: 50%;">Описание на свойството</th>
-                                                                <th class="py-2 text-end px-3 border-0" style="width: 50%;">Избор на Bootstrap токен / Клас</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @foreach (var themeStyle in filteredStyles)
-                                                            {
-                                                                <tr style="border-color: #2d2d2d !important;">
-                                                                    <td class="px-3 text-white">
-                                                                        <i class="bi bi-terminal-fill text-info me-2" style="font-size: 0.75rem;"></i>@themeStyle.Description
-                                                                    </td>
-                                                                    <td class="text-end px-3">
-                                                                        <select name="BootstrapClasses[@themeStyle.Id]" class="form-select form-select-sm text-white font-monospace d-inline-block" style="background-color: #333333 !important; border-color: #555555 !important; font-size: 0.75rem; width: auto; min-width: 260px;">
-
-                                                                            <!-- 1. ДИНАМИЧНО ПЪЛНЕНЕ НА ПЪЛНАТА БАЗА ОТ BOOTSTRAP КЛАСОВЕ -->
-                                                                            @{
-                                                                                // Дефинираме речник с абсолютно всички официални Bootstrap v5 токени и техните описания
-                                                                                var bootstrapOptions = new Dictionary<string, string>();
-
-                                                                                if (themeStyle.ElementContext.Contains("background"))
-                                                                                {
-                                                                                    bootstrapOptions.Add("bg-dark", "bg-dark (Тъмен графит)");
-                                                                                    bootstrapOptions.Add("bg-primary", "bg-primary (Корпоративно синьо)");
-                                                                                    bootstrapOptions.Add("bg-secondary", "bg-secondary (VS Сив конзолен профил)");
-                                                                                    bootstrapOptions.Add("bg-success", "bg-success (Оперативно зелено)");
-                                                                                    bootstrapOptions.Add("bg-danger", "bg-danger (Системно червено)");
-                                                                                    bootstrapOptions.Add("bg-warning", "bg-warning (Предупредително златно)");
-                                                                                    bootstrapOptions.Add("bg-info", "bg-info (Информационно светлосиньо)");
-                                                                                    bootstrapOptions.Add("bg-light", "bg-light (Чист офис светъл)");
-                                                                                    bootstrapOptions.Add("bg-white", "bg-white (Снежно бял режим)");
-                                                                                    bootstrapOptions.Add("bg-transparent", "bg-transparent (Напълно прозрачна зона)");
-                                                                                }
-                                                                                else if (themeStyle.ElementContext.Contains("table"))
-                                                                                {
-                                                                                    bootstrapOptions.Add("table-dark table-striped", "table-dark (Тъмна раирана решетка)");
-                                                                                    bootstrapOptions.Add("table-light table-striped", "table-light (Светла раирана решетка)");
-                                                                                    bootstrapOptions.Add("table-primary", "table-primary (Синя релационна решетка)");
-                                                                                    bootstrapOptions.Add("table-success", "table-success (Зелена счетоводна решетка)");
-                                                                                    bootstrapOptions.Add("table-warning", "table-warning (Златна архивна решетка)");
-                                                                                    bootstrapOptions.Add("table-danger", "table-danger (Червена критична решетка)");
-                                                                                }
-                                                                                else if (themeStyle.ElementContext.Contains("shadow"))
-                                                                                {
-                                                                                    bootstrapOptions.Add("shadow-none", "shadow-none (Напълно плосък макет)");
-                                                                                    bootstrapOptions.Add("shadow-sm", "shadow-sm (Дискретна малка сянка)");
-                                                                                    bootstrapOptions.Add("shadow", "shadow (Средна стандартна десктоп сянка)");
-                                                                                    bootstrapOptions.Add("shadow-lg", "shadow-lg (Дълбока луксозна сянка)");
-                                                                                }
-                                                                                else // За text_color или текстови контексти
-                                                                                {
-                                                                                    bootstrapOptions.Add("text-white", "text-white (Чисто бял четим текст)");
-                                                                                    bootstrapOptions.Add("text-warning", "text-warning (Конзолно златно / Акцент)");
-                                                                                    bootstrapOptions.Add("text-muted", "text-muted (Приглушено системно сиво)");
-                                                                                    bootstrapOptions.Add("text-info", "text-info (Информационно уеб синьо)");
-                                                                                    bootstrapOptions.Add("text-success", "text-success (Успешно оперативно зелено)");
-                                                                                    bootstrapOptions.Add("text-danger", "text-danger (Критично софтуерно червено)");
-                                                                                    bootstrapOptions.Add("text-primary", "text-primary (Стандартно линк синьо)");
-                                                                                    bootstrapOptions.Add("text-light", "text-light (Мек светлосив текст)");
-                                                                                    bootstrapOptions.Add("text-dark", "text-dark (Дълбок черен шрифт)");
-                                                                                }
-
-                                                                                // Извеждаме ги като HTML опции, проверявайки коя е записаната стойност в SQL Server за маркиране
-                                                                                // Извеждаме ги като HTML опции с цветни квадратчета и отметки
-                                                                                // Извеждаме ги като HTML опции с цветни кубчета и чисти български имена
-                                                                                foreach (var option in bootstrapOptions)
-                                                                                {
-                                                                                    // 1. Определяме цветното квадратче според името на Bootstrap класа
-                                                                                    string colorSquare = "⬛"; // Тъмни
-
-                                                                                    if (option.Key.Contains("primary") || option.Key.Contains("info")) colorSquare = "🟦";
-                                                                                    else if (option.Key.Contains("success")) colorSquare = "🟩";
-                                                                                    else if (option.Key.Contains("danger")) colorSquare = "🟥";
-                                                                                    else if (option.Key.Contains("warning")) colorSquare = "🟨";
-                                                                                    else if (option.Key.Contains("light") || option.Key.Contains("white")) colorSquare = "⬜";
-                                                                                    else if (option.Key.Contains("secondary")) colorSquare = "🟫";
-                                                                                    else if (option.Key.Contains("transparent")) colorSquare = "🏁";
-
-                                                                                    // 2. Извличаме само българското описание, скривайки системното име от текста
-                                                                                    string cleanBulgarianName = option.Value;
-                                                                                    if (cleanBulgarianName.Contains("("))
-                                                                                    {
-                                                                                        // Премахваме повтарящата се предна част, ако има такава
-                                                                                        int startIndex = cleanBulgarianName.IndexOf('(') + 1;
-                                                                                        int endIndex = cleanBulgarianName.LastIndexOf(')');
-                                                                                        if (startIndex > 0 && endIndex > startIndex)
-                                                                                        {
-                                                                                            cleanBulgarianName = cleanBulgarianName.Substring(startIndex, endIndex - startIndex);
-                                                                                        }
-                                                                                    }
-
-                                                                                    if (themeStyle.BootstrapClass == option.Key)
-                                                                                    {
-                                                                                        <option value="@option.Key" selected="selected" class="fw-bold" style="background-color: #37373d !important;">
-                                                                                            ✓ @colorSquare @cleanBulgarianName
-                                                                                        </option>
-                                                                                    }
-                                                                                    else
-                                                                                    {
-                                                                                        <option value="@option.Key">
-                                                                                            @colorSquare @cleanBulgarianName
-                                                                                        </option>
-                                                                                    }
-                                                                                }
-
-
-
-                                                                            }
-
-                                                                        </select>
-                                                                    </td>
-                                                                </tr>
-                                                            }
-                                                        </tbody>
-
-
-                                                    </table>
-                                                </div>
-                                            }
-                                            else
-                                            {
-                                                <span class="text-secondary small font-monospace d-block py-2"><i class="bi bi-exclamation-triangle me-1 text-muted"></i> Няма намерени прикачени свойства за този компонент.</span>
-                                            }
-
-                                        </div>
-                                    </div>
-
-                                </div>
-                            }
-
-                        </div>
+                                             
                         
                     </div>                 
 
