@@ -76,7 +76,7 @@
                 <!-- ПАНЕЛ 2: СИСТЕМНИ ВИЗУАЛНИ ЕЛЕМЕНТИ -->
                 <div class="tab-pane fade" id="content-elements" role="tabpanel">
 
-                    <!-- 1. ГЛОБАЛНИ ПАРАМЕТРИ -->
+                                        <!-- 1. ГЛОБАЛНИ ПАРАМЕТРИ -->
                     <div class="card @ViewData["CardStyleClass"] p-4 mb-4">
                         <h5 class="fw-bold mb-3 border-bottom pb-2">
                             <i class="bi bi-gear-fill text-warning me-2"></i> Глобални параметри (Общи настройки)
@@ -104,116 +104,66 @@
                     </div>
 
 
-                    <!-- ПАНЕЛ 2: СИСТЕМНИ ВИЗУАЛНИ ЕЛЕМЕНТИ -->
-                    <div class="tab-pane fade" id="content-elements" role="tabpanel">
-
-                        <!-- 1. ГЛОБАЛНИ ПАРАМЕТРИ -->
-                        <div class="card @ViewData["CardStyleClass"] p-4 mb-4">
+                    <!-- 2. КОНФИГУРАТОР НА СТИЛОВЕ (GROUP BOX) -->
+                    <div class="card @ViewData["CardStyleClass"] p-4 mb-4">
+                        <h5 class="fw-bold mb-3 border-bottom pb-2">
+                            <i class="bi bi-palette-fill text-info me-2"></i> Конфигуратор на стилови файлове (bootstrap.build)
+                        </h5>
+                        <div class="row g-3">
+                            <!-- РАДИО БУТОНИ -->
                             <h5 class="fw-bold mb-3 border-bottom pb-2">
-                                <i class="bi bi-gear-fill text-warning me-2"></i> Глобални параметри (Общи настройки)
+                                <i class="bi bi-circle-half text-primary me-2"></i> Контраст на околната среда (Глобален Режим)
                             </h5>
-                            <div class="row g-3 align-items-end">
-                                <div class="col-md-8">
-                                    <label class="form-label fw-bold small">Вид на главното меню</label>
-                                    <select name="LayoutType" id="layoutSelector" class="form-select form-select-sm font-monospace">
-                                        <option value="1" selected="@(Model.LayoutType == AppLayoutType.Dashboard ? "selected" : null)">Вертикален страничен контролен панел</option>
-                                        <option value="2" selected="@(Model.LayoutType == AppLayoutType.Ribbon ? "selected" : null)">Хоризонтална лента тип MS Excel / Word (Ribbon)</option>
-                                        <option value="3" selected="@(Model.LayoutType == AppLayoutType.Navbar ? "selected" : null)">Хоризонтална лента тип NAVBAR</option>
+
+                            <div class="col-md-4 border-end border-secondary pe-3">
+                                <div class="form-check">
+                                    <input class="form-check-input mode-contrast-radio" type="radio" name="IsDarkUserPreference" id="modeLightRadio" value="false" checked="@(!Model.IsDarkUserPreference ? "checked" : null)">
+                                    <label class="form-check-label" for="modeLightRadio">☀️ Светъл уеб режим</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input mode-contrast-radio" type="radio" name="IsDarkUserPreference" id="modeDarkRadio" value="true" checked="@(Model.IsDarkUserPreference ? "checked" : null)">
+                                    <label class="form-check-label fw-bold" for="modeDarkRadio">🌙 Тъмен конзолен профил</label>
+                                </div>
+                               
+                            </div>
+
+                            <!-- СЕЛЕКТОР ЗА ТЕМИ -->
+                            <div class="col-md-8 ps-md-3">
+                                <label class="form-label fw-bold small">Произход на стила</label>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input theme-source-radio" type="radio" name="IsCustomPaletteActive" 
+                                    id="radioFactoryStyle" value="false" checked="@(!Model.IsCustomPaletteActive ? "checked" : null)">
+                                    <label class="form-check-label" for="radioFactoryStyle">
+                                        <i class="bi bi-cpu me-1"></i> Фабричен Bootstrap изглед
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input theme-source-radio" type="radio" name="IsCustomPaletteActive"
+                                    id="radioCustomStyle" value="true" checked="@(Model.IsCustomPaletteActive ? "checked" : null)">
+                                    <label class="form-check-label" for="radioCustomStyle">
+                                        <i class="bi bi-file-earmark-code me-1 text-success"></i> Персонализирана тема (Външен файл)
+                                    </label>
+                                <select name="ThemeId" id="themeIdDropdown" class="form-select form-select-sm font-monospace">
+                                    @if (ViewBag.GlobalThemes != null)
+                                    {
+                                        foreach (var theme in (List<GlobalTheme>)ViewBag.GlobalThemes)
+                                        {
+                                            string square = theme.SupportType ? "⬛" : "⬜";
+                                            if (Model.ThemeId == theme.Id)
+                                            {
+                                                <option value="@theme.Id" data-file="@theme.FileName" data-dark="@theme.SupportType.ToString().ToLower()" selected="selected">✓ @square @theme.ThemeName</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@theme.Id" data-file="@theme.FileName" data-dark="@theme.SupportType.ToString().ToLower()">@square @theme.ThemeName</option>
+                                            }
+                                        }
+                                    }
                                     </select>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="form-check form-switch mb-1">
-                                        <input class="form-check-input" type="checkbox" name="IsMenuExpanded" id="isMenuExpandedSwitch" value="true" checked="@(Model.IsMenuExpanded ? "checked" : null)" style="cursor: pointer;" />
-                                        <input type="hidden" name="IsMenuExpanded" value="false" />
-                                        <label class="form-check-label text-muted small fw-bold" for="isMenuExpandedSwitch">
-                                            <i class="bi bi-layout-sidebar-inset me-1"></i> Разпънато главно меню
-                                        </label>
-                                    </div>
-                                </div>
                             </div>
                         </div>
-
-                        <!-- 2. НОВИЯТ ДВУКОЛОНЕН КОНФИГУРАТОР НА СТИЛОВЕ -->
-                        <div class="card @ViewData["CardStyleClass"] p-4 mb-3">
-                            <h5 class="fw-bold mb-4 border-bottom pb-2">
-                                <i class="bi bi-palette-fill text-info me-2"></i> Конфигуратор на визуални стилове
-                            </h5>
-
-                            <div class="row g-4">
-
-                                <!-- КОЛОНА 1: КОНТРАСТ НА ОКОЛНАТА СРЕДА -->
-                                <div class="col-md-5 border-end border-secondary pe-md-4">
-                                    <label class="form-label fw-bold small text-secondary mb-3">
-                                        <i class="bi bi-circle-half me-1"></i> 1. Контраст на околната среда (Глобален режим)
-                                    </label>
-
-                                    <div class="form-check mb-3">
-                                        <input class="form-check-input mode-contrast-radio" type="radio" name="IsDarkUserPreference" id="modeDarkRadio" value="true" checked="@(Model.IsDarkUserPreference ? "checked" : null)" style="cursor: pointer;">
-                                        <label class="form-check-label text-white fw-bold" for="modeDarkRadio">
-                                            🌙 Тъмен конзолен профил
-                                        </label>
-                                    </div>
-
-                                    <div class="form-check">
-                                        <input class="form-check-input mode-contrast-radio" type="radio" name="IsDarkUserPreference" id="modeLightRadio" value="false" checked="@(!Model.IsDarkUserPreference ? "checked" : null)" style="cursor: pointer;">
-                                        <label class="form-check-label text-muted" for="modeLightRadio">
-                                            ☀️ Светъл уеб режим
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <!-- КОЛОНА 2: ПРОИЗХОД И ИЗБОР НА СТИЛ (INPUT GROUP ПАТЕНТ) -->
-                                <div class="col-md-7 ps-md-4">
-                                    <label class="form-label fw-bold small text-secondary mb-3">
-                                        <i class="bi bi-code-square me-1"></i> 2. Произход и избор на стиловия слой
-                                    </label>
-
-                                    <!-- ВАРЯНТ 1: ФАБРИЧЕН РАДИО БУТОН -->
-                                    <div class="form-check p-0 mb-3 d-flex align-items-center" style="height: 31px;">
-                                        <input class="form-check-input theme-source-radio ms-0 me-2" type="radio" name="IsCustomPaletteActive" id="radioFactoryStyle" value="false" checked="@(!Model.IsCustomPaletteActive ? "checked" : null)" style="cursor: pointer;">
-                                        <label class="form-check-label text-white" for="radioFactoryStyle">
-                                            <i class="bi bi-cpu me-1 text-secondary"></i> Фабричен Bootstrap изглед
-                                        </label>
-                                    </div>
-
-                                    <!-- ВАРЯНТ 2: ИНТЕЛЕГЕНТНА INPUT GROUP С КОМБИНАЦИЯ М/У РАДИО И СЕЛЕКТ -->
-                                    <div class="input-group input-group-sm">
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text bg-transparent border-secondary text-white font-monospace">
-                                                <input class="theme-source-radio mt-0 me-2" type="radio" name="IsCustomPaletteActive" id="radioCustomStyle" value="true" checked="@(Model.IsCustomPaletteActive ? "checked" : null)" style="cursor: pointer;">
-                                                <label class="m-0" for="radioCustomStyle" style="cursor: pointer;">
-                                                    <i class="bi bi-file-earmark-code text-success me-1"></i> Персонализирана тема:
-                                                </label>
-                                            </div>
-                                        </div>
-
-                                        <select name="ThemeId" id="themeIdDropdown" class="form-select font-monospace border-secondary text-white bg-dark">
-                                            @if (ViewBag.GlobalThemes != null)
-                                            {
-                                                foreach (var theme in (List<GlobalTheme>)ViewBag.GlobalThemes)
-                                                {
-                                                    string square = theme.SupportType ? "⬛" : "⬜";
-                                                    string isDarkTheme = theme.SupportType.ToString().ToLower();
-
-                                                    if (Model.ThemeId == theme.Id)
-                                                    {
-                                                        <option value="@theme.Id" data-file="@theme.FileName" data-dark="@isDarkTheme" selected="selected">✓ @square @theme.ThemeName (@theme.FileSize)</option>
-                                                    }
-                                                    else
-                                                    {
-                                                        <option value="@theme.Id" data-file="@theme.FileName" data-dark="@isDarkTheme">@square @theme.ThemeName (@theme.FileSize)</option>
-                                                    }
-                                                }
-                                            }
-                                        </select>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
-
 
                 </div>
 
