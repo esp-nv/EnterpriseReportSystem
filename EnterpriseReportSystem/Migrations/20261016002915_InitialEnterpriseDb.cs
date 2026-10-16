@@ -49,7 +49,7 @@ namespace EnterpriseReportSystem.Migrations
                     ThemeName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     FileName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     FileSize = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    IsDark = table.Column<bool>(type: "bit", nullable: false)
+                    SupportType = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -361,7 +361,6 @@ namespace EnterpriseReportSystem.Migrations
                     Password = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     LayoutType = table.Column<int>(type: "int", nullable: false),
                     IsMenuExpanded = table.Column<bool>(type: "bit", nullable: false),
-                    ThemeType = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     IsGlobalAdmin = table.Column<bool>(type: "bit", nullable: false),
                     WishListMenuIds = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     CompanyId = table.Column<int>(type: "int", nullable: false),

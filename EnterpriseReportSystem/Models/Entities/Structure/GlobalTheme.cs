@@ -22,10 +22,12 @@ namespace EnterpriseReportSystem.Models.Entities.Structure
         [StringLength(ValidationConstants.FileSizeMaxLength)]
         public string FileSize { get; set; } = "0 KB"; // Мета-данни за размер
 
+     
         /// <summary>
         /// Контрастен капацитет на темата: 1 = Светла, 2 = Тъмна, 3 = Универсална (И двете)
         /// </summary>
         [Required]
+        [Column("SupportType")] // ТВЪРДО СВЪРЗВАНЕ КЪМ КОЛОНАТА В SQL SERVER
         public ThemeSupportType SupportType { get; set; } = ThemeSupportType.Universal;
     }
 

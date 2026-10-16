@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EnterpriseReportSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20261015174200_InitialEnterpriseDb")]
+    [Migration("20261016002915_InitialEnterpriseDb")]
     partial class InitialEnterpriseDb
     {
         /// <inheritdoc />
@@ -544,8 +544,9 @@ namespace EnterpriseReportSystem.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<bool>("IsDark")
-                        .HasColumnType("bit");
+                    b.Property<int>("SupportType")
+                        .HasColumnType("int")
+                        .HasColumnName("SupportType");
 
                     b.Property<string>("ThemeName")
                         .IsRequired()
@@ -674,11 +675,6 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.Property<int?>("ThemeId")
                         .HasColumnType("int");
-
-                    b.Property<string>("ThemeType")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Username")
                         .IsRequired()
