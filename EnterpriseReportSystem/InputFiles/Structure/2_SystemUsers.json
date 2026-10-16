@@ -2,11 +2,11 @@
   {
     "Id": 1,
     "Username": "admin_holding",
-    "Password": "admin123",
+    "Password": "super_secret_admin",
     "LayoutType": 2,
     "IsMenuExpanded": true,
     "IsGlobalAdmin": true,
-    "WishListMenuIds": "1,2,3",
+    "WishListMenuIds": "2,8",
     "CompanyId": 1,
     "IsCustomPaletteActive": false,
     "ThemeId": 1,

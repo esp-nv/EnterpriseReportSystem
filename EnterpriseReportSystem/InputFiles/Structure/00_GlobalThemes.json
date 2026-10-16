@@ -4,20 +4,20 @@
     "ThemeName": "Класическа Фабрична Тема (Bootstrap)",
     "FileName": "",
     "FileSize": "0 KB",
-    "SupportType": 3
+    "SupportType": true
   },
   {
     "Id": 2,
     "ThemeName": "Матрично оперативно зелено",
     "FileName": "matrix_terminal_green.css",
     "FileSize": "4.5 KB",
-    "SupportType": 2
+    "SupportType": true
   },
   {
     "Id": 3,
     "ThemeName": "Луксозно корпоративно синьо",
     "FileName": "corporate_high_blue.css",
     "FileSize": "5.1 KB",
-    "SupportType": 3
+    "SupportType": false
   }
 ]
