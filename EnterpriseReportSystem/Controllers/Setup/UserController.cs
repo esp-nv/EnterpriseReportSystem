@@ -52,8 +52,10 @@ public class UserController : Controller
         // Записваме базовите операторски параметри
         dbUser.Username = model.Username;
         dbUser.Password = model.Password;
+        // Моделът автоматично ще обвърже и запечата булевия флаг IsMenuExpanded в базата
         dbUser.LayoutType = model.LayoutType;
-        dbUser.IsMenuExpanded = model.IsMenuExpanded;
+        dbUser.IsMenuExpanded = model.IsMenuExpanded; // Запечатва True или False на чисто
+
 
         // Прехвърляме валидираните булеви радио флагове към базата данни
         dbUser.IsCustomPaletteActive = isCustomPaletteActive;

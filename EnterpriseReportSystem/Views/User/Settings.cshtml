@@ -81,17 +81,28 @@
                         <h5 class="fw-bold mb-3 border-bottom pb-2">
                             <i class="bi bi-gear-fill text-warning me-2"></i> Глобални параметри (Общи настройки)
                         </h5>
-                        <div class="row g-3">
-                            <div class="col-12">
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-8">
                                 <label class="form-label fw-bold small">Вид на главното меню</label>
                                 <select name="LayoutType" id="layoutSelector" class="form-select form-select-sm font-monospace">
                                     <option value="1" selected="@(Model.LayoutType == AppLayoutType.Dashboard ? "selected" : null)">Вертикален страничен контролен панел</option>
-                                    <option value="2" selected="@(Model.LayoutType == AppLayoutType.Ribbon ? "selected" : null)">Хоризонтална лента тип MS Excel / Word</option>
+                                    <option value="2" selected="@(Model.LayoutType == AppLayoutType.Ribbon ? "selected" : null)">Хоризонтална лента тип MS Excel / Word (Ribbon)</option>
                                     <option value="3" selected="@(Model.LayoutType == AppLayoutType.Navbar ? "selected" : null)">Хоризонтална лента тип NAVBAR</option>
                                 </select>
                             </div>
+                            <!-- ДОБАВЕНО: ПРЕВКЛЮЧВАТЕЛ ЗА РАЗПЪНАТО / СЪБРАНО СЪСТОЯНИЕ НА МЕНЮТО -->
+                            <div class="col-md-4">
+                                <div class="form-check form-switch mb-1">
+                                    <input class="form-check-input" type="checkbox" name="IsMenuExpanded" id="isMenuExpandedSwitch" value="true" checked="@(Model.IsMenuExpanded ? "checked" : null)" style="cursor: pointer;" />
+                                    <input type="hidden" name="IsMenuExpanded" value="false" />
+                                    <label class="form-check-label text-muted small fw-bold" for="isMenuExpandedSwitch">
+                                        <i class="bi bi-layout-sidebar-inset me-1"></i> Разпънато главно меню
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
 
                     <!-- 2. КОНФИГУРАТОР НА СТИЛОВЕ (GROUP BOX) -->
                     <div class="card @ViewData["CardStyleClass"] p-4 mb-4">
