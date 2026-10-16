@@ -102,7 +102,7 @@
                                 <i class="bi bi-gear-fill text-warning me-2"></i> Глобални параметри (Общи настройки)
                             </h6>
                             <div class="row g-3 font-monospace" style="font-size: 0.85rem;">
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <label class="form-label fw-bold text-secondary mb-1">Вид на главното меню</label>
                                     <select name="LayoutType" id="layoutSelector" class="form-select form-select-sm text-white font-monospace" style="background-color: #333333 !important; border-color: #555555 !important;">
                                         <option value="1" selected="@(Model.LayoutType == AppLayoutType.Dashboard ? "selected" : null)">Вертикален страничен контролен панел</option>
@@ -110,7 +110,6 @@
                                         <option value="3" selected="@(Model.LayoutType == AppLayoutType.Navbar ? "selected" : null)">Хоризонтална лента тип NAVBAR</option>
                                     </select>
                                 </div>
-
                             </div>
                         </div>
 
@@ -138,7 +137,32 @@
                                             <i class="bi bi-file-earmark-code me-1 text-success"></i> Персонализирана тема (Външен файл)
                                         </label>
                                     </div>
-                                </div>                               
+                                </div>
+
+                                <!-- ДИНАМИЧЕН COMBOBOX С ТЕМИ (ДОБАВЕН И СИНХРОНИЗИРАН С НОВИТЕ ЕНУМЕРАЦИИ) -->
+                                <div class="col-md-6 ps-md-4">
+                                    <label class="form-label fw-bold text-secondary mb-1" id="labelThemeDropdown">Избор на десктоп тема</label>
+                                    <select name="ThemeId" id="themeIdDropdown" class="form-select form-select-sm text-white font-monospace" style="background-color: #333333 !important; border-color: #555555 !important;">
+                                        @if (ViewBag.GlobalThemes != null)
+                                        {
+                                            foreach (var theme in (List<GlobalTheme>)ViewBag.GlobalThemes)
+                                            {
+                                                string square = "🔲"; // По подразбиране Universal (3)
+                                                if (theme.SupportType == ThemeSupportType.DarkOnly) { square = "⬛"; }
+                                                else if (theme.SupportType == ThemeSupportType.LightOnly) { square = "⬜"; }
+
+                                                if (Model.ThemeId == theme.Id)
+                                                {
+                                                    <option value="@theme.Id" data-file="@theme.FileName" selected="selected">✓ @square @theme.ThemeName (@theme.FileSize)</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@theme.Id" data-file="@theme.FileName">@square @theme.ThemeName (@theme.FileSize)</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
@@ -168,7 +192,6 @@
                         </div>
 
                     </div>
-
 
                 </div>
             </div>

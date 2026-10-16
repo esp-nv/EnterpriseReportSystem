@@ -47,6 +47,33 @@ public class ApplicationDbContext : DbContext
     public DbSet<GlobalTheme> GlobalThemes { get; set; } = null!;
 
 
+    public override int SaveChanges()
+    {
+        EnforceGlobalThemeProtection();
+        return base.SaveChanges();
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        EnforceGlobalThemeProtection();
+        return base.SaveChangesAsync(cancellationToken);
+    }
+
+    private void EnforceGlobalThemeProtection()
+    {
+        // Хващаме всеки опит за промяна (Modified) или изтриване (Deleted) на тема с Id = 1
+        var violatedEntries = ChangeTracker.Entries<GlobalTheme>()
+            .Where(e => e.State == EntityState.Modified || e.State == EntityState.Deleted)
+            .Any(e => e.Entity.Id == 1);
+
+        if (violatedEntries)
+        {
+            throw new InvalidOperationException("⚠️ [Критична системна защита]: Операцията е блокирана! Фабричният запис с Id = 1 е защитен котва и не може да бъде променян или изтриван.");
+        }
+    }
+
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 

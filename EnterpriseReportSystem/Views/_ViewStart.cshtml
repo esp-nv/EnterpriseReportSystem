@@ -1,6 +1,7 @@
 ﻿@inject EnterpriseReportSystem.Data.ApplicationDbContext _context
 @using Microsoft.EntityFrameworkCore
 @using EnterpriseReportSystem.Models.Entities.Structure
+@using EnterpriseReportSystem.Common.Enum
 
 @{
     // 1. Извличаме глобалните настройки на текущия потребител безопасно заедно с темата му
@@ -16,8 +17,8 @@
     string layoutStyle = "DASHBOARD";
     if (currentUser != null)
     {
-       // if (currentUser.LayoutType == AppLayoutType.Ribbon) layoutStyle = "RIBBON";
-      //  else if (currentUser.LayoutType == AppLayoutType.Navbar) layoutStyle = "NAVBAR";
+        if (currentUser.LayoutType == AppLayoutType.Ribbon) layoutStyle = "RIBBON";
+        else if (currentUser.LayoutType == AppLayoutType.Navbar) layoutStyle = "NAVBAR";
     }
 
     ViewData["GlobalTheme"] = isDark ? "dark" : "light";

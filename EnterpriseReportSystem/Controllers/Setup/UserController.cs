@@ -36,43 +36,35 @@ public class UserController : Controller
     [Route("User/SaveSettings")]
     public async Task<IActionResult> SaveSettings(SystemUser model)
     {
-        // 1. Извличаме оригиналния потребител от базата данни, за да го модифицираме
         var dbUser = await _context.SystemUsers.FirstOrDefaultAsync(u => u.Id == model.Id);
         if (dbUser == null) return NotFound();
 
-        // 2. СИГУРНО РЪЧНО ИЗВЛИЧАНЕ НА РАДИО БУТОНИТЕ ОТ ФОРМАТА
-        // Четем суровите стойности "true"/"false" от браузъра и ги превръщаме в чист bool
         string customPaletteRaw = Request.Form["IsCustomPaletteActive"].ToString();
         string darkPreferenceRaw = Request.Form["IsDarkUserPreference"].ToString();
 
         bool isCustomPaletteActive = !string.IsNullOrEmpty(customPaletteRaw) && customPaletteRaw.ToLower() == "true";
         bool isDarkUserPreference = !string.IsNullOrEmpty(darkPreferenceRaw) && darkPreferenceRaw.ToLower() == "true";
 
-        // 3. ЗАПЕЧАТВАНЕ НА ВСИЧКИ ПАРАМЕТРИ В SQL SERVER
         dbUser.Username = model.Username;
         dbUser.Password = model.Password;
         dbUser.LayoutType = model.LayoutType;
         dbUser.IsMenuExpanded = model.IsMenuExpanded;
 
-        // Прехвърляме валидираните булеви радио флагове
         dbUser.IsCustomPaletteActive = isCustomPaletteActive;
         dbUser.IsDarkUserPreference = isDarkUserPreference;
 
-        // Ако е избран фабричен Bootstrap режим, зануляваме ThemeId в базата данни
+        // ЖЕЛЯЗНА ЗАЩИТА: Ако не е активна външна палитра, твърдо заковаваме запис 1
         if (!isCustomPaletteActive)
         {
-            dbUser.ThemeId = null;
+            dbUser.ThemeId = 1; // Твърда фабрична котва
         }
         else
         {
-            dbUser.ThemeId = model.ThemeId;
+            // Ако се опитва да избере празно или невалидно ID за външна тема, пак връщаме 1
+            dbUser.ThemeId = (model.ThemeId == 1 || model.ThemeId == null) ? 1 : model.ThemeId;
         }
 
-
-        // Записваме трансакцията на чисто в SQL Server
         await _context.SaveChangesAsync();
-
-        // 4. Мигновено връщане към страницата за настройки, за да се види визуалният ефект веднага
         return RedirectToAction("Settings");
     }
 
