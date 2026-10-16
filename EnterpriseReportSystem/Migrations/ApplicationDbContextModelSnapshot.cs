@@ -42,7 +42,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Currencies");
+                    b.ToTable("Currencies", (string)null);
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.ExchangeRateHistory", b =>
@@ -74,7 +74,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("ToCurrencyId");
 
-                    b.ToTable("ExchangeRateHistories");
+                    b.ToTable("ExchangeRateHistories", (string)null);
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetGroup", b =>
@@ -102,7 +102,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("MainTypeId");
 
-                    b.ToTable("AssetGroups");
+                    b.ToTable("AssetGroups", (string)null);
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetSpecification", b =>
@@ -125,7 +125,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("AssetSubGroupId");
 
-                    b.ToTable("AssetSpecifications");
+                    b.ToTable("AssetSpecifications", (string)null);
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.AssetSubGroup", b =>
@@ -158,7 +158,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("AssetGroupId");
 
-                    b.ToTable("AssetSubGroups");
+                    b.ToTable("AssetSubGroups", (string)null);
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Hierarchy.MainType", b =>
@@ -181,7 +181,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MainTypes");
+                    b.ToTable("MainTypes", (string)null);
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Ledger.AssetAttribute", b =>
@@ -205,7 +205,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AssetAttributes");
+                    b.ToTable("AssetAttributes", (string)null);
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Ledger.AssetAttributeValue", b =>
@@ -233,7 +233,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("TransactionId");
 
-                    b.ToTable("AssetAttributeValues");
+                    b.ToTable("AssetAttributeValues", (string)null);
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Ledger.AssetTransaction", b =>
@@ -296,7 +296,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("ToGroupId");
 
-                    b.ToTable("AssetTransactions");
+                    b.ToTable("AssetTransactions", (string)null);
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Ledger.OperationType", b =>
@@ -323,7 +323,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OperationTypes");
+                    b.ToTable("OperationTypes", (string)null);
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Location.Municipality", b =>
@@ -346,7 +346,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("RegionId");
 
-                    b.ToTable("Municipalities");
+                    b.ToTable("Municipalities", (string)null);
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Location.Region", b =>
@@ -364,7 +364,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Regions");
+                    b.ToTable("Regions", (string)null);
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Location.TownOrVillage", b =>
@@ -392,7 +392,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("MunicipalityId");
 
-                    b.ToTable("TownsOrVillages");
+                    b.ToTable("TownsOrVillages", (string)null);
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.CompanyOrPerson", b =>
@@ -430,7 +430,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("RegisteredTownId");
 
-                    b.ToTable("CompaniesOrPersons");
+                    b.ToTable("CompaniesOrPersons", (string)null);
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.Facility", b =>
@@ -484,7 +484,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("TownOrVillageId");
 
-                    b.ToTable("Facilities");
+                    b.ToTable("Facilities", (string)null);
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.FacilityLog", b =>
@@ -520,7 +520,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("FacilityId");
 
-                    b.ToTable("FacilityLogs");
+                    b.ToTable("FacilityLogs", (string)null);
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.GlobalTheme", b =>
@@ -551,7 +551,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GlobalThemes");
+                    b.ToTable("GlobalThemes", (string)null);
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.Language", b =>
@@ -574,7 +574,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Languages");
+                    b.ToTable("Languages", (string)null);
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemMenu", b =>
@@ -602,7 +602,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("ParentMenuId");
 
-                    b.ToTable("SystemMenus");
+                    b.ToTable("SystemMenus", (string)null);
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemMenuTranslation", b =>
@@ -635,7 +635,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("SystemMenuId");
 
-                    b.ToTable("SystemMenuTranslations");
+                    b.ToTable("SystemMenuTranslations", (string)null);
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.Structure.SystemUser", b =>
@@ -693,7 +693,7 @@ namespace EnterpriseReportSystem.Migrations
 
                     b.HasIndex("ThemeId");
 
-                    b.ToTable("SystemUsers");
+                    b.ToTable("SystemUsers", (string)null);
                 });
 
             modelBuilder.Entity("EnterpriseReportSystem.Models.Entities.ExchangeRateHistory", b =>
