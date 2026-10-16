@@ -79,3 +79,31 @@
     // Изпълняваме проверката веднага на старта за първоначално отчитане на профила
     evalThemeLockMatrix();
 });
+
+// =========================================================================
+// 4. ДОБАВЕНО: ПРЕВКЛЮЧВАНЕ НА ВИДИМОСТТА НА ПАРОЛАТА (SHOW/HIDE EYE EFFECT)
+// =========================================================================
+const togglePasswordBtn = document.getElementById("togglePasswordVisibilityBtn");
+const passwordInput = document.getElementById("operatorPasswordInput");
+const eyeIcon = document.getElementById("passwordEyeIcon");
+
+if (togglePasswordBtn && passwordInput && eyeIcon) {
+    togglePasswordBtn.addEventListener("click", function () {
+        // Проверяваме текущия тип на полето
+        const isPassword = passwordInput.getAttribute("type") === "password";
+
+        if (isPassword) {
+            passwordInput.setAttribute("type", "text");
+            eyeIcon.classList.remove("bi-eye");
+            eyeIcon.classList.add("bi-eye-slash"); // Зачеркнато око
+            togglePasswordBtn.classList.remove("text-secondary");
+            togglePasswordBtn.classList.add("text-primary"); // Светва в синьо при активиран текст
+        } else {
+            passwordInput.setAttribute("type", "password");
+            eyeIcon.classList.remove("bi-eye-slash");
+            eyeIcon.classList.add("bi-eye"); // Нормално око
+            togglePasswordBtn.classList.remove("text-primary");
+            togglePasswordBtn.classList.add("text-secondary");
+        }
+    });
+}

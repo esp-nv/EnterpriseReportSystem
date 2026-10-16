@@ -50,17 +50,28 @@
                             <i class="bi bi-person-badge text-primary me-2"></i> Профилни данни на оператора
                         </h5>
                         <div class="row g-3">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label fw-bold small">Име на оператора</label>
                                 <input type="text" class="form-control form-control-sm font-monospace" value="@Model.Username" disabled />
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label fw-bold small">Системна роля</label>
                                 <input type="text" class="form-control form-control-sm font-monospace" value="@(Model.IsGlobalAdmin ? "Глобален Администратор" : "Оператор")" disabled />
+                            </div>
+                            <!-- ДОБАВЕНО: ПОЛЕ ЗА ПАРОЛА С ИКОНА ОКО -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small">Системна парола</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="password" name="Password" id="operatorPasswordInput" class="form-control font-monospace border-end-0" value="@Model.Password" autocomplete="off" />
+                                    <button class="input-group-text bg-transparent text-secondary border-start-0" type="button" id="togglePasswordVisibilityBtn" style="cursor: pointer;">
+                                        <i class="bi bi-eye" id="passwordEyeIcon"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
 
                 <!-- ПАНЕЛ 2: СИСТЕМНИ ВИЗУАЛНИ ЕЛЕМЕНТИ -->
                 <div class="tab-pane fade" id="content-elements" role="tabpanel">
