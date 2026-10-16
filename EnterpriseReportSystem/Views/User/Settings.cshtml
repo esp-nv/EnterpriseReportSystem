@@ -1,201 +1,154 @@
-﻿@using EnterpriseReportSystem.Models.Entities.Structure
-
-@model EnterpriseReportSystem.Models.Entities.Structure.SystemUser
-
+﻿@model EnterpriseReportSystem.Models.Entities.Structure.SystemUser
+@using EnterpriseReportSystem.Models.Entities.Structure
+@using EnterpriseReportSystem.Common.Enum
 
 @{
-    Layout = "_Layout";
-    ViewData["Title"] = "Application Settings";
-    //  var userStyles = ViewBag.UserStyles as List<EnterpriseReportSystem.Models.Entities.Structure.SystemUserTheme> ?? new();
-    // var uiElements = ViewBag.UIElements as List<EnterpriseReportSystem.Models.Entities.Structure.SystemUIElement> ?? new();
+    ViewData["Title"] = "Потребителски настройки и Визуални теми";
 }
 
-<form asp-action="SaveSettings" asp-controller="User" method="post" class="needs-validation m-0 p-0" novalidate>
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="Id" />
+<div class="container-fluid py-4 @ViewData["TextClass"]">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h4 class="fw-light mb-1">Потребителски настройки и Визуални теми</h4>
+            <small class="text-muted font-monospace">Интегрирано управление на уеб параметрите и стиловите конфигурации на холдинга.</small>
+        </div>
+    </div>
 
-    <div class="container-fluid my-4 font-sans-serif" style="background-color: #1e1e1e; color: #d4d4d4; min-height: 85vh; border: 1px solid #3c3c3c; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+    <form asp-action="SaveSettings" asp-controller="User" method="post" class="row g-4">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Username" />
+        <input type="hidden" asp-for="Password" />
+        <input type="hidden" asp-for="CompanyId" />
 
-        <!-- ГОРНА СИСТЕМНА LЕНТА С ИМЕТО НА ПРИЛОЖЕНИЕТО -->
-        <div class="p-3 border-bottom d-flex align-items-center justify-content-between" style="border-color: #3c3c3c !important; background-color: #2d2d2d; margin-left: -12px; margin-right: -12px;">
-            <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-window text-info fs-5"></i>
-                <span class="fw-bold text-white small font-monospace">Потребителски настройки и Визуални теми</span>
+        <!-- ЛЯВ ПАНЕЛ: НАВИГАЦИОННИ ТАБОВЕ -->
+        <div class="col-md-3">
+            <div class="card @ViewData["CardStyleClass"] p-3">
+                <div class="nav flex-column nav-pills" id="vs-tab-system" role="tabpanel">
+                    <button class="nav-link active text-start mb-2" id="tab-profile-btn" data-bs-toggle="pill" data-bs-target="#content-profile" type="button" role="tab">
+                        <i class="bi bi-person-fill me-2"></i> Потребителски профил
+                    </button>
+                    <button class="nav-link text-start" id="tab-elements-btn" data-bs-toggle="pill" data-bs-target="#content-elements" type="button" role="tab">
+                        <i class="bi bi-sliders me-2"></i> Системни елементи
+                    </button>
+                </div>
+                <hr />
+                <button type="submit" class="btn btn-primary w-100 fw-bold">
+                    <i class="bi bi-shield-check me-2"></i> Запечатай настройките
+                </button>
             </div>
-            <span class="badge bg-dark text-secondary font-monospace border border-secondary" style="font-size: 0.7rem; color: #ffc107 !important;">user: @Model.Username</span>
         </div>
 
-        <div class="row g-0" style="min-height: 75vh;">
+        <!-- ДЕСЕН ПАНЕЛ: ДИНАМИЧНО СЪДЪРЖАНИЕ -->
+        <div class="col-md-9">
+            <div class="tab-content" id="vs-tab-content">
 
-            <!-- ========================================================================= -->
-            <!-- ЛЯВ ВЕРТИКАЛЕН СИСТЕМЕН ПАНЕЛ (ДВА ОФИЦИАЛНИ ТАБА)                        -->
-            <!-- ========================================================================= -->
-            <div class="col-md-3 border-end" style="border-color: #3c3c3c !important; background-color: #252526; min-height: 75vh;">
-
-                <div class="text-uppercase text-secondary font-monospace px-3 pt-3 pb-1 fw-bold" style="font-size: 0.7rem; letter-spacing: 0.5px;">
-                    <i class="bi bi-sliders me-1 text-info"></i> Конфигуратор на теми
-                </div>
-
-                <!-- СИСТЕМНИ ТАБОВЕ -->
-                <div class="nav flex-column nav-pills p-3 gap-2" id="vs-tab-system" role="tablist" aria-orientation="vertical">
-
-                    <!-- БУТОН 1: Потребителски профил (Активен по подразбиране) -->
-                    <button class="nav-link active text-start py-2 px-3 rounded-0 font-monospace border border-primary small text-white position-relative"
-                            id="tab-user-props-btn" data-bs-toggle="pill" data-bs-target="#content-user-props" type="button" role="tab" aria-controls="content-user-props" aria-selected="true"
-                            style="font-size: 0.85rem;">
-                        <i class="bi bi-person-vcard-fill me-2 text-info"></i> Потребителски профил
-                    </button>
-
-                    <!-- БУТОН 2: Системни визуални елементи -->
-                    <button class="nav-link text-start py-2 px-3 rounded-0 font-monospace border border-primary small text-muted"
-                            id="tab-elements-btn" data-bs-toggle="pill" data-bs-target="#content-elements" type="button" role="tab" aria-controls="content-elements" aria-selected="false"
-                            style="font-size: 0.85rem;">
-                        <i class="bi bi-layers-half me-2 text-success"></i> Системни визуални елементи
-                    </button>
-
-                </div>
-
-                <!-- БУТОН ЗА ЗАПИС: Статичен с малък горен отстъп mt-2 -->
-                <div class="w-100 px-3 pb-3 mt-lg-5">
-                    <button type="submit" class="btn btn-sm btn-primary shadow-sm font-monospace rounded-1 border-0 w-100 py-2 fs-6">
-                        <i class="bi bi-cloud-check-fill me-2 text-warning"></i> Запечатай настройките
-                    </button>
-                </div>
-
-            </div>
-
-            <!-- ========================================================================= -->
-            <!-- ДЕСЕН ГОЛЯМ КОНТЕНЕР СЪС СИНХРОНИЗИРАНИ ТАБ-ПАНЕЛИ                         -->
-            <!-- ========================================================================= -->
-            <div class="col-md-9 p-4" style="background-color: #1e1e1e;">
-                <div class="tab-content h-100" id="vs-tab-content-panes">
-
-                    <!-- ----------------------------------------------------------------- -->
-                    <!-- ПАНЕЛ 1: ПОТРЕБИТЕЛСКИ ПРОФИЛ (АКТИВЕН В НАЧАЛОТО)                -->
-                    <!-- ----------------------------------------------------------------- -->
-                    <div class="tab-pane fade show active" id="content-user-props" role="tabpanel" aria-labelledby="tab-user-props-btn">
-                        <h4 class="text-white fw-light mb-1" style="font-size: 1.6rem;">Потребителски профил</h4>
-                        <span class="text-muted small d-block mb-4 pb-2 border-bottom font-monospace" style="border-color: #3c3c3c !important;">Управление на потребителските идентификатори и права за достъп в холдинга.</span>
-
-                        <div class="row g-3 font-monospace" style="font-size: 0.85rem;">
-                            <div class="col-md-8 mb-2">
-                                <label class="form-label fw-bold text-secondary mb-1">Потребителско име</label>
-                                <input type="text" name="Username" value="@Model.Username" class="form-control form-control-sm text-white font-monospace bg-dark border-secondary" style="background-color: #333333 !important; border-color: #555555 !important;" required />
+                <!-- ПАНЕЛ 1: ПОТРЕБИТЕЛСКИ ПРОФИЛ -->
+                <div class="tab-pane fade show active" id="content-profile" role="tabpanel">
+                    <div class="card @ViewData["CardStyleClass"] p-4">
+                        <h5 class="fw-bold mb-3 border-bottom pb-2">
+                            <i class="bi bi-person-badge text-primary me-2"></i> Профилни данни на оператора
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small">Име на оператора</label>
+                                <input type="text" class="form-control form-control-sm font-monospace" value="@Model.Username" disabled />
                             </div>
-                            <div class="col-md-8 mb-2">
-                                <label class="form-label fw-bold text-secondary mb-1">Парола за достъп</label>
-                                <input type="password" name="Password" value="@Model.Password" class="form-control form-control-sm text-white font-monospace bg-dark border-secondary" style="background-color: #333333 !important; border-color: #555555 !important;" required />
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small">Системна роля</label>
+                                <input type="text" class="form-control form-control-sm font-monospace" value="@(Model.IsGlobalAdmin ? "Глобален Администратор" : "Оператор")" disabled />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ПАНЕЛ 2: СИСТЕМНИ ВИЗУАЛНИ ЕЛЕМЕНТИ -->
+                <div class="tab-pane fade" id="content-elements" role="tabpanel">
+
+                    <!-- 1. ГЛОБАЛНИ ПАРАМЕТРИ -->
+                    <div class="card @ViewData["CardStyleClass"] p-4 mb-4">
+                        <h5 class="fw-bold mb-3 border-bottom pb-2">
+                            <i class="bi bi-gear-fill text-warning me-2"></i> Глобални параметри (Общи настройки)
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold small">Вид на главното меню</label>
+                                <select name="LayoutType" id="layoutSelector" class="form-select form-select-sm font-monospace">
+                                    <option value="1" selected="@(Model.LayoutType == AppLayoutType.Dashboard ? "selected" : null)">Вертикален страничен контролен панел</option>
+                                    <option value="2" selected="@(Model.LayoutType == AppLayoutType.Ribbon ? "selected" : null)">Хоризонтална лента тип MS Excel / Word</option>
+                                    <option value="3" selected="@(Model.LayoutType == AppLayoutType.Navbar ? "selected" : null)">Хоризонтална лента тип NAVBAR</option>
+                                </select>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ----------------------------------------------------------------- -->
-                    <!-- ПАНЕЛ 2: СИСТЕМНИ ВИЗУАЛНИ ЕЛЕМЕНТИ                              -->
-                    <!-- ----------------------------------------------------------------- -->
-                    <div class="tab-pane fade" id="content-elements" role="tabpanel" aria-labelledby="tab-elements-btn">
-                        <h4 class="text-white fw-light mb-1" style="font-size: 1.6rem;">Системни визуални елементи</h4>
-                        <span class="text-muted small d-block mb-4 pb-2 border-bottom font-monospace" style="border-color: #3c3c3c !important;">Интегрирано управление на базовите уеб параметри и фиксираните интерфейсни зони.</span>
-
-                        <!-- 1. ОБЩИ НАСТРОЙКИ (ГЛОБАЛНИ ПАРАМЕТРИ НАЙ-ОТГОРЕ) -->
-                        <div class="card border-0 p-4 rounded-1 mb-4" style="background-color: #252526; border: 1px solid #3c3c3c !important;">
-                            <h6 class="text-white fw-bold mb-3 small text-uppercase border-bottom pb-2" style="border-color: #3c3c3c !important;">
-                                <i class="bi bi-gear-fill text-warning me-2"></i> Глобални параметри (Общи настройки)
-                            </h6>
-                            <div class="row g-3 font-monospace" style="font-size: 0.85rem;">
-                                <div class="col-md-12">
-                                    <label class="form-label fw-bold text-secondary mb-1">Вид на главното меню</label>
-                                    <select name="LayoutType" id="layoutSelector" class="form-select form-select-sm text-white font-monospace" style="background-color: #333333 !important; border-color: #555555 !important;">
-                                        <option value="1" selected="@(Model.LayoutType == AppLayoutType.Dashboard ? "selected" : null)">Вертикален страничен контролен панел</option>
-                                        <option value="2" selected="@(Model.LayoutType == AppLayoutType.Ribbon ? "selected" : null)">Хоризонтална лента тип MS Excel / Word</option>
-                                        <option value="3" selected="@(Model.LayoutType == AppLayoutType.Navbar ? "selected" : null)">Хоризонтална лента тип NAVBAR</option>
-                                    </select>
+                    <!-- 2. КОНФИГУРАТОР НА СТИЛОВЕ (GROUP BOX) -->
+                    <div class="card @ViewData["CardStyleClass"] p-4 mb-4">
+                        <h5 class="fw-bold mb-3 border-bottom pb-2">
+                            <i class="bi bi-palette-fill text-info me-2"></i> Конфигуратор на стилови файлове (bootstrap.build)
+                        </h5>
+                        <div class="row g-3">
+                            <!-- РАДИО БУТОНИ -->
+                            <div class="col-md-6 border-end border-secondary pe-3">
+                                <label class="form-label fw-bold small">Произход на стила</label>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input theme-source-radio" type="radio" name="IsCustomPaletteActive" id="radioFactoryStyle" value="false" checked="@(!Model.IsCustomPaletteActive ? "checked" : null)">
+                                    <label class="form-check-label" for="radioFactoryStyle">
+                                        <i class="bi bi-cpu me-1"></i> Фабричен Bootstrap изглед
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input theme-source-radio" type="radio" name="IsCustomPaletteActive" id="radioCustomStyle" value="true" checked="@(Model.IsCustomPaletteActive ? "checked" : null)">
+                                    <label class="form-check-label" for="radioCustomStyle">
+                                        <i class="bi bi-file-earmark-code me-1 text-success"></i> Персонализирана тема (Външен файл)
+                                    </label>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- 2. НОВИЯТ ИЗОЛИРАН GROUP BOX ЗА УПРАВЛЕНИЕ НА СТИЛОВЕТЕ -->
-                        <div class="card border-0 p-4 rounded-1 mb-4" style="background-color: #252526; border: 1px solid #3c3c3c !important;">
-                            <h6 class="text-white fw-bold mb-3 small text-uppercase border-bottom pb-2" style="border-color: #3c3c3c !important;">
-                                <i class="bi bi-palette-fill text-info me-2"></i> Конфигуратор на стилови файлове (bootstrap.build)
-                            </h6>
-
-                            <div class="row g-3 font-monospace" style="font-size: 0.85rem;">
-                                <!-- РАДИО БУТОНИ ВЪТРЕ В КУТИЯТА -->
-                                <div class="col-md-6 d-flex flex-column gap-2 border-end border-secondary pe-4" style="border-color: #3c3c3c !important;">
-                                    <label class="form-label fw-bold text-secondary mb-1">Произход на стила</label>
-
-                                    <div class="form-check">
-                                        <input class="form-check-input theme-source-radio" type="radio" name="IsCustomPaletteActive" id="radioFactoryStyle" value="false" checked="@(!Model.IsCustomPaletteActive ? "checked" : null)">
-                                        <label class="form-check-label text-white" for="radioFactoryStyle">
-                                            <i class="bi bi-cpu me-1 text-secondary"></i> Фабричен Bootstrap изглед
-                                        </label>
-                                    </div>
-
-                                    <div class="form-check">
-                                        <input class="form-check-input theme-source-radio" type="radio" name="IsCustomPaletteActive" id="radioCustomStyle" value="true" checked="@(Model.IsCustomPaletteActive ? "checked" : null)">
-                                        <label class="form-check-label text-white" for="radioCustomStyle">
-                                            <i class="bi bi-file-earmark-code me-1 text-success"></i> Персонализирана тема (Външен файл)
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <!-- ДИНАМИЧЕН COMBOBOX С ТЕМИ (ДОБАВЕН И СИНХРОНИЗИРАН С НОВИТЕ ЕНУМЕРАЦИИ) -->
-                                <div class="col-md-6 ps-md-4">
-                                    <label class="form-label fw-bold text-secondary mb-1" id="labelThemeDropdown">Избор на десктоп тема</label>
-                                    <select name="ThemeId" id="themeIdDropdown" class="form-select form-select-sm text-white font-monospace" style="background-color: #333333 !important; border-color: #555555 !important;">
-                                        @if (ViewBag.GlobalThemes != null)
+                            <!-- СЕЛЕКТОР ЗА ТЕМИ -->
+                            <div class="col-md-6 ps-md-3">
+                                <label class="form-label fw-bold small" id="labelThemeDropdown">Избор на десктоп тема</label>
+                                <select name="ThemeId" id="themeIdDropdown" class="form-select form-select-sm font-monospace">
+                                    @if (ViewBag.GlobalThemes != null)
+                                    {
+                                        foreach (var theme in (List<GlobalTheme>)ViewBag.GlobalThemes)
                                         {
-                                            @foreach (var theme in (List<GlobalTheme>)ViewBag.GlobalThemes)
+                                            string square = theme.SupportType ? "⬛" : "⬜";
+                                            if (Model.ThemeId == theme.Id)
                                             {
-                                                // Чиста булева проверка: true (1) = Тъмна, false (0) = Светла
-                                                string square = theme.SupportType ? "⬛" : "⬜";
-
-                                                if (Model.ThemeId == theme.Id)
-                                                {
-                                                    <option value="@theme.Id" data-file="@theme.FileName" selected="selected">✓ @square @theme.ThemeName (@theme.FileSize)</option>
-                                                }
-                                                else
-                                                {
-                                                    <option value="@theme.Id" data-file="@theme.FileName">@square @theme.ThemeName (@theme.FileSize)</option>
-                                                }
+                                                <option value="@theme.Id" data-file="@theme.FileName" data-dark="@theme.SupportType.ToString().ToLower()" selected="selected">✓ @square @theme.ThemeName</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@theme.Id" data-file="@theme.FileName" data-dark="@theme.SupportType.ToString().ToLower()">@square @theme.ThemeName</option>
                                             }
                                         }
-                                    </select>
-                                </div>
+                                    }
+                                </select>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- 3. ГЛОБАЛЕН КОНТРАСТЕН ИЗБОР (ИЗВЪН РАМКАТА С КОМЕНТАР TRUE->ТЪМНА) -->
-                        <div class="card border-0 p-4 rounded-1 mb-3" style="background-color: #252526; border: 1px solid #3c3c3c !important;">
-                            <h6 class="text-white fw-bold mb-3 small text-uppercase border-bottom pb-2" style="border-color: #3c3c3c !important;">
-                                <i class="bi bi-circle-half text-warning me-2"></i> Контраст на околната среда (Глобален Режим)
-                            </h6>
-
-                            <div class="d-flex gap-4 font-monospace small align-items-center">
-                                <div class="form-check m-0">
-                                    <!-- true -> Тъмна среда (База данни bit) -->
-                                    <input class="form-check-input" type="radio" name="IsDarkUserPreference" id="modeDarkRadio" value="true" checked="@(Model.IsDarkUserPreference ? "checked" : null)">
-                                    <label class="form-check-label text-white fw-bold" for="modeDarkRadio">
-                                        🌙 Тъмен конзолен профил (True)
-                                    </label>
-                                </div>
-
-                                <div class="form-check m-0">
-                                    <!-- false -> Светла среда (База данни bit) -->
-                                    <input class="form-check-input" type="radio" name="IsDarkUserPreference" id="modeLightRadio" value="false" checked="@(!Model.IsDarkUserPreference ? "checked" : null)">
-                                    <label class="form-check-label text-muted" for="modeLightRadio">
-                                        ☀️ Светъл уеб режим (False)
-                                    </label>
-                                </div>
+                    <!-- 3. ГЛОБАЛЕН КОНТРАСТЕН ИЗБОР -->
+                    <div class="card @ViewData["CardStyleClass"] p-4">
+                        <h5 class="fw-bold mb-3 border-bottom pb-2">
+                            <i class="bi bi-circle-half text-primary me-2"></i> Контраст на околната среда (Глобален Режим)
+                        </h5>
+                        <div class="d-flex gap-4 small align-items-center">
+                            <div class="form-check">
+                                <input class="form-check-input mode-contrast-radio" type="radio" name="IsDarkUserPreference" id="modeDarkRadio" value="true" checked="@(Model.IsDarkUserPreference ? "checked" : null)">
+                                <label class="form-check-label fw-bold" for="modeDarkRadio">🌙 Тъмен конзолен профил</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input mode-contrast-radio" type="radio" name="IsDarkUserPreference" id="modeLightRadio" value="false" checked="@(!Model.IsDarkUserPreference ? "checked" : null)">
+                                <label class="form-check-label" for="modeLightRadio">☀️ Светъл уеб режим</label>
                             </div>
                         </div>
-
                     </div>
 
                 </div>
+
             </div>
-
-        </div> <!-- Край на .row -->
-    </div> <!-- Край на .container-fluid -->
-</form>
-
+        </div>
+    </form>
+</div>
