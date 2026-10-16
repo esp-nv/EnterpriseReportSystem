@@ -145,11 +145,10 @@
                                     <select name="ThemeId" id="themeIdDropdown" class="form-select form-select-sm text-white font-monospace" style="background-color: #333333 !important; border-color: #555555 !important;">
                                         @if (ViewBag.GlobalThemes != null)
                                         {
-                                            foreach (var theme in (List<GlobalTheme>)ViewBag.GlobalThemes)
+                                            @foreach (var theme in (List<GlobalTheme>)ViewBag.GlobalThemes)
                                             {
-                                                string square = "🔲"; // По подразбиране Universal (3)
-                                                if (theme.SupportType == ThemeSupportType.DarkOnly) { square = "⬛"; }
-                                                else if (theme.SupportType == ThemeSupportType.LightOnly) { square = "⬜"; }
+                                                // Чиста булева проверка: true (1) = Тъмна, false (0) = Светла
+                                                string square = theme.SupportType ? "⬛" : "⬜";
 
                                                 if (Model.ThemeId == theme.Id)
                                                 {
