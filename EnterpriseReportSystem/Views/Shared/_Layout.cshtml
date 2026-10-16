@@ -10,25 +10,27 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Холдинг ERP</title>
+    <title>@ViewData["Title"] - ХОЛДИНГ ERP</title>
 
-    <!-- ТВОЯТА АРХИТЕКТУРНА ПРОВЕРКА: Изключваме или включваме основния фреймуърк -->
-    @if (!isCustomActive)
+    <!-- 1. ИНТЕЛЕГЕНТНО ДИНАМИЧНО ЗАРЕЖДАНЕ НА ТЕМАТА ОТ ТВОЯТА ЛОКАЛНА ПАПКА -->
+    @if (ViewData["IsCustomPaletteActive"] != null && (bool)ViewData["IsCustomPaletteActive"] == true && ViewData["CustomThemeFileName"] != null && !string.IsNullOrEmpty(ViewData["CustomThemeFileName"].ToString()))
     {
-        <!-- СТЪЛБ 1 & 2: ЧИСТ БУТСТРАП (Зарежда фабричните стилове на твоя Bootstrap v5.1.0) -->
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <!-- Ако е активна локална тема, зареждаме директно нейния файл от твоята папка -->
+        <link rel="stylesheet" href="~/css/themes/@ViewData["CustomThemeFileName"]" asp-append-version="true" />
     }
     else
     {
-        <!-- СТЪЛБ 3 & 4: ПОТРЕБИТЕЛСКИ НАСТРОЙКИ (Твоите два разделени CSS модула) -->
-        <link rel="stylesheet" href="~/css/themes/user_variables.css" asp-append-version="true" />
-        <link rel="stylesheet" href="~/css/themes/user_themes.css" asp-append-version="true" />
+        <!-- Бекъп защита: Ако е на Фабричен Bootstrap, зареждаме стандартния основен стил -->
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     }
 
-    <!-- Фиксиран и работещ линк за иконите на Bootstrap и базовия стил на проекта -->
-    <link rel="stylesheet" href="https://jsdelivr.net">
+    <link rel="stylesheet" href="https://jsdelivr.net" />
+
+    <!-- 2. ГЛОБАЛНИ СТИЛОВЕ НА ХОЛДИНГА -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
+
+
 
 <body data-bs-theme="@themeFile" class="d-flex flex-column min-height-100vh">
 
