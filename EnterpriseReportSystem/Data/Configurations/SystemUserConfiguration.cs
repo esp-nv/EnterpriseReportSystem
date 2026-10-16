@@ -22,16 +22,19 @@ public class SystemUserConfiguration : IEntityTypeConfiguration<SystemUser>
             .IsRequired();
 
         builder.Property(x => x.WishListMenuIds)
-            .HasMaxLength(ValidationConstants.WishListMenuIds);
+            .HasMaxLength(ValidationConstants.WishListMenuIdsMaxLength);
 
-        // 2. Системно оформление (Без HasMaxLength върху числовото Enum поле)
+        // 2. Системно оформление и радио-селект параметри
         builder.Property(x => x.LayoutType)
             .IsRequired();
 
         builder.Property(x => x.IsMenuExpanded)
             .IsRequired();
 
-       
+        // ДОБАВЕНО: Задължително бит-поле, което контролира радио бутоните във формата
+        builder.Property(x => x.IsCustomPaletteActive)
+            .IsRequired();
+
         builder.Property(x => x.IsDarkUserPreference)
             .IsRequired();
 

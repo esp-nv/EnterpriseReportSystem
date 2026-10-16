@@ -27,7 +27,7 @@ namespace EnterpriseReportSystem.Models.Entities.Structure
 
         public bool IsGlobalAdmin { get; set; } = false;
 
-        [StringLength(200)]
+        [StringLength(ValidationConstants.WishListMenuIdsMaxLength)]
         public string WishListMenuIds { get; set; } = string.Empty;
 
         [Required]
@@ -36,15 +36,20 @@ namespace EnterpriseReportSystem.Models.Entities.Structure
         [ForeignKey("CompanyId")]
         public virtual CompanyOrPerson Company { get; set; } = null!;
 
+        // 0 -> Фабрична, 1 -> Custom (Управлява радио бутоните точно като Job -> Other)
         [Required]
-        public bool IsCustomPaletteActive { get; set; } = false; // Контролира се от радио бутоните
+        public bool IsCustomPaletteActive { get; set; } = false;
 
-        public int? ThemeId { get; set; } // Външен ключ към новата каталог-таблица
+        // Външен ключ към новата каталог-таблица, по подразбиране е 1 (без null)
+        [Required]
+        public int ThemeId { get; set; } = 1;
+
+        // БИТ-ФЛАГ: true (1) = Тъмна, false (0) = Светла
+        [Required]
+        public bool IsDarkUserPreference { get; set; } = true;
+
 
         [ForeignKey("ThemeId")]
         public virtual GlobalTheme? GlobalTheme { get; set; }
-
-        [Required]
-        public bool IsDarkUserPreference { get; set; } = true; // БИТ-ФЛАГ: true (1) = Тъмна, false (0) = Светла
     }
 }

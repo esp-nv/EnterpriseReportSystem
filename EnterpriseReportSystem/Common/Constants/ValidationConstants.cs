@@ -64,7 +64,7 @@ public static class ValidationConstants
     public const int MenuCssClassMaxLength = 150;
     public const int MenuShortcutMaxLength = 30;
 
-   public const int WishListMenuIds=200;  // Максимална дължина на списъка с избрани менюта (като низ от ID-та, разделени със запетаи)
+   public const int WishListMenuIdsMaxLength = 200;  // Максимална дължина на списъка с избрани менюта (като низ от ID-та, разделени със запетаи)
 
     // Валутна децимална точност
     public const int ExchangeRatePrecision = 18;

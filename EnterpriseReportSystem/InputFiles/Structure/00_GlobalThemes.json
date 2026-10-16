@@ -1,20 +1,13 @@
 [
   {
     "Id": 1,
-    "ThemeName": "Класическа Фабрична Тема (Bootstrap)",
-    "FileName": "",
-    "FileSize": "0 KB",
-    "SupportType": true
-  },
-  {
-    "Id": 2,
     "ThemeName": "Матрично оперативно зелено",
     "FileName": "matrix_terminal_green.css",
     "FileSize": "4.5 KB",
     "SupportType": true
   },
   {
-    "Id": 3,
+    "Id": 2,
     "ThemeName": "Луксозно корпоративно синьо",
     "FileName": "corporate_high_blue.css",
     "FileSize": "5.1 KB",
