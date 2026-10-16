@@ -1,7 +1,6 @@
-﻿using EnterpriseReportSystem.Common.Constants;
-using EnterpriseReportSystem.Common.Enum;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using EnterpriseReportSystem.Common.Constants;
 
 namespace EnterpriseReportSystem.Models.Entities.Structure
 {
@@ -17,19 +16,17 @@ namespace EnterpriseReportSystem.Models.Entities.Structure
 
         [Required]
         [StringLength(ValidationConstants.FileNameMaxLength)]
-        public string FileName { get; set; } = string.Empty; // Име на файла: "corporate_blue.css"
+        public string FileName { get; set; } = string.Empty; // Име на файла: "corporate_blue.css" (празно за фабрична)
 
-        [StringLength(ValidationConstants.FileSizeMaxLength)]
-        public string FileSize { get; set; } = "0 KB"; // Мета-данни за размер
+        [Required]
+        [StringLength(50)]
+        public string FileSize { get; set; } = "0 KB";
 
-     
         /// <summary>
-        /// Контрастен капацитет на темата: 1 = Светла, 2 = Тъмна, 3 = Универсална (И двете)
+        /// БИТ-ФИЛТЪР: false (0) = Светла тема, true (1) = Тъмна тема
         /// </summary>
         [Required]
-        [Column("SupportType")] // ТВЪРДО СВЪРЗВАНЕ КЪМ КОЛОНАТА В SQL SERVER
-        public ThemeSupportType SupportType { get; set; } = ThemeSupportType.Universal;
+        [Column("SupportType")]
+        public bool SupportType { get; set; } = true; // По подразбиране е Тъмна (1)
     }
-
 }
-

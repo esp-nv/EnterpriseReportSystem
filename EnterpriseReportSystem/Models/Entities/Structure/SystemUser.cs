@@ -5,12 +5,6 @@ using EnterpriseReportSystem.Common.Enum;
 
 namespace EnterpriseReportSystem.Models.Entities.Structure
 {
-    /// <summary>
-    /// ОФИЦИАЛНА ХОЛДИНГОВА МАТРИЦА ЗА ТИПОВЕТЕ ОФОРМЛЕНИЕ НА НАВИГАЦИЯТА
-    /// Елиминира напълно магическите числа и записва леки флагове (1, 2, 3) в SQL Server.
-    /// </summary>
-   
-
     [Table("SystemUsers")]
     public class SystemUser
     {
@@ -25,25 +19,15 @@ namespace EnterpriseReportSystem.Models.Entities.Structure
         [StringLength(ValidationConstants.PasswordMaxLength)]
         public string Password { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Системен тип на оформлението, защитен чрез системния enum AppLayoutType
-        /// </summary>
         [Required]
-        public AppLayoutType LayoutType { get; set; } = AppLayoutType.Dashboard;
+        public AppLayoutType LayoutType { get; set; } = AppLayoutType.Dashboard; // Използва чистия enum
 
-        /// <summary>
-        /// КОНТРОЛ НА ВАРИАНТИТЕ ЗА ИЗБРАНОТО ОФОРМЛЕНИЕ:
-        /// За LayoutType = Navbar (3):
-        /// - false = Вариант 1 (Тънка хоризонтална лента с класически падащи списъци)
-        /// - true  = Вариант 2 (Масивно Мега Меню с разгърната решетка на колони)
-        /// </summary>
         [Required]
         public bool IsMenuExpanded { get; set; } = true;
 
-        
         public bool IsGlobalAdmin { get; set; } = false;
 
-        [StringLength(ValidationConstants.WishListMenuIds)]
+        [StringLength(200)]
         public string WishListMenuIds { get; set; } = string.Empty;
 
         [Required]
@@ -53,15 +37,14 @@ namespace EnterpriseReportSystem.Models.Entities.Structure
         public virtual CompanyOrPerson Company { get; set; } = null!;
 
         [Required]
-        public bool IsCustomPaletteActive { get; set; } = false;
+        public bool IsCustomPaletteActive { get; set; } = false; // Контролира се от радио бутоните
 
-       
-        public int? ThemeId { get; set; }
+        public int? ThemeId { get; set; } // Външен ключ към новата каталог-таблица
 
         [ForeignKey("ThemeId")]
         public virtual GlobalTheme? GlobalTheme { get; set; }
 
         [Required]
-        public bool IsDarkUserPreference { get; set; } = true;
+        public bool IsDarkUserPreference { get; set; } = true; // БИТ-ФЛАГ: true (1) = Тъмна, false (0) = Светла
     }
 }
