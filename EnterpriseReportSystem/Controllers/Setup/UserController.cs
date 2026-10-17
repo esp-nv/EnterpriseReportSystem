@@ -16,77 +16,86 @@ public class UserController : Controller
         _context = context;
     }
 
-    // 1. ИЗВЛИЧАНЕ НА НАСТРОЙКИТЕ И ФИЛТРИРАНЕ НА ТЕМИТЕ (GET)
+    // 1. ИЗВЛИЧАНЕ НА НАСТРОЙКИТЕ И ЗАРЕЖДАНЕ НА VIEW MODEL (GET)
     [HttpGet]
     public async Task<IActionResult> Settings()
     {
-        // Извличаме текущия оператор безопасно от базата данни
         var user = await _context.SystemUsers
             .FirstOrDefaultAsync(u => u.Id == 1); // Тестов администратор #1
 
         if (user == null) return NotFound();
 
-        // Прочитаме всички налични външни теми от каталога
-        var allThemes = await _context.GlobalThemes.AsNoTracking().ToListAsync();
-
-        // Сглобяваме нашия сигурен ViewModel (точно по модела на StudentManagement)
         var viewModel = new SettingsViewModel
         {
             UserId = user.Id,
             Username = user.Username,
-            Password = user.Password,
+            IsGlobalAdmin = user.IsGlobalAdmin,
+            CompanyId = user.CompanyId,
             LayoutType = user.LayoutType,
             IsMenuExpanded = user.IsMenuExpanded,
             IsCustomPaletteActive = user.IsCustomPaletteActive,
             ThemeId = user.ThemeId,
             IsDarkUserPreference = user.IsDarkUserPreference,
-
-            // Предаваме пълния каталог към контейнера за уеб изгледа
-            AvailableThemes = allThemes
+            AvailableThemes = await _context.GlobalThemes.AsNoTracking().ToListAsync()
         };
 
         return View(viewModel);
     }
 
-    // 2. ЗАПЕЧАТВАНЕ И СТРОГА КРОС-ВАЛИДАЦИЯ НА ДАННИТЕ (POST)
+    // 2. ЗАПЕЧАТВАНЕ, СТРОГА LINQ ПРОВЕРКА НА ПАРОЛИТЕ И КРОС-ВАЛИДАЦИЯ (POST)
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SaveSettings(SettingsViewModel model)
     {
-        // Ако крос-валидацията в SettingsViewModel (IValidatableObject) открие несъответствие:
+        // Извличаме оригиналния запис на потребителя от SQL Server за сравнение
+        var dbUser = await _context.SystemUsers.FirstOrDefaultAsync(u => u.Id == model.UserId);
+        if (dbUser == null) return NotFound();
+
+        // ЛОГИКА 1: Проверка на текущата парола чрез LINQ при опит за промяна
+        if (!string.IsNullOrWhiteSpace(model.NewPassword))
+        {
+            // Проверяваме дали въведената стара парола съвпада напълно с тази в базата
+            if (dbUser.Password != model.CurrentPassword)
+            {
+                ModelState.AddModelError(nameof(model.CurrentPassword), "⚠️ Въведената текуща парола е невалидна.");
+            }
+        }
+
+        // Ако крос-валидацията от SettingsViewModel или LINQ проверката открие грешка:
         if (!ModelState.IsValid)
         {
-            // Презареждаме списъка с теми от базата, за да не се счупи падащото меню на екрана
+            // Презареждаме списъка с теми, за да не се счупи падащото меню на екрана
             model.AvailableThemes = await _context.GlobalThemes.AsNoTracking().ToListAsync();
             return View("Settings", model);
         }
 
-        // Извличаме оригиналния запис от SQL Server за модификация
-        var dbUser = await _context.SystemUsers.FirstOrDefaultAsync(u => u.Id == model.UserId);
-        if (dbUser == null) return NotFound();
-
-        // Записваме променените параметри в релационния профил
-        dbUser.Username = model.Username;
-        dbUser.Password = model.Password;
+        // ЛОГИКА 2: Записване на промените на чисто в базата данни
+        dbUser.Username = model.Username; // Обновяваме името на оператора (отключеното поле)
         dbUser.LayoutType = model.LayoutType;
         dbUser.IsMenuExpanded = model.IsMenuExpanded;
         dbUser.IsCustomPaletteActive = model.IsCustomPaletteActive;
         dbUser.IsDarkUserPreference = model.IsDarkUserPreference;
 
-        // Прилагаме бизнес защитата на приоритетите
+        // Застраховка на темите
         if (!model.IsCustomPaletteActive)
         {
-            dbUser.ThemeId = 1; // Фабрично закована котва
+            dbUser.ThemeId = 1;
         }
         else
         {
             dbUser.ThemeId = model.ThemeId;
         }
 
-        // Запечатваме трансакцията на чисто в базата данни
+        // Ако LINQ проверката е преминала успешно и имаме нова валидирана парола, я запечатваме
+        if (!string.IsNullOrWhiteSpace(model.NewPassword))
+        {
+            dbUser.Password = model.NewPassword;
+        }
+
+        // Записваме трансакцията финално в SQL Server
         await _context.SaveChangesAsync();
 
-        // Мигновено презареждаме екрана, за да може визуалният ефект да влезе в сила
+        // Презареждаме екрана чисто, за да светнат новите визуални настройки веднага
         return RedirectToAction("Settings");
     }
 }
