@@ -42,7 +42,8 @@
 
 
                 <hr />
-                <button type="submit" class="btn btn-primary w-100 fw-bold">
+                <!-- БУТОН ЗА ОКОНЧАТЕЛНО СТАРТИРАНЕ НА ДИАЛОГА -->
+                <button type="button" class="btn btn-primary w-100 fw-bold" data-bs-toggle="modal" data-bs-target="#confirmSettingsModal">
                     <i class="bi bi-shield-check me-2"></i> Запечатай настройките
                 </button>
             </div>
@@ -272,4 +273,31 @@
         </div>
     </form>
 </div>
+<!-- ФАБРИЧЕН BOOTSTRAP MODAL ПРОЗОРЕЦ ЗА ПОТВЪРЖДЕНИЕ -->
+<div class="modal fade" id="confirmSettingsModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom-0">
+                <h5 class="modal-title fw-bold text-primary" id="confirmModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i> Потвърждение на системните промени
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-3">
+                <p class="m-0 text-muted">
+                    Системата ще актуализира уеб параметрите, визуалния интерфейс и настройките за сигурност на холдинга в реално време.
+                </p>
+                <p class="fw-bold mt-2 text-white-50">
+                    Наистина ли искате да потвърдите направените промени?
+                </p>
+            </div>
+            <div class="modal-footer border-top-0">
+                <!-- ОРИГИНАЛНИ ДЕКСТОР БУТОНИ "ДА" И "НЕ" -->
+                <button type="button" class="btn btn-secondary fw-bold px-3" data-bs-dismiss="modal">Не, отказ</button>
+                <button type="button" class="btn btn-success fw-bold px-4" id="executeSubmitFormBtn">Да, потвърждавам</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="~/js/settings-mirror.js?v=@DateTime.Now.Ticks"></script>

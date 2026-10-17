@@ -93,101 +93,17 @@
     const submitBtn = document.querySelector("button[type='submit']");
 
     // =========================================================================
-    // 5. ГЛОБАЛЕН ТРАКЕР ЗА ПРОМЯНА НА НАСТРОЙКИТЕ И ЗАКЛЮЧВАНЕ НА ЗАПИСА
+    // 5. ОЛЕКОТЕНО ЗАРЕЖДАНЕ И ИЗПЪЛНЕНИЕ НА BOOTSTRAP MODAL СЪБИТИЕТО
     // =========================================================================
-    const settingsForm = document.querySelector("form");
-    const masterSubmitBtn = document.getElementById("mainSubmitSettingsBtn");
-    const masterResetBtn = document.getElementById("mainResetSettingsBtn");
+    const executeSubmitBtn = document.getElementById("executeSubmitFormBtn");
+    const mainFormElement = document.querySelector("form");
 
-    // Запечатваме първоначалното състояние на формата веднага при зареждане на уеб страницата
-    const initialFormStateMap = new Map();
-
-    if (settingsForm) {
-        const inputs = settingsForm.querySelectorAll("input, select");
-        inputs.forEach(input => {
-            if (input.id === "globalShowPasswordsCheckbox" || input.id === "showPasswordCheckbox") return;
-
-            if (input.type === "checkbox" || input.type === "radio") {
-                initialFormStateMap.set(input, input.checked);
-            } else {
-                initialFormStateMap.set(input, input.value);
-            }
+    if (executeSubmitBtn && mainFormElement) {
+        executeSubmitBtn.addEventListener("click", function () {
+            // Изпращаме формата чисто към бекенд контролера UserController.cs
+            mainFormElement.submit();
         });
     }
-
-    function evaluateGlobalFormChangesMatrix() {
-        if (!masterSubmitBtn) return;
-
-        let hasAnyRealChange = false;
-
-        // Сканираме всички полета за разлика спрямо първоначалните стойности
-        initialFormStateMap.forEach((initialValue, input) => {
-            let currentValue = (input.type === "checkbox" || input.type === "radio") ? input.checked : input.value;
-
-            if (currentValue !== initialValue) {
-                hasAnyRealChange = true;
-            }
-        });
-
-        // СПЕЦИАЛНА ЗАЩИТА ЗА ПАРОЛИТЕ: Ако се въвеждат нови пароли, текущата задължително трябва да присъства и да съвпадат
-        if (currentPassInput && newPassInput && confirmPassInput) {
-            const currentVal = currentPassInput.value.trim();
-            const newVal = newPassInput.value.trim();
-            const confirmVal = confirmPassInput.value.trim();
-
-            if (newVal.length > 0 || confirmVal.length > 0) {
-                if (currentVal.length === 0 || newVal !== confirmVal) {
-                    hasAnyRealChange = false; // Блокираме отключването при невалидни пароли
-                }
-            }
-        }
-
-        // АКТУАЛИЗИРАМЕ СТАТУСА НА БУТОНА ЗА ЗАПИС
-        masterSubmitBtn.disabled = !hasAnyRealChange;
-        if (!hasAnyRealChange) {
-            masterSubmitBtn.className = "btn btn-secondary w-100 fw-bold";
-            masterSubmitBtn.style.cursor = "not-allowed";
-        } else {
-            masterSubmitBtn.className = "btn btn-primary w-100 fw-bold";
-            masterSubmitBtn.style.cursor = "pointer";
-        }
-    }
-
-    // Закачаме живи слушатели за промяна върху абсолютно всяко поле в системата
-    if (settingsForm) {
-        settingsForm.querySelectorAll("input, select").forEach(input => {
-            if (input.id === "globalShowPasswordsCheckbox" || input.id === "showPasswordCheckbox") return;
-
-            input.addEventListener("input", evaluateGlobalFormChangesMatrix);
-            input.addEventListener("change", evaluateGlobalFormChangesMatrix);
-        });
-    }
-
-    // ЛОГИКА ЗА БУТОНА "ОТКАЗ ОТ ПРОМЕНИ"
-    if (masterResetBtn && settingsForm) {
-        masterResetBtn.addEventListener("click", function () {
-            // Връщаме фабричните стойности на всяко поле от запазената ни карта
-            initialFormStateMap.forEach((initialValue, input) => {
-                if (input.type === "checkbox" || input.type === "radio") {
-                    input.checked = initialValue;
-                } else {
-                    input.value = initialValue;
-                }
-                // Ръчно задействаме събитие за опресняване на интерфейсните матрици
-                input.dispatchEvent(new Event('change'));
-            });
-
-            // Изчистваме ръчно полетата за нови пароли, ако са били въвеждани
-            if (currentPassInput) currentPassInput.value = "";
-            if (newPassInput) newPassInput.value = "";
-            if (confirmPassInput) confirmPassInput.value = "";
-
-            evaluateGlobalFormChangesMatrix();
-        });
-    }
-
-    // Изпълняваме начален контрол при стартиране на уеб екрана
-    evaluateGlobalFormChangesMatrix();
 
 
 });
