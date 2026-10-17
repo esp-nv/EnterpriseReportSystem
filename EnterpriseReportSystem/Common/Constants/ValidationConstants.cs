@@ -88,7 +88,8 @@ public static class ValidationConstants
         public const string PasswordUpperRegex = @"[A-Z]";
         public const string PasswordLowerRegex = @"[a-z]";
         public const string PasswordDigitRegex = @"[0-9]";
-    }
+        public const string PasswordSpecialRegex = @"[\W_]";
+}
 
 
 

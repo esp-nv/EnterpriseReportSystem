@@ -92,24 +92,30 @@ public class SettingsViewModel : IValidatableObject
 
             if (hasNew)
             {
-                // Използваме изнесената константа 8
                 if (NewPassword!.Length < ValidationConstants.PasswordMinLength)
                 {
                     yield return new ValidationResult($"⚠️ Новата парола трябва да бъде дълга поне {ValidationConstants.PasswordMinLength} символа.", new[] { nameof(NewPassword) });
                 }
                 else
                 {
-                    // Използваме изнесените RegEx константи
                     var hasUpper = new Regex(ValidationConstants.PasswordUpperRegex);
                     var hasLower = new Regex(ValidationConstants.PasswordLowerRegex);
                     var hasDigit = new Regex(ValidationConstants.PasswordDigitRegex);
 
-                    if (!hasUpper.IsMatch(NewPassword) || !hasLower.IsMatch(NewPassword) || !hasDigit.IsMatch(NewPassword))
+                    // ДОБАВЕНО: Зареждаме новия регулярен израз за специален символ
+                    var hasSpecial = new Regex(ValidationConstants.PasswordSpecialRegex);
+
+                    // Разширяваме проверката с новото твърдо изискване
+                    if (!hasUpper.IsMatch(NewPassword) ||
+                        !hasLower.IsMatch(NewPassword) ||
+                        !hasDigit.IsMatch(NewPassword) ||
+                        !hasSpecial.IsMatch(NewPassword))
                     {
-                        yield return new ValidationResult("⚠️ Паролата трябва да съдържа поне една главна буква, една малка буква и една цифра.", new[] { nameof(NewPassword) });
+                        yield return new ValidationResult("⚠️ Паролата трябва да съдържа поне една главна буква, една малка буква, една цифра и поне един специален символ (напр. @, #, $, %).", new[] { nameof(NewPassword) });
                     }
                 }
             }
+
         }
     }
 }
