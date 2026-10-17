@@ -70,39 +70,34 @@
     function filterThemesDropdown() {
         if (!themeDropdown) return;
 
-        // Определяме дали текущо е избран Тъмен (true) или Светъл (false) глобален режим
+        // Определяме дали текущо е избран Тъмен (true) или Светъл (false) режим
         const isCurrentSystemDark = modeDark && modeDark.checked;
         const options = themeDropdown.getElementsByTagName("option");
-        let activeVisibleCount = 0;
 
         for (let option of options) {
-            const themeDarkData = option.getAttribute("data-dark"); // Четем "true" или "false" от option тага
+            const themeDarkData = option.getAttribute("data-dark");
             if (!themeDarkData) continue;
 
-            // Филтриращо съпоставяне едно към едно
-            if (themeDarkData === isCurrentSystemDark.toString()) {
-                option.style.display = ""; // Показваме съвместимата тема
-                activeVisibleCount++;
-            } else {
-                option.style.display = "none"; // Скриваме несъвместимата тема
+            // Извличаме чистото оригинално име на темата (махаме старото подсещане, ако има такова)
+            let baseText = option.text.replace(" (несъвместима)", "");
 
-                // FALLBACK ЗАЩИТА: Ако скриваме темата, която потребителят е бил избрал, зануляваме селектора
+            if (themeDarkData === isCurrentSystemDark.toString()) {
+                // ПОЗВОЛЕНА ТЕМА: Връщаме оригиналния текст и я отключваме
+                option.disabled = false;
+                option.text = baseText;
+            } else {
+                // НЕСЪВМЕСТИМА ТЕМА: Блокираме я на Disabed и подсещаме визуално
+                option.disabled = true;
+                option.text = baseText + " (несъвместима)";
+
+                // FALLBACK ЗАЩИТА: Ако потребителят е бил стъпил върху нея, връщаме на Фабрична котва
                 if (option.selected) {
                     option.selected = false;
                     if (radioFactory) {
-                        radioFactory.checked = true; // Автоматично връщаме на Фабричен Bootstrap
+                        radioFactory.checked = true;
                         evalThemeLockMatrix();
                     }
                 }
             }
         }
     }
-
-    // Закачаме филтъра към радио бутоните за контраст на околната среда
-    if (modeDark) modeDark.addEventListener("change", filterThemesDropdown);
-    if (modeLight) modeLight.addEventListener("change", filterThemesDropdown);
-
-    // ИЗПЪЛНЯВАМЕ НАЧАЛЕН СИНХРОН ПРИ ЗАРЕЖДАНЕ НА ЕКРАНА
-    evalThemeLockMatrix();
-    filterThemesDropdown();
-});

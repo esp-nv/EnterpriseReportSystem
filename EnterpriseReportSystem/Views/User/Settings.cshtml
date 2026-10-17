@@ -143,23 +143,26 @@
                                     <label class="form-check-label" for="radioCustomStyle">
                                         <i class="bi bi-file-earmark-code me-1 text-success"></i> Персонализирана тема (Външен файл)
                                     </label>
-                                <select name="ThemeId" id="themeIdDropdown" class="form-select form-select-sm font-monospace">
-                                    @if (ViewBag.GlobalThemes != null)
-                                    {
-                                        foreach (var theme in (List<GlobalTheme>)ViewBag.GlobalThemes)
+                                    <select name="ThemeId" id="themeIdDropdown" class="form-select form-select-sm font-monospace">
+                                        @if (ViewBag.GlobalThemes != null)
                                         {
-                                            string square = theme.SupportType ? "⬛" : "⬜";
-                                            if (Model.ThemeId == theme.Id)
+                                            foreach (var theme in (List<GlobalTheme>)ViewBag.GlobalThemes)
                                             {
-                                                <option value="@theme.Id" data-file="@theme.FileName" data-dark="@theme.SupportType.ToString().ToLower()" selected="selected">✓ @square @theme.ThemeName</option>
-                                            }
-                                            else
-                                            {
-                                                <option value="@theme.Id" data-file="@theme.FileName" data-dark="@theme.SupportType.ToString().ToLower()">@square @theme.ThemeName</option>
+                                                string square = theme.SupportType ? "⬛" : "⬜";
+                                                string isDarkString = theme.SupportType ? "true" : "false";
+
+                                                if (Model.ThemeId == theme.Id)
+                                                {
+                                                    <option value="@theme.Id" data-file="@theme.FileName" data-dark="@isDarkString" selected="selected">✓ @square @theme.ThemeName</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@theme.Id" data-file="@theme.FileName" data-dark="@isDarkString">@square @theme.ThemeName</option>
+                                                }
                                             }
                                         }
-                                    }
                                     </select>
+
                                 </div>
                             </div>
                         </div>
