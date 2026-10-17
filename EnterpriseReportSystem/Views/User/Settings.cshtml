@@ -90,12 +90,14 @@
                                         </div>
                                     </div>
                                     <select name="ThemeId" id="themeIdDropdown" class="form-control font-monospace form-select">
-                                        @if (ViewBag.GlobalThemes != null)
+                                        <!-- КОРЕКЦИЯ: Четем списъка от модела, а не от ViewBag -->
+                                        @if (Model.AvailableThemes != null)
                                         {
-                                            @foreach (var theme in (List<GlobalTheme>)ViewBag.GlobalThemes)
+                                            @foreach (var theme in Model.AvailableThemes)
                                             {
                                                 string square = theme.SupportType ? "⬛" : "⬜";
                                                 string isDarkTheme = theme.SupportType.ToString().ToLower();
+                                                
                                                 if (Model.ThemeId == theme.Id)
                                                 {
                                                     <option value="@theme.Id" data-file="@theme.FileName" data-dark="@isDarkTheme" selected="selected">✓ @square @theme.ThemeName</option>
