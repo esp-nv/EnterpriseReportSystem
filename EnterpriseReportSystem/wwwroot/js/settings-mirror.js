@@ -1,24 +1,20 @@
-﻿document.addEventListener("DOMContentLoaded", function () {
-    // =========================================================================
-    // 1. СИНХРОНИЗАЦИЯ НА ЛЕВИТЕ СТРАНИЧНИ ТАБОВЕ (Visual Studio Ефект)
-    // =========================================================================
-    var pillButtons = document.querySelectorAll('#vs-tab-system .nav-link');
-    pillButtons.forEach(function (btn) {
+﻿// Интегрирано управление на потребителския интерфейс по модела на StudentManagement
+document.addEventListener("DOMContentLoaded", function () {
+
+    // 1. СИНХРОНИЗАЦИЯ НА ЛЕВИТЕ СТРАНИЧНИ ТАБОВЕ
+    document.querySelectorAll('#vs-tab-system .nav-link').forEach(btn => {
         btn.addEventListener('shown.bs.tab', function () {
-            pillButtons.forEach(function (b) {
-                b.style.backgroundColor = 'transparent';
+            document.querySelectorAll('#vs-tab-system .nav-link').forEach(b => {
                 b.classList.add('text-muted');
                 b.classList.remove('text-white');
             });
-            this.style.backgroundColor = '#37373d';
+            // Премахнат твърдия цвят #37373d - сега се управлява на чисто от CSS темата!
             this.classList.remove('text-muted');
             this.classList.add('text-white');
         });
     });
 
-    // =========================================================================
-    // 2. ПРЕВКЛЮЧВАНЕ НА ВИДИМОСТТА НА ПАРОЛАТА (Show/Hide Eye Effect)
-    // =========================================================================
+    // 2. ПРЕВКЛЮЧВАНЕ НА ВИДИМОСТТА НА ПАРОЛАТА (SHOW/HIDE EYE EFFECT)
     const togglePasswordBtn = document.getElementById("togglePasswordVisibilityBtn");
     const passwordInput = document.getElementById("operatorPasswordInput");
     const eyeIcon = document.getElementById("passwordEyeIcon");
@@ -40,72 +36,56 @@
         });
     }
 
-    // =========================================================================
-    // 3. ЖИВО ЗАКЛЮЧВАНЕ НА COMBOBOX-А (Group Box UX контрол)
-    // =========================================================================
+    // 3. АВТОМАТИЧНО УПРАВЛЕНИЕ И ФИЛТРАЦИЯ НА ТЕМИТЕ (МАТРИЦА НА СЪОТВЕТСТВИЕТО)
     const radioFactory = document.getElementById("radioFactoryStyle");
     const radioCustom = document.getElementById("radioCustomStyle");
     const themeDropdown = document.getElementById("themeIdDropdown");
-    const labelTheme = document.getElementById("labelThemeDropdown");
-
-    function evalThemeLockMatrix() {
-        if (radioFactory && radioFactory.checked) {
-            if (themeDropdown) themeDropdown.disabled = true;
-            if (labelTheme) labelTheme.className = "form-label fw-bold small text-muted text-decoration-line-through";
-        } else if (radioCustom && radioCustom.checked) {
-            if (themeDropdown) themeDropdown.disabled = false;
-            if (labelTheme) labelTheme.className = "form-label fw-bold small text-primary";
-        }
-    }
-
-    if (radioFactory) radioFactory.addEventListener("change", evalThemeLockMatrix);
-    if (radioCustom) radioCustom.addEventListener("change", evalThemeLockMatrix);
-
-    // =========================================================================
-    // 4. ДОBAВЕНО: ИНТЕЛЕГЕНТЕН ЖИВ ФИЛТЪР НА ТЕМИТЕ СПРЯМО КОНТРАСТА
-    // =========================================================================
     const modeDark = document.getElementById("modeDarkRadio");
     const modeLight = document.getElementById("modeLightRadio");
 
-    function filterThemesDropdown() {
+    function evaluateThemeInterfaceMatrix() {
         if (!themeDropdown) return;
 
-        // Вземаме истинското състояние на контрастния радио бутон
+        const isFactoryMode = radioFactory && radioFactory.checked;
         const isCurrentSystemDark = modeDark && modeDark.checked;
-        const options = themeDropdown.getElementsByTagName("option");
 
-        for (let option of options) {
+        // Контрол на достъпа до падащото меню
+        themeDropdown.disabled = isFactoryMode;
+        themeDropdown.style.opacity = isFactoryMode ? "0.5" : "1";
+
+        // Динамично филтриране и заключване на опциите спрямо контраста
+        Array.from(themeDropdown.options).forEach(option => {
             const themeDarkData = option.getAttribute("data-dark");
-            if (!themeDarkData) continue;
+            if (!themeDarkData) return;
 
-            // Изчистваме старите динамични текстови добавки
-            let cleanText = option.text.replace("✓ ", "").replace(" (несъвместима)", "");
+            // Сравняваме булевите низове "true"/"false"
+            const isCompatible = themeDarkData === isCurrentSystemDark.toString();
 
-            if (themeDarkData === isCurrentSystemDark.toString()) {
-                // ПРАВИЛНА ТЕМА: Махаме забранителния статус
-                option.disabled = false;
-                option.classList.remove("disabled"); // Премахваме Bootstrap класа
-
-                // Ако тази тема е реално селектираната в модела, ѝ връщаме отметката
-                if (option.defaultSelected || option.value == themeDropdown.value) {
-                    option.text = "✓ " + cleanText;
-                } else {
-                    option.text = cleanText;
-                }
-            } else {
-                // НЕСЪВМЕСТИМА ТЕМА: Махаме отметката, заключваме и добавяме текст
-                option.disabled = true;
-                option.classList.add("disabled"); // Налагаме Bootstrap класа за сив цвят
-                option.text = cleanText + " (несъвместима)";
-
-                // АВТОМАТИЧНА ЗАЩИТА: Ако потребителят е бил върху нея, я деселектираме
+            option.disabled = !isCompatible;
+            if (!isCompatible) {
+                option.classList.add("text-muted", "disabled");
                 if (option.selected) {
                     option.selected = false;
-                    if (radioFactory) {
-                        radioFactory.checked = true; // Връщаме на Фабричен Bootstrap
-                        evalThemeLockMatrix();
-                    }
+                    if (radioFactory) radioFactory.checked = true;
                 }
+            } else {
+                option.classList.remove("text-muted", "disabled");
             }
+        });
+
+        // Ако сме върнали на фабричен режим принудително, преизчисляваме състоянието
+        if (radioFactory && radioFactory.checked && themeDropdown.disabled === false) {
+            themeDropdown.disabled = true;
+            themeDropdown.style.opacity = "0.5";
         }
     }
+
+    // Закачаме чисти събития по примера на GitHub site.js
+    if (radioFactory) radioFactory.addEventListener("change", evaluateThemeInterfaceMatrix);
+    if (radioCustom) radioCustom.addEventListener("change", evaluateThemeInterfaceMatrix);
+    if (modeDark) modeDark.addEventListener("change", evaluateThemeInterfaceMatrix);
+    if (modeLight) modeLight.addEventListener("change", evaluateThemeInterfaceMatrix);
+
+    // Изпълняваме първоначален баланс при зареждане на екрана
+    evaluateThemeInterfaceMatrix();
+});
