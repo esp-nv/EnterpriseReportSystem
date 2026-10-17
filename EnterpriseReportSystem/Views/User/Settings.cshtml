@@ -24,13 +24,23 @@
         <div class="col-md-3">
             <div class="card p-3 shadow-sm">
                 <div class="nav flex-column nav-pills" id="vs-tab-system" role="tablist">
-                    <button class="nav-link active text-start mb-2" id="tab-profile-btn" data-bs-toggle="pill" data-bs-target="#content-profile" type="button" role="tab">
+                    <!-- БУТОН 1: ИДЕНТИЧНОСТ -->
+                    <button class="nav-link active text-start mb-2" id="tab-profile-btn" data-bs-toggle="pill" data-bs-target="#content-profile" type="button" role="tab" aria-controls="content-profile" aria-selected="true">
                         <i class="bi bi-person-fill me-2"></i> Потребителски профил
                     </button>
-                    <button class="nav-link text-start" id="tab-elements-btn" data-bs-toggle="pill" data-bs-target="#content-elements" type="button" role="tab">
+
+                    <!-- БУТОН 2: СИСТЕМНИ ЕЛЕМЕНТИ -->
+                    <button class="nav-link text-start mb-2" id="tab-elements-btn" data-bs-toggle="pill" data-bs-target="#content-elements" type="button" role="tab" aria-controls="content-elements" aria-selected="false">
                         <i class="bi bi-sliders me-2"></i> Системни елементи
                     </button>
+
+                    <!-- БУТОН 3: НОВИЯТ ТАБ ЗА СИГУРНОСТ -->
+                    <button class="nav-link text-start" id="tab-security-btn" data-bs-toggle="pill" data-bs-target="#content-security" type="button" role="tab" aria-controls="content-security" aria-selected="false">
+                        <i class="bi bi-shield-lock-fill me-2 text-danger"></i> Сигурност на акаунта
+                    </button>
                 </div>
+
+
                 <hr />
                 <button type="submit" class="btn btn-primary w-100 fw-bold">
                     <i class="bi bi-shield-check me-2"></i> Запечатай настройките
@@ -41,34 +51,86 @@
         <!-- ДЕСЕН ПАНЕЛ: ДИНАМИЧНО СЪДЪРЖАНИЕ -->
         <div class="col-md-9">
             <div class="tab-content" id="vs-tab-content">
-                
-                <!-- ПАНЕЛ 1: ПОТРЕБИТЕЛСКИ ПРОФИЛ (ЗАРЕЖДА СЕ АКТИВЕН ПО ПОДРАЗБИРАНЕ) -->
-                <div class="tab-pane fade show active" id="content-profile" role="tabpanel">
-                    <div class="card p-4 shadow-sm">
-                        <h5 class="fw-bold mb-3 border-bottom pb-2">
-                            <i class="bi bi-person-badge text-primary me-2"></i> Профилни данни на оператора
-                        </h5>
+
+                <!-- ПАНЕЛ 1: ПОТРЕБИТЕЛСКИ ПРОФИЛ -->
+                <div class="tab-pane fade show active" id="content-profile" role="tabpanel" aria-labelledby="tab-profile-btn">
+                    <!-- КАРТА 1: ОБЩИ ДАННИ НА ОПЕРАТОРА -->
+                    <div class="card p-4 mb-4 shadow-sm border-0 bg-body">
+                        <h6 class="text-secondary text-uppercase tracking-wider small fw-bold mb-4 pb-2 border-bottom">
+                            <i class="bi bi-person-badge text-primary me-2"></i> Идентификация на оператора
+                        </h6>
                         <div class="row g-3">
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold small">Име на оператора</label>
-                                <input type="text" class="form-control form-control-sm font-monospace" value="@Model.Username" disabled />
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold mb-1">Потребителско име (Отключено за промяна)</label>
+                                <input type="text" asp-for="Username" class="form-control form-control-sm font-monospace border-secondary-subtle" />
+                                <span asp-validation-for="Username" class="text-danger small"></span>
                             </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold small">Системна роля</label>
-                                <input type="text" class="form-control form-control-sm font-monospace" value="Оператор / Администратор" disabled />
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold small">Системна парола</label>
-                                <div class="input-group input-group-sm">
-                                    <input type="password" name="Password" id="operatorPasswordInput" class="form-control font-monospace border-end-0" value="@Model.Password" autocomplete="off" />
-                                    <button class="input-group-text bg-transparent text-secondary border-start-0" type="button" id="togglePasswordVisibilityBtn">
-                                        <i class="bi bi-eye" id="passwordEyeIcon"></i>
-                                    </button>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold mb-1">Глобален Администраторски Статус</label>
+                                <div class="form-check form-switch mt-1">
+                                    <input type="checkbox" asp-for="IsGlobalAdmin" class="form-check-input" disabled style="cursor: not-allowed;" />
+                                    <label class="form-check-label small fw-bold text-danger" for="IsGlobalAdmin">Глобален контрол (Заключено)</label>
                                 </div>
+                                <input type="hidden" asp-for="IsGlobalAdmin" />
                             </div>
                         </div>
                     </div>
+                    <!-- КАРТА 2: МАТРИЦА НА ПРАВАТА (ТИП ТАБЛИЦА С CRUD СИГУРНОСТ) -->
+                    <div class="card p-4 shadow-sm border-0 bg-body">
+                        <h6 class="text-secondary text-uppercase tracking-wider small fw-bold mb-3 pb-2 border-bottom">
+                            <i class="bi bi-shield-shaded text-success me-2"></i> Системна матрица на корпоративните права
+                        </h6>
+                        <div class="table-responsive">
+                            <table class="table align-middle font-monospace small mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 50%;">Системна роля на акаунта</th>
+                                        <th style="width: 50%;">Прикачен Субект / Компания в холдинга</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            @if (Model.IsGlobalAdmin)
+                                            {
+                                                <!-- CRUD режим за Администратор: Активен избор -->
+                                                <select asp-for="LayoutType" class="form-select form-select-sm border-success-subtle">
+                                                    <option value="1">Глобален Dashboard Контролер</option>
+                                                    <option value="2">Оперативен Мениджър (Ribbon)</option>
+                                                    <option value="3">Системен Анализатор (Navbar)</option>
+                                                </select>
+                                            }
+                                            else
+                                            {
+                                                <!-- За обикновен оператор: Само за четене -->
+                                                <input type="text" class="form-control form-control-sm bg-light border-secondary-subtle" value="Стандартен Системен Оператор" disabled style="cursor: not-allowed;" />
+                                                <input type="hidden" asp-for="LayoutType" />
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (Model.IsGlobalAdmin)
+                                            {
+                                                <!-- CRUD режим за Администратор: Смяна на Компания -->
+                                                <select asp-for="CompanyId" class="form-select form-select-sm border-success-subtle">
+                                                    <option value="1">Централен Холдинг АД</option>
+                                                    <option value="2">Дъщерно Предприятие ЕООД</option>
+                                                </select>
+                                            }
+                                            else
+                                            {
+                                                <!-- За обикновен оператор: Само за четене -->
+                                                <input type="text" class="form-control form-control-sm bg-light border-secondary-subtle" value="Централен Холдинг АД" disabled style="cursor: not-allowed;" />
+                                                <input type="hidden" asp-for="CompanyId" />
+                                            }
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
+
+
 
                 <!-- ПАНЕЛ 2: СИСТЕМНИ ВИЗУАЛНИ ЕЛЕМЕНТИ -->
                 <div class="tab-pane fade" id="content-elements" role="tabpanel">
@@ -162,6 +224,50 @@
                     </div>
                 </div>
 
+                <!-- ПАНЕЛ 3: СИГУРНОСТ НА АКАУНТА -->
+                <div class="tab-pane fade" id="content-security" role="tabpanel" aria-labelledby="tab-security-btn">
+                    <div class="card p-4 shadow-sm border-0 bg-body">
+                        <!-- ФИКСИРАН ЕТИКЕТ ЗА ТЕКУЩИЯ ПОТРЕБИТЕЛ -->
+                        <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+                            <h6 class="text-secondary text-uppercase tracking-wider small fw-bold m-0">
+                                <i class="bi bi-shield-lock-fill text-danger me-2"></i> Управление на паролите и сигурността
+                            </h6>
+                            <span class="badge bg-secondary-subtle text-secondary font-monospace border border-secondary-subtle px-3 py-2 small fw-bold">
+                                <i class="bi bi-person-circle me-1 text-primary"></i> Сигурност за акаунт: @Model.Username
+                            </span>
+                        </div>
+                        <div class="row g-3">
+                            <!-- 1. ТЕКУЩА ПАРОЛА -->
+                            <div class="col-12">
+                                <label class="form-label text-muted small fw-bold mb-1">Текуща системна парола</label>
+                                <input type="password" asp-for="CurrentPassword" id="inputCurrentPass" class="form-control form-control-sm font-monospace border-secondary-subtle" autocomplete="off" />
+                                <span asp-validation-for="CurrentPassword" class="text-danger small"></span>
+                            </div>
+                            <!-- 2. НОВА ПАРОЛА -->
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold mb-1">Нова сигурна парола</label>
+                                <input type="password" asp-for="NewPassword" id="inputNewPass" class="form-control form-control-sm font-monospace border-secondary-subtle" autocomplete="off" />
+                                <span asp-validation-for="NewPassword" class="text-danger small"></span>
+                            </div>
+                            <!-- 3. ПОВТОРИ НОВАТА ПАРОЛА -->
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold mb-1">Повторете новата парола</label>
+                                <input type="password" asp-for="ConfirmNewPassword" id="inputConfirmPass" class="form-control form-control-sm font-monospace border-secondary-subtle" autocomplete="off" />
+                                <span asp-validation-for="ConfirmNewPassword" class="text-danger small"></span>
+                            </div>
+                            <!-- 4. ОБЩ ЧЕКБОКС "ПОКАЖИ ПАРОЛИТЕ" -->
+                            <div class="col-12 mt-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input text-primary" type="checkbox" id="globalShowPasswordsCheckbox" style="cursor: pointer;" />
+                                    <label class="form-check-label text-muted small fw-bold" for="globalShowPasswordsCheckbox" style="cursor: pointer;">
+                                        <i class="bi bi-eye-fill me-1"></i> Покажи въведените пароли
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Панел 3. Край -->
             </div>
         </div>
     </form>
