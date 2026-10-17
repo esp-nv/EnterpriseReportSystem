@@ -8,6 +8,10 @@ public class SettingsViewModel : IValidatableObject
 {
     public int UserId { get; set; }
 
+    // ДОБАВЕНО: Задължителен идентификатор на компанията, за да се отпуши изгледът
+    [Required]
+    public int CompanyId { get; set; }
+
     [Required]
     public string Username { get; set; } = string.Empty;
 
