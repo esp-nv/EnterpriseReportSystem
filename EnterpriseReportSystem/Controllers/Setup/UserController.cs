@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using EnterpriseReportSystem.Data;
+using EnterpriseReportSystem.Models.Entities.Structure;
 using EnterpriseReportSystem.ViewModels;
 
 namespace EnterpriseReportSystem.Controllers.Setup;
@@ -17,7 +18,6 @@ public class UserController : Controller
 
     // 1. ИЗВЛИЧАНЕ НА НАСТРОЙКИТЕ И ФИЛТРИРАНЕ НА ТЕМИТЕ (GET)
     [HttpGet]
-    [Route("User/Settings")]
     public async Task<IActionResult> Settings()
     {
         // Извличаме текущия оператор безопасно от базата данни
@@ -51,7 +51,6 @@ public class UserController : Controller
     // 2. ЗАПЕЧАТВАНЕ И СТРОГА КРОС-ВАЛИДАЦИЯ НА ДАННИТЕ (POST)
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Route("User/SaveSettings")]
     public async Task<IActionResult> SaveSettings(SettingsViewModel model)
     {
         // Ако крос-валидацията в SettingsViewModel (IValidatableObject) открие несъответствие:
