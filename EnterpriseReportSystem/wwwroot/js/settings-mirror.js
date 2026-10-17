@@ -86,4 +86,47 @@
 
     // Изпълняваме първоначален баланс при зареждане на екрана
     evaluateThemeInterfaceMatrix();
+
+    // =========================================================================
+    // 5. ЖИВА БЛОКИРОВКА НА БУТОНА ЗА ЗАПИС ПРИ НЕСЪВПАДАЩИ ПАРОЛИ
+    // =========================================================================
+    const submitBtn = document.querySelector("button[type='submit']");
+
+    function evaluatePasswordSubmitMatrix() {
+        if (!submitBtn || !currentPassInput || !newPassInput || !confirmPassInput) return;
+
+        const currentVal = currentPassInput.value;
+        const newVal = newPassInput.value;
+        const confirmVal = confirmPassInput.value;
+
+        let shouldBlock = false;
+
+        // Блокираме, ако е попълнено някое от новите полета, но липсва текущата парола
+        if ((newVal.length > 0 || confirmVal.length > 0) && currentVal.length === 0) {
+            shouldBlock = true;
+        }
+
+        // Блокираме, ако новата парола и повторението се разминават
+        if (newVal !== confirmVal) {
+            shouldBlock = true;
+        }
+
+        // Прилагаме заключването и променяме визуалния стил на бутона
+        submitBtn.disabled = shouldBlock;
+        if (shouldBlock) {
+            submitBtn.classList.remove("btn-primary");
+            submitBtn.classList.add("btn-secondary");
+            submitBtn.style.cursor = "not-allowed";
+        } else {
+            submitBtn.classList.remove("btn-secondary");
+            submitBtn.classList.add("btn-primary");
+            submitBtn.style.cursor = "pointer";
+        }
+    }
+
+    // Закачаме слушатели за всяко натискане на клавиш (input event) в трите полета
+    if (currentPassInput) currentPassInput.addEventListener("input", evaluatePasswordSubmitMatrix);
+    if (newPassInput) newPassInput.addEventListener("input", evaluatePasswordSubmitMatrix);
+    if (confirmPassInput) confirmPassInput.addEventListener("input", evaluatePasswordSubmitMatrix);
+
 });
