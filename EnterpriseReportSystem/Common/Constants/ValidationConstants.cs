@@ -76,4 +76,19 @@ public static class ValidationConstants
 
     public const int FileSizeMaxLength = 50; // Максимална дължина на размера на файла (напр. "0 KB")
 
-}
+
+    
+        // ... твоите съществуващи константи (напр. UsernameMaxLength = 50 и т.н.) ...
+
+        // МИНИМАЛНИ ДЪЛЖИНИ
+        public const int UsernameMinLength = 3;
+        public const int PasswordMinLength = 8;
+
+        // РЕГУЛЯРНИ ИЗРАЗИ ЗА СИГУРНОСТ (REGEX)
+        public const string PasswordUpperRegex = @"[A-Z]";
+        public const string PasswordLowerRegex = @"[a-z]";
+        public const string PasswordDigitRegex = @"[0-9]";
+    }
+
+
+
