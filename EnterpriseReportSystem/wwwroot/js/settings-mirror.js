@@ -70,7 +70,7 @@
     function filterThemesDropdown() {
         if (!themeDropdown) return;
 
-        // Определяме дали текущо е избран Тъмен (true) или Светъл (false) режим
+        // Вземаме истинското състояние на контрастния радио бутон
         const isCurrentSystemDark = modeDark && modeDark.checked;
         const options = themeDropdown.getElementsByTagName("option");
 
@@ -78,23 +78,31 @@
             const themeDarkData = option.getAttribute("data-dark");
             if (!themeDarkData) continue;
 
-            // Извличаме чистото оригинално име на темата (махаме старото подсещане, ако има такова)
-            let baseText = option.text.replace(" (несъвместима)", "");
+            // Изчистваме старите динамични текстови добавки
+            let cleanText = option.text.replace("✓ ", "").replace(" (несъвместима)", "");
 
             if (themeDarkData === isCurrentSystemDark.toString()) {
-                // ПОЗВОЛЕНА ТЕМА: Връщаме оригиналния текст и я отключваме
+                // ПРАВИЛНА ТЕМА: Махаме забранителния статус
                 option.disabled = false;
-                option.text = baseText;
-            } else {
-                // НЕСЪВМЕСТИМА ТЕМА: Блокираме я на Disabed и подсещаме визуално
-                option.disabled = true;
-                option.text = baseText + " (несъвместима)";
+                option.classList.remove("disabled"); // Премахваме Bootstrap класа
 
-                // FALLBACK ЗАЩИТА: Ако потребителят е бил стъпил върху нея, връщаме на Фабрична котва
+                // Ако тази тема е реално селектираната в модела, ѝ връщаме отметката
+                if (option.defaultSelected || option.value == themeDropdown.value) {
+                    option.text = "✓ " + cleanText;
+                } else {
+                    option.text = cleanText;
+                }
+            } else {
+                // НЕСЪВМЕСТИМА ТЕМА: Махаме отметката, заключваме и добавяме текст
+                option.disabled = true;
+                option.classList.add("disabled"); // Налагаме Bootstrap класа за сив цвят
+                option.text = cleanText + " (несъвместима)";
+
+                // АВТОМАТИЧНА ЗАЩИТА: Ако потребителят е бил върху нея, я деселектираме
                 if (option.selected) {
                     option.selected = false;
                     if (radioFactory) {
-                        radioFactory.checked = true;
+                        radioFactory.checked = true; // Връщаме на Фабричен Bootstrap
                         evalThemeLockMatrix();
                     }
                 }
