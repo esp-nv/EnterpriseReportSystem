@@ -1,7 +1,6 @@
 ﻿@inject EnterpriseReportSystem.Data.ApplicationDbContext _context
 @using Microsoft.EntityFrameworkCore
 @using EnterpriseReportSystem.Models.Entities.Structure
-@using EnterpriseReportSystem.Common.Enum
 
 @{
     // 1. Извличаме глобалните настройки на текущия потребител безопасно заедно с темата му
@@ -10,15 +9,15 @@
         .AsNoTracking()
         .FirstOrDefault(u => u.Id == 1);
 
-    // 2. ОПРЕДЕЛЯМЕ АКТИВНАТА ТЕМА И ОФОРМЛЕНИЕТО ЧРЕЗ ENUM ФЛАГОВЕТЕ
+    // 2. ОПРЕДЕЛЯМЕ АКТИВНАТА ТЕМА И ОФОРМЛЕНИЕТО ЧРЕЗ ENUM И БИТ ФЛАГОВЕТЕ
     bool isDark = currentUser != null ? currentUser.IsDarkUserPreference : true;
 
     // Преобразуваме числото от базата към текстова директива за шаблона
     string layoutStyle = "DASHBOARD";
     if (currentUser != null)
     {
-        if (currentUser.LayoutType == AppLayoutType.Ribbon) layoutStyle = "RIBBON";
-        else if (currentUser.LayoutType == AppLayoutType.Navbar) layoutStyle = "NAVBAR";
+        if (currentUser.LayoutType == EnterpriseReportSystem.Common.Enum.AppLayoutType.Ribbon) layoutStyle = "RIBBON";
+        else if (currentUser.LayoutType == EnterpriseReportSystem.Common.Enum.AppLayoutType.Navbar) layoutStyle = "NAVBAR";
     }
 
     ViewData["GlobalTheme"] = isDark ? "dark" : "light";
@@ -29,22 +28,20 @@
     // 3. ИНТЕЛЕГЕНТНА КОНТРАСТНА ЗАЩИТА НА КЛАСОВЕТЕ СПРЯМО СВЕТЪЛ/ТЪМЕН РЕЖИМ
     if (!isDark)
     {
-        // Ако потребителят е маркиран за СВЕТЪЛ режим (false)
         ViewData["NavbarClass"] = "navbar-light bg-light border-bottom";
         ViewData["SidebarClass"] = "bg-light border-end";
         ViewData["AccountingTableClass"] = "table-light table-striped";
-        ViewData["CardStyleClass"] = "shadow-sm border";
+        ViewData["CardStyleClass"] = "shadow-sm border bg-white";
         ViewData["FooterLayoutClass"] = "d-flex justify-content-between align-items-center text-dark bg-light";
         ViewData["TextClass"] = "text-dark";
         ViewData["ActiveMenuClass"] = "text-primary fw-bold";
     }
     else
     {
-        // Ако е в ТЪМЕН режим (true) - Ако има качен външен CSS, той ще пренапише тези базови класове
         ViewData["NavbarClass"] = "navbar-dark bg-dark border-bottom border-secondary";
         ViewData["SidebarClass"] = "bg-dark border-end border-secondary";
         ViewData["AccountingTableClass"] = "table-dark table-striped";
-        ViewData["CardStyleClass"] = "bg-secondary shadow";
+        ViewData["CardStyleClass"] = "bg-dark shadow border border-secondary text-white";
         ViewData["FooterLayoutClass"] = "d-flex justify-content-between align-items-center text-white bg-dark border-top border-secondary";
         ViewData["TextClass"] = "text-white";
         ViewData["ActiveMenuClass"] = "text-warning fw-bold";
