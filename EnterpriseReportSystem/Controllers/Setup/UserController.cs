@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using EnterpriseReportSystem.Data;
-using EnterpriseReportSystem.Models.Entities.Structure;
 using EnterpriseReportSystem.ViewModels;
 
 namespace EnterpriseReportSystem.Controllers.Setup;
